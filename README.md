@@ -1,47 +1,37 @@
 # LogLab
 
-LogLab adalah proyek praktikum Rekayasa Sistem untuk mencatat login akun fiktif, mengirim event dari VM A ke VM B, lalu menampilkan analisis rules dan satu model Logistic Regression lokal pada dashboard operator.
+LogLab adalah praktikum Rekayasa Sistem untuk mencatat login akun fiktif di VM Source, mengirim event ke VM Monitor, lalu menampilkan rules dan satu classifier Logistic Regression lokal pada dashboard.
 
-**Status 28 Oktober 2026:** repository ini berisi kerangka dokumentasi dan pembagian pekerjaan. Source aplikasi, skrip setup, dependency lock, pengujian, dan PDF tugas belum diterbitkan di sini. Belum ada perintah `make setup` yang dapat dijalankan. Implementasi dan evidence pada workspace sebelumnya belum otomatis menjadi bukti untuk repo ini.
+**Erna menangani VM A Source. Arhasya menangani VM B Monitor.** Keduanya menulis kode, tests dan deployment peran. Integrator menyiapkan fondasi/kontrak bersama, training offline dan penyatuan hasil. Nama anggota adalah samaran kerja. Setiap anggota memakai clone repo di `~/LogLab` dalam guest Debian masing-masing; SSH direkomendasikan agar copy-paste dari terminal host lebih mudah.
 
-## Mulai membaca
+## Mulai sesuai peran
 
-1. [Baseline kerja](docs/architecture/BASELINE.md): dua VM, OS, jaringan, batas reproducibility, dan pembagian file.
-2. [Daftar pekerjaan](docs/TASKS.md): dokumen yang perlu ditulis, task A/B, dependensi, serta bukti penyelesaian.
-3. [Cara berkontribusi](CONTRIBUTING.md): branch, PR, sinkronisasi, dan integrasi.
+- **Erna:** [panduan Source](docs/tasks/erna.md).
+- **Arhasya:** [panduan Monitor](docs/tasks/arhasya.md).
+- **Integrator:** [fondasi dan integrasi](docs/tasks/integration.md).
+- **Semua dokumen:** [docs/index.md](docs/index.md), termasuk PRD, SRS per bagian, diagram, standar, dan inventaris lama.
 
-Kebutuhan produk dan sistem akan berada di [docs/requirements/](docs/requirements/). Rencana kontrak teknis A–B ada di [docs/interface-contracts/](docs/interface-contracts/).
+## Status repo
 
-## Struktur repository
+Dokumen kebutuhan, standar, dan assets lama telah diadaptasi; task anggota telah dirinci untuk review. Source aplikasi, dependency, installer, fixture executable, dan PDF baru belum diterbitkan. `make setup-source`/`make setup-monitor` masih target rencana. Jangan mengklaim hasil uji lama berlaku untuk repo atau build anggota ini.
 
-Mengikuti contoh pada materi Pertemuan 5, slide 6. Setiap direktori saat ini memuat catatan cakupan; kode dan skrip ditambahkan melalui task yang tercatat.
+## Struktur menurut materi
 
 ```text
-Log-lab/
-├── src/                      # source aplikasi
-├── tests/                    # unit, contract, dan integration tests
-├── docs/
-│   ├── requirements/         # PRD dan SRS
-│   ├── architecture/         # baseline dan diagram arsitektur
-│   ├── interface-contracts/  # schema/API dan fixture kontrak
-│   └── TASKS.md              # satu daftar pekerjaan tim
-├── config/                   # template konfigurasi tanpa secret
-├── scripts/                  # alat bantu pengembangan dan evidence
-├── deployment/               # provisioning dan konfigurasi dua VM
-├── .gitignore
-├── .gitattributes
-├── AGENTS.md
-├── CONTRIBUTING.md
-├── README.md
-└── CHANGELOG.md
+src/                        source aplikasi
+tests/                     pengujian
+docs/
+   index.md                 navigasi peran
+   requirements/            PRD dan SRS yang dipecah per kemampuan
+   architecture/            baseline, standar, assets dan diagram
+   interface-contracts/     rujukan kontrak dan fixture bersama
+   tasks/                   Erna, Arhasya, workspace, dan integrasi
+   history/                 inventaris dan konteks implementasi lama
+config/                    template aman tanpa secret
+scripts/                   alat bantu pengembangan
+deployment/                provisioning guest, service, firewall
 ```
 
-Satu repository digunakan oleh kedua VM. Target setup Source dan Monitor akan berbeda; masing-masing memakai commit atau tag pasangan yang sudah diuji. Nama direktori deployment adalah `deployment/`, sesuai contoh materi; jangan menambahkan direktori `deploy/` kedua.
+Nama direktori utama mengikuti contoh Pertemuan 5 slide 6. `docs/` mempunyai index pada setiap kelompok yang memerlukan navigasi. Tidak ada repo atau paket source terpisah per anggota. Source/Monitor dibedakan oleh konfigurasi dan target setup yang diuji pada Debian target, dengan host integrasi akhir Windows 11.
 
-## SSH dari host
-
-SSH direkomendasikan untuk memudahkan copy-paste perintah dari terminal host ketika clipboard console VMware tidak nyaman atau bermasalah. Anggota tetap boleh menjalankan perintah melalui console guest. SSH adalah akses administrasi host ke guest; aplikasi A mengirim event ke B melalui HTTPS.
-
-## Acuan materi
-
-Struktur mengikuti *Pertemuan 5 — Version Control & Collaborative Engineering*, terutama slide 6, 15–17, dan 21. Kontrak teknis mengikuti pembahasan interface pada *Pertemuan 4 — System Modeling and Documentation*. Berkas materi kuliah tidak diunggah ulang ke repo. Lembar Artefak Modul 5 menetapkan repository sebagai bukti utama, dengan PDF ringkas untuk lokasi repo, branch/merge, git log, konflik/resolusi, dan kontribusi anggota.
+Alur branch dan PR ada di [CONTRIBUTING.md](CONTRIBUTING.md). [Daftar task](docs/tasks/index.md) menjadi satu tempat status tim. Secret, database, log privat, file VM, OVA dan backup tidak disimpan di Git.

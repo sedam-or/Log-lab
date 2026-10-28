@@ -1,0 +1,24 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Times New Roman, Georgia, serif","fontSize":"24px","primaryColor":"#EAF1F7","primaryTextColor":"#15283B","primaryBorderColor":"#476781","lineColor":"#597086","secondaryColor":"#F6F8FA","tertiaryColor":"#E8EEF4","edgeLabelBackground":"#FFFFFF"},"flowchart":{"htmlLabels":false,"nodeSpacing":45,"rankSpacing":62,"curve":"basis"}}}%%
+flowchart TB
+  subgraph A["VM A - SOURCE<br/>172.16.202.21"]
+    direction LR
+    login["Login uji<br/>autentikasi"]
+    outbox[("SQLite<br/>outbox + sequence")]
+    sender["Sender tunggal<br/>retry durable"]
+    login --> outbox --> sender
+  end
+  subgraph B["VM B - MONITOR<br/>172.16.202.22"]
+    direction LR
+    ingest["API HTTPS :8443<br/>auth + validasi"]
+    store[("SQLite<br/>event unik + receipt")]
+    snapshot["Snapshot 60 detik<br/>watermark + kualitas"]
+    analysis["rules-v1<br/>Logistic Regression"]
+    console["Dashboard operator<br/>sesi sah"]
+    ingest --> store --> snapshot --> analysis --> console
+  end
+  A -->|"Sender ke ingest<br/>HTTPS :8443, event + status"| B
+  B -.->|"receipt setelah commit"| A
+  classDef source fill:#EAF1F7,stroke:#476781,color:#15283B,stroke-width:1.8px
+  classDef monitor fill:#EEF6F1,stroke:#527C63,color:#15283B,stroke-width:1.8px
+  class login,outbox,sender source
+  class ingest,store,snapshot,analysis,console monitor

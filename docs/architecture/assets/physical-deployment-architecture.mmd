@@ -1,0 +1,18 @@
+%%{init: {"theme":"neutral","flowchart":{"wrappingWidth":320,"minNodeWidth":250},"themeVariables":{"fontFamily":"Arial, sans-serif","fontSize":"23px","lineColor":"#475569","primaryColor":"#FFFFFF","primaryTextColor":"#111827","primaryBorderColor":"#475569","secondaryColor":"#F3F4F6","tertiaryColor":"#E5E7EB","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8"}}}%%
+flowchart LR
+    HOST["Host Windows 11<br/>VMware Workstation<br/>Browser: HTTPS :8443<br/>Admin: SSH :22"]
+    NETWORK["VMnet1 host-only<br/>Private lab network<br/>No external route at runtime"]
+    SOURCE["VM A | Debian | Source<br/>HTTPS :8443<br/>SQLite local; not network-exposed<br/>Login + outbox + sender/status"]
+    MONITOR["VM B | Debian | Monitor<br/>HTTPS :8443<br/>SQLite + model package local<br/>Ingest + analysis + rules/ML + console"]
+
+    HOST -->|"host-only"| NETWORK
+    NETWORK -->|"C-01 HTTPS :8443<br/>C-12 SSH :22"| SOURCE
+    NETWORK -->|"C-10 HTTPS :8443<br/>C-12 SSH :22"| MONITOR
+    SOURCE -->|"C-03 / C-04<br/>HTTPS :8443"| MONITOR
+
+    classDef node fill:#FFFFFF,stroke:#475569,stroke-width:1.7px,color:#111827;
+    classDef boundary fill:#F1F5F9,stroke:#475569,stroke-width:1.7px,color:#111827;
+    classDef runtime fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#111827;
+    class HOST,SOURCE,MONITOR node;
+    class NETWORK boundary;
+    linkStyle default stroke:#475569,stroke-width:1.7px

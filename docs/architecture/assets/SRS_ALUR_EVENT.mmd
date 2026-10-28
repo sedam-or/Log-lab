@@ -1,0 +1,17 @@
+sequenceDiagram
+    actor T as Penguji
+    participant A as VM A Source
+    participant B as VM B Monitor
+    actor O as Operator
+    T->>A: Coba login fiktif
+    A->>A: Autentikasi dan simpan event ke outbox
+    A-->>T: Tampilkan hasil login
+    loop Sampai receipt sah
+        A->>B: Kirim event melalui HTTPS
+        B->>B: Validasi dan commit event
+        B-->>A: Receipt tersimpan atau duplikat
+        A->>A: Commit ACK lokal
+    end
+    B->>B: Buat snapshot; jalankan rules dan ML
+    O->>B: Cari event atau hasil
+    B-->>O: Tampilkan state dan bukti

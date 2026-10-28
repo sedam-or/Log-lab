@@ -1,0 +1,7 @@
+flowchart LR
+    T[Penguji login] -->|percobaan fiktif| A[Login uji
+VM A]
+    A -->|hasil autentikasi| E[Event login]
+    E -->|diterima dan dianalisis| M[Monitoring dan analisis
+VM B]
+    M -->|hasil dan bukti| O[Operator lab]

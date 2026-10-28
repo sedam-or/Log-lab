@@ -1,6 +1,6 @@
 # Baseline kerja LogLab
 
-**Tanggal:** 28 Oktober 2026. **Status:** arah kerja yang disepakati pemilik; rincian instalasi dan kontrak belum dibekukan sebagai rilis. Dokumen ini mengikat pembagian pekerjaan awal. PRD, SRS, installer, dan acceptance yang sesuai repo masih perlu disiapkan melalui [daftar task](../TASKS.md).
+**Tanggal:** 28 Oktober 2026. **Status:** arah kerja yang disepakati pemilik; rincian instalasi dan kontrak belum dibekukan sebagai rilis. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi sebagai draf; installer dan acceptance belum tersedia. Lihat [index arsitektur](index.md) dan [task tim](../tasks/index.md).
 
 ## Tujuan dan pembagian VM
 
@@ -44,9 +44,9 @@ Repo akan menyediakan satu target setup per peran. Nama yang direncanakan adalah
 
 | Pemilik | Cakupan yang direncanakan |
 | --- | --- |
-| Anggota A | Kode Source, outbox/sender, `deployment/source/`, template `config/source.example.*`, tes Source, panduan tugas A |
-| Anggota B | Kode Monitor, ingest/analysis/model/dashboard, `deployment/monitor/`, template `config/monitor.example.*`, tes Monitor, panduan tugas B |
-| Integrator dengan review A/B | Schema dan utilitas bersama, root Makefile, dependency lock, `deployment/common/`, tes kontrak/integrasi, PRD/SRS, baseline, serta daftar task |
+| Erna | Implementasi dan tes login/outbox/sender/status Source, setup dan verifikasi peran, `deployment/source/`, template `config/source.example.*`, tes Source, panduan tugas A |
+| Arhasya | Implementasi dan tes ingest/analysis/inferensi/dashboard, setup dan verifikasi peran, `deployment/monitor/`, template `config/monitor.example.*`, tes Monitor, panduan tugas B |
+| Integrator dengan review Erna/Arhasya | Schema/helper bersama, training/evaluasi offline, paket model, root Makefile, dependency lock, `deployment/common/`, tes kontrak/integrasi, PRD/SRS, baseline, serta daftar task |
 
 Path per peran dibuat ketika berisi implementasi; direktori kosong tidak perlu ditambahkan. Tentukan daftar modul aktual sebelum implementasi. Jika kode lama masih memakai modul datar dalam `src/loglab/`, petakan kepemilikannya tanpa refactor besar hanya demi pembagian tugas.
 
@@ -59,3 +59,7 @@ Untuk acceptance pasangan, integrator memasang kedua peran dari commit yang sama
 ## Hal yang perlu diselaraskan
 
 Dokumen workspace sebelumnya memakai istilah host Linux, path `deploy/`, serta catatan deployment/evidence lama. Migrasi harus menyesuaikan target Windows 11 dan `deployment/`, memeriksa link, menghapus path privat, serta mempertahankan ID requirement. Status draf, persetujuan pemilik, persetujuan dosen, dan hasil uji aktual harus ditulis berbeda. Jangan mengklaim evidence lama berlaku pada commit repo baru.
+
+## Panduan peran
+
+Workspace anggota dijelaskan di [workspace](../tasks/workspace.md). Erna membuka [task Source](../tasks/erna.md); Arhasya membuka [task Monitor](../tasks/arhasya.md). Batas coding bersama dan urutan penyatuan dijelaskan pada [integrasi](../tasks/integration.md).

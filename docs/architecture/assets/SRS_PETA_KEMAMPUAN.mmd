@@ -1,0 +1,19 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Times New Roman, Georgia, serif","fontSize":"20px","primaryColor":"#EAF1F7","primaryTextColor":"#15283B","primaryBorderColor":"#476781","lineColor":"#597086","secondaryColor":"#F6F8FA","tertiaryColor":"#E8EEF4","edgeLabelBackground":"#FFFFFF"},"flowchart":{"htmlLabels":false,"nodeSpacing":55,"rankSpacing":72,"curve":"basis"}}}%%
+flowchart LR
+  EP["event-pipeline<br/>event, outbox, ingest"]
+  AA["activity-analysis<br/>snapshot, kualitas, rules"]
+  ML["ml-classifier<br/>dataset, fit, evaluasi"]
+  UI["operator-console<br/>akses dan bukti"]
+  OP["lab-operations<br/>dua VM, TLS, backup,<br/>recovery, evidence"]
+  EP --> AA --> ML
+  EP --> UI
+  AA --> UI
+  ML --> UI
+  EP -.-> OP
+  AA -.-> OP
+  ML -.-> OP
+  UI -.-> OP
+  classDef core fill:#EAF1F7,stroke:#476781,color:#15283B,stroke-width:1.6px
+  classDef ops fill:#EEF6F1,stroke:#527C63,color:#15283B,stroke-width:1.6px
+  class EP,AA,ML,UI core
+  class OP ops

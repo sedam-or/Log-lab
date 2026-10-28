@@ -1,0 +1,16 @@
+%%{init: {"theme":"neutral","flowchart":{"wrappingWidth":360,"minNodeWidth":260},"themeVariables":{"fontFamily":"Arial, sans-serif","fontSize":"24px","lineColor":"#475569","primaryColor":"#FFFFFF","primaryTextColor":"#111827","primaryBorderColor":"#475569","secondaryColor":"#F3F4F6","tertiaryColor":"#E5E7EB","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8"}}}%%
+flowchart LR
+    TESTER(["Penguji login"])
+    SOURCE["VM A | Source<br/><b>Satu aplikasi runtime</b><br/>Login + autentikasi<br/>Event Factory + Outbox<br/>Sender + Status Reporter<br/>SQLite akun, sequence, outbox"]
+    MONITOR["VM B | Monitor<br/><b>Satu aplikasi runtime</b><br/>Ingest API + Event Store<br/>Activity Analysis: window, quality,<br/>7 fitur; hanya READY dianalisis<br/>Rules + Logistic Regression lokal<br/>Analysis Store + Operator Console"]
+    OPERATOR(["Operator"])
+
+    TESTER -->|"C-01 login"| SOURCE
+    SOURCE -->|"C-03 event + receipt<br/>C-04 status"| MONITOR
+    MONITOR -->|"C-10 query baca"| OPERATOR
+
+    classDef actor fill:#FFFFFF,stroke:#64748B,stroke-width:1.5px,color:#111827;
+    classDef runtime fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#111827;
+    class TESTER,OPERATOR actor;
+    class SOURCE,MONITOR runtime;
+    linkStyle default stroke:#475569,stroke-width:1.7px
