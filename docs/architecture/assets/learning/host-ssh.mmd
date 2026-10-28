@@ -1,0 +1,20 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px"},"flowchart":{"htmlLabels":false,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    subgraph HOST["Laptop fisik anggota atau host"]
+        TERM["Terminal host
+Tempat copy-paste perintah"]
+        VMWARE["VMware Workstation
+Menjalankan VM"]
+        subgraph VM["Guest Debian di dalam VM"]
+            SSH["SSH server
+Menerima koneksi terminal"]
+            SHELL["Shell Debian
+Menjalankan perintah"]
+            REPO["Folder ~/LogLab
+Kode dan riwayat Git"]
+        end
+        TERM -->|"SSH melalui jaringan host-only"| SSH
+        SSH --> SHELL
+        VMWARE -->|"Console sebagai pilihan lain"| SHELL
+        SHELL -->|"Baca atau edit file"| REPO
+    end

@@ -4,6 +4,10 @@ LogLab adalah praktikum Rekayasa Sistem untuk mencatat login akun fiktif di VM S
 
 **Erna menangani VM A Source. Arhasya menangani VM B Monitor.** Keduanya menulis kode, tests dan deployment peran. Integrator menyiapkan fondasi/kontrak bersama, training offline dan penyatuan hasil. Nama anggota adalah samaran kerja. Setiap anggota memakai clone repo di `~/LogLab` dalam guest Debian masing-masing; SSH direkomendasikan agar copy-paste dari terminal host lebih mudah.
 
+## Mulai belajar proyek
+
+Jika baru belajar software engineering, buka [dasar proyek](docs/tasks/basics.md) untuk memahami satu percobaan login dari Source sampai dashboard. Sesudah itu buka [folder kerja dan SSH](docs/tasks/workspace.md) agar jelas di mana kamu menulis kode dan menjalankan command.
+
 ## Mulai sesuai peran
 
 - **Erna:** [panduan Source](docs/tasks/erna.md).

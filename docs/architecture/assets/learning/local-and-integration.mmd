@@ -1,0 +1,24 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px"},"flowchart":{"htmlLabels":false,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    subgraph DEV["Saat coding pada laptop masing-masing"]
+      E["Laptop Erna
+VM A + receiver uji"]
+      R["Laptop Arhasya
+VM B + data fixture"]
+      G["GitHub Log-lab
+Pertukaran kode melalui PR"]
+      E -->|"Push kode Source"| G
+      R -->|"Push kode Monitor"| G
+    end
+    subgraph LAB["Saat integrasi pada satu laptop atau PC lab"]
+      W["Host Windows 11
+VMware Workstation"]
+      A["VM A
+Source"]
+      B["VM B
+Monitor"]
+      W --> A
+      W --> B
+      A -->|"HTTPS melalui satu host-only"| B
+    end
+    G -->|"Pasang commit hasil merge pada kedua VM"| W

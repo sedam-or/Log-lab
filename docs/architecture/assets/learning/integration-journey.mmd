@@ -1,0 +1,24 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px"},"flowchart":{"htmlLabels":false,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    F["Fondasi bersama oleh integrator
+Requirement, helper, fixture dan dependency"] --> ER["Erna
+Kode dan tes Source
+PR kecil selama pengerjaan"]
+    F --> AR["Arhasya
+Kode dan tes Monitor
+PR kecil selama pengerjaan"]
+    ER --> AUDIT["I-01
+Audit semua PR dan tes bersama
+Catat satu commit hasil integrasi"]
+    AR --> AUDIT
+    AUDIT --> HOST["I-02 pada satu host Windows 11
+Pasang A dan B dari commit yang sama
+Jaringan host-only bersama"]
+    HOST --> TEST["Uji login ke dashboard
+Uji gangguan, reboot dan pemulihan"]
+    TEST --> CHECK{"Semua syarat wajib terpenuhi?"}
+    CHECK -->|"Belum"| FIX["Catat masalah
+PR perbaikan lalu tes terdampak"]
+    FIX --> AUDIT
+    CHECK -->|"Ya dan disetujui"| DONE["I-03
+Tag rilis dan laporan bukti Modul 5"]

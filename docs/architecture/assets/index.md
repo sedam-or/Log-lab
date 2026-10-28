@@ -10,3 +10,5 @@ Sumber `.mmd` dan render `.svg`/`.png` dipindahkan dari dokumen proyek lama. Gam
 - `physical-deployment-architecture`: dua guest pada host Windows 11.
 
 Gunakan [halaman arsitektur](../index.md) untuk membaca gambar dalam konteks. Bila narasi baseline mengubah isi diagram, tandai dan render ulang sebelum publikasi PDF final.
+
+[Diagram proses kerja untuk pemula](learning/index.md) menjelaskan host/SSH, perjalanan event, Git, task peran dan integrasi.

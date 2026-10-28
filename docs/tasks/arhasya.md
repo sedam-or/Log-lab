@@ -1,65 +1,136 @@
-# Panduan Arhasya untuk kode dan VM B Monitor
+# Panduan Arhasya menulis dan memasang Monitor
 
-Arhasya menulis kode Monitor, mengujinya, lalu memasangnya pada VM Debian miliknya. Monitor menerima event, menyimpannya sebelum memberi receipt, membentuk analisis, menjalankan inferensi model lokal, dan menampilkan dashboard. Training offline dan penyediaan paket model menjadi tugas integrator agar beban peran ini tetap terkendali. Arhasya tetap menulis jalur inferensi runtime dan penanganan kegagalannya.
+Arhasya bertanggung jawab atas penerima log serta halaman tempat operator memeriksa hasilnya. Kodenya harus menerima event sesuai kontrak, menyimpan data sebelum menjawab Source, mengelompokkan aktivitas, menghitung hasil, dan menampilkannya dengan konteks yang benar.
 
-Baca [workspace](workspace.md), [istilah](../requirements/srs/terms.md), lalu SRS per task: [event](../requirements/srs/event-pipeline.md), [analisis](../requirements/srs/activity-analysis.md), [model](../requirements/srs/ml-classifier.md), dan [console](../requirements/srs/operator-console.md). Command bootstrap final menunggu F-04; tidak ada klaim kode/tes peran sudah tersedia.
+Beban Monitor lebih luas daripada Source. Karena itu pekerjaan dibagi menjadi ingest, analisis, inferensi, console, lalu deployment. Integrator menyiapkan training offline dan paket model. Arhasya tetap menulis loader serta jalur inferensi runtime, yaitu pemakaian model yang sudah dilatih untuk menghitung prediksi pada input baru.
 
-## Workspace dan file milik Arhasya
+Baca [dasar proyek](basics.md) dan [workspace](workspace.md) sebelum mulai. Kerjakan satu tahap lalu baca SRS yang dirujuk tahap tersebut. Source/helper dan command bootstrap belum diterbitkan; coding dimulai setelah fondasi F-04 siap.
 
-VM: `LogLab-Monitor-Arhasya`. Clone guest: `~/LogLab`. Gunakan branch per PR, misalnya `feat/arhasya-ingest`, `feat/arhasya-analysis`, dan `feat/arhasya-console`.
+## Gambaran perjalanan Arhasya
 
-| File yang direncanakan | Yang ditulis Arhasya |
+![Urutan task Arhasya dan ketergantungan paket model](../architecture/assets/learning/arhasya-journey.png)
+
+[Sumber Mermaid](../architecture/assets/learning/arhasya-journey.mmd).
+
+R-03 dapat diuji memakai fixture tanpa menunggu Source Erna. Setelah fitur R-04 diterima, integrator menggunakan fitur yang sama untuk training F-05. Sambil menunggu paket model, Arhasya dapat menulis route console yang tidak bergantung pada prediksi final. Pengujian inferensi akhir menunggu paket dan fixture prediksi tersebut.
+
+## File yang menjadi tempat coding
+
+| File atau direktori rencana | Fungsi yang ditulis |
 | --- | --- |
-| `src/loglab/monitor_app.py`, `monitor_main.py` | Endpoint ingest/status, bootstrap aplikasi, sesi dan route dashboard memakai helper security |
-| `src/loglab/analysis.py` | Window, snapshot/revision, kualitas, rules, penyimpanan hasil dan analisis loop |
-| `src/loglab/features.py` | Ekstraktor tujuh fitur; **review bersama integrator wajib** karena dipakai training dan runtime |
-| `src/loglab/model.py` | Loader paket numerik, hash/schema, inferensi dan penanganan model tidak tersedia |
-| `tests/test_monitor_app.py`, `test_analysis.py`, `test_features.py`, `test_model.py` | Tes input, persistensi, analisis, fitur, model, serta akses console |
-| `deployment/monitor/`, `config/monitor.example.*` | Service, firewall, dan template peran B |
-| `docs/tasks/results/arhasya.md` | Hasil aktual, isu, dan batas tes Monitor |
+| `src/loglab/monitor_app.py`, `monitor_main.py` | Endpoint ingest/status, bootstrap runtime dan route dashboard |
+| `src/loglab/analysis.py` | Window, kualitas, revisi snapshot, rules dan penyimpanan hasil |
+| `src/loglab/features.py` | Ekstraktor tujuh fitur; ditinjau integrator karena dipakai training dan runtime |
+| `src/loglab/model.py` | Loader, pemeriksaan paket model dan inferensi |
+| `tests/test_monitor_app.py`, `test_analysis.py`, `test_features.py`, `test_model.py` | Tes input, transaksi, fitur, analisis, model dan console |
+| `deployment/monitor/`, `config/monitor.example.*` | Service, aturan jaringan dan konfigurasi contoh Monitor |
 
-Schema event, helper `db.py`/`security.py`/`config.py`, dependency, root Makefile dan training dikelola integrator. Pemilik dapat mengusulkan perubahan lewat PR bersama; jangan membuat kontrak/helper berbeda untuk Monitor.
+Nama file adalah target implementasi. Integrator mengelola schema event, helper DB/security/config, root Makefile, dependency dan training. Jika helper belum mendukung kebutuhan Monitor, jelaskan operasi yang diperlukan dalam PR bersama, beserta dampaknya pada Source. Hindari membuat versi field/validasi sendiri yang berbeda dari fixture bersama.
 
-## R-01 Pahami alur dan periksa laptop
+## R-01 Memahami penerimaan log dan memeriksa laptop
 
-**Tujuan:** Arhasya dapat menjelaskan mengapa HTTP sukses tidak cukup membuktikan data/analisis sehat. **Requirement:** EP-03/EP-04, AA-02, OP-01. Catat OS/VMware/resource host dan profil B: 2 vCPU, RAM 2 GiB, disk dinamis 20 GiB. Baca field receipt dan beda READY, incomplete/stale, serta hasil model. Selesai bila prasyarat dan alur ditulis di catatan Arhasya.
+Perhatikan perjalanan event pada dasar proyek. Monitor menyimpan event sebelum menjawab receipt. Jika menjawab sukses terlebih dahulu tetapi proses mati sebelum menyimpan, Source mungkin menganggap pekerjaannya selesai padahal data hilang. Hubungan ini menjadi alasan utama urutan validasi → commit → receipt.
 
-## R-02 Siapkan guest dan environment coding
+Tulis penjelasan singkat urutan itu, lalu catat OS/VMware, RAM dan disk host. Profil Monitor adalah 2 vCPU, RAM 2 GiB, disk dinamis 20 GiB. Task awal selesai ketika resource tercatat dan Arhasya dapat menjelaskan perbedaan “API merespons” dengan “event benar-benar tersimpan”. Requirement terkait: EP-03/EP-04 dan OP-01.
 
-**Dependensi:** F-04. Pasang ISO Debian/hash yang sama dengan Erna, akun `loglab`, jaringan host-only dan SSH opsional. Clone ke `~/LogLab`, buat branch dari SHA baseline dan ikuti bootstrap environment yang diterbitkan integrator. Periksa OS/Python, remote Git, branch dan tes fondasi. Tidak ada migrasi lewat folder shared host yang menjadi dependensi runtime.
+## R-02 Menyiapkan guest dan environment coding
 
-## R-03 Tulis ingest dan status sumber
+Menunggu baseline F-04. Pasang Debian dari ISO/hash yang sama dengan Erna, gunakan VM `LogLab-Monitor-Arhasya`, akun `loglab`, dan jaringan host-only. SSH direkomendasikan untuk menempelkan perintah dari host, dengan console sebagai alternatif.
 
-**Requirement:** EP-03/EP-04/EP-05/EP-07. **File:** endpoint Monitor, bootstrap, tes ingest. **Input:** schema, digest helper, DB helper dan fixture integrator.
+Clone ke `~/LogLab`, buat branch task dari baseline yang diberikan, lalu ikuti bootstrap Python/dependency. Periksa OS, remote repo, branch, folder dan tes fondasi. Simpan hasil aman. Jika environment atau fixture belum disediakan, laporkan dependensi agar kode berikutnya tidak ditulis berdasarkan format tebakan.
 
-1. Validasi TLS/auth, ukuran request, schema, digest dan identitas sumber sesuai kontrak.
-2. Simpan event/receipt pada transaksi sebelum mengirim jawaban. Event identik yang dikirim ulang menjadi duplicate; konflik identitas tidak menimpa record awal.
-3. Simpan status sumber dan watermark dengan waktu penerimaan sendiri. Status sumber bukan event login.
-4. Tes valid, duplicate, konflik ID/sequence, token salah, digest invalid, body berlebih dan kapasitas. Cocokkan field/status dengan fixture yang sama dengan Erna.
-5. Kirim PR `feat/arhasya-ingest`. **Lulus:** record/count benar, receipt sesuai, dan input tidak sah ditolak tanpa body secret di log. Ini belum memerlukan koneksi laptop Erna.
+## R-03 Menulis ingest dan receipt
 
-## R-04 Tulis fitur, snapshot dan rules
+**Ingest** berarti proses menerima data masuk. **API** adalah cara aplikasi bertukar request dan response dengan format yang disepakati. Pada tahap ini, Arhasya membuat endpoint penerima event dan status sumber sesuai [EP-03/EP-04/EP-05/EP-07](../requirements/srs/event-pipeline.md).
 
-**Requirement:** AA-01–AA-05. **File:** `analysis.py`, `features.py`, tes fitur/analisis. Buat PR terpisah atau beberapa PR kecil untuk fitur dahulu, kemudian snapshot/kualitas/rules.
+Mulai di branch `feat/arhasya-ingest`. Kerjakan endpoint pada aplikasi Monitor, pemanggilan helper DB dan tes ingest. Fixture integrator menyediakan event valid, event invalid, digest dan response yang diharapkan.
 
-Implementasikan window 60 detik, membership/urutan deterministik, tujuh fitur sesuai urutan kontrak, kualitas input dan revisi immutable. Tes batas window, event terlambat, heartbeat usang, watermark/gap, clock offset dan input kosong. Hanya READY dapat dianalisis. Terapkan rules serta alasan dan event pendukung sesuai threshold SRS, tanpa mengganti label ground truth dataset.
+### Langkah pengerjaan
 
-**Lulus:** fixture manual menghasilkan fitur yang benar, hasil/versi/revisi dapat ditelusuri, state tidak layak terlihat, dan tes batas lulus. Integrator mereview `features.py` sebelum menyiapkan paket model karena training harus memakai fitur yang sama. Temuan ambigu dilaporkan sebagai pertanyaan kontrak, tidak diputuskan berbeda sendiri.
+1. Periksa autentikasi, sumber, ukuran dan bentuk JSON request. JSON adalah format data dengan pasangan nama/nilai; misalnya `schema_version` berisi angka versi. Ikuti batas serta field yang diterima schema bersama.
+2. Periksa digest dan identitas event. Event ID menandai satu kejadian; sequence menunjukkan urutan dalam stream Source. Kedua identitas tidak boleh dipakai ulang untuk isi berbeda.
+3. Simpan event dan informasi receipt dengan transaksi. Balas setelah commit berhasil. Untuk duplikat identik, kembalikan duplicate sah sesuai kontrak tanpa membuat record tambahan.
+4. Untuk konflik, pertahankan record awal dan kirim error sesuai kontrak. Untuk status sumber, simpan metadata waktu/watermark; status bukan event login baru.
+5. Tes sebelum menambahkan analisis. Fokus R-03 adalah perilaku penerimaan, sehingga kegagalan analisis belum boleh menghambat receipt event yang sudah tersimpan.
 
-## R-05 Tulis inferensi dan dashboard
+### Contoh dan syarat selesai
 
-**Requirement:** ML-05/ML-06 dan UI-01–UI-05. **Input:** paket model numerik, checksum dan expected prediction dari integrator; helper sesi/security. Training/dataset/evaluasi ML-01–ML-04 diselesaikan integrator pada F-05 menggunakan fitur R-04 yang sudah diterima.
+Kirim fixture event yang sama dua kali. Hasil yang diharapkan adalah satu record event pada B. Receipt kedua menunjukkan duplikat untuk identitas dan digest yang sama. Berikutnya, ubah isi tetapi gunakan ID awal; permintaan itu harus ditolak sebagai konflik dan record awal tetap utuh.
 
-Tulis loader dan inferensi pada `model.py`. Validasi hash/schema/urutan fitur/angka, kunci identitas paket saat proses hidup, dan simpan hasil per revisi/model. Tes prediksi terhadap fixture integrator, paket hilang/korup/schema salah dan restart. Kegagalan tidak menghasilkan label normal.
+| Case | Input | Yang harus diperiksa |
+| --- | --- | --- |
+| R3-01 | Event valid | Record tersimpan dan receipt cocok |
+| R3-02 | Event identik dikirim ulang | Satu record, receipt duplicate sah |
+| R3-03 | ID/sequence konflik | Error sesuai kontrak; data awal tidak berubah |
+| R3-04 | Token salah, schema/digest invalid atau payload berlebih | Ditolak pada kategori yang benar, tanpa secret pada log |
+| R3-05 | Status sumber valid/invalid | Field dan watermark divalidasi; tidak menambah event login |
 
-Pada PR console terpisah, tulis login/logout operator, route data yang dilindungi sesi, filter/pagination, detail event, hasil rules/ML/version dan kualitas/health. Gunakan helper security; jangan menyimpan secret dalam HTML/log. Tes akses tanpa sesi, query invalid, batas pagination, escaping dan tampilan state. **Lulus:** operator dapat menelusuri input hingga hasil; data belum layak/model gagal dibedakan dari normal.
+Kirim PR ingest setelah case tersebut dapat diulang. Pengujian ini menggunakan fixture, sehingga belum menjadi bukti koneksi dari Source sebenarnya.
 
-## R-06 Buat deployment Monitor dan uji operasi
+## R-04 Menulis fitur, snapshot dan rules
 
-**Requirement:** OP-01–OP-03/OP-06. Tulis service, firewall dan template peran. Koordinasikan root Makefile dengan integrator untuk `make setup-monitor`. Jalankan setup, ulangi setup, periksa HTTPS dari host, reboot guest, backup konsisten dan restore terisolasi. Jangan menyalin DB aktif atau mengubah threshold untuk memperbaiki skor fixture.
+Event tunggal memberi tahu bahwa suatu login terjadi. Untuk melihat pola, Monitor mengelompokkan event dalam rentang waktu. Rentang ini disebut **window**. Pada LogLab, window berdurasi 60 detik dengan pengelompokan sesuai source, stream dan client pada [kontrak analisis](../requirements/srs/activity-analysis.md).
 
-**Lulus:** service/IP/data/model kembali, konfigurasi tidak bergantung path host, secret tidak tertimpa, dan prosedur recovery dapat diulang. Kirim PR `feat/arhasya-monitor-deployment` dengan hasil aktual.
+**Snapshot** menyimpan kumpulan input dan metadata analisis suatu window. **Revision** adalah versi snapshot ketika membership atau kelas kualitas berubah; revisi lama tetap tersedia. **Fitur** adalah angka yang dihitung dari input, misalnya jumlah login gagal. Model dan rules memakai fitur yang sama agar hasil dapat dibandingkan.
 
-## R-07 Serahkan hasil dan ikut integrasi
+### Mulai dari fitur yang dapat diperiksa manual
 
-Kirim PR kecil, file yang menjadi scope, requirement, command/expected/actual, commit, output aman dan isu tersisa. Screenshot VMware harus asli; hasil SSH dicatat sebagai bukti terminal. Arhasya ikut [integrasi pasangan](integration.md) untuk memeriksa data sebenarnya dari Source Erna, receipt, outage, analisis dan dashboard pada satu host. Fixture ingest yang lulus belum menggantikan pengujian kedua VM.
+Gunakan contoh latihan berikut: satu source/stream/client dan satu akun fiktif memiliki login gagal pada detik 0, 10, 20 dan 30, kemudian login sukses pada detik 40 dalam menit yang sama. Lima event tersebut adalah input latihan, bukan evidence hasil proyek.
+
+| Fitur | Nilai contoh | Alasannya |
+| --- | --- | --- |
+| `event_count` | 5 | Ada lima event unik |
+| `failure_count` | 4 | Empat event login gagal |
+| `success_count` | 1 | Satu login berhasil |
+| `failure_ratio` | 0.8 | 4 dibagi 5 |
+| `distinct_accounts` | 1 | Semua event memakai akun pseudonim yang sama |
+| `max_consecutive_failures` | 4 | Empat gagal berurutan sebelum sukses |
+| `active_span_seconds` | 40 | Event terakhir dikurangi waktu event pertama |
+
+Tulis tes yang membandingkan ekstraktor terhadap nilai tersebut. Tambahkan event di batas menit untuk membuktikan bahwa waktu tepat pada akhir window masuk window berikutnya. Urutan tujuh fitur harus sama dengan kontrak; jangan mengurutkan kolom sendiri karena model membaca posisi yang telah ditetapkan.
+
+### Lanjutkan ke kualitas dan rules
+
+Kumpulan data belum selalu lengkap ketika window waktunya lewat. Source mungkin masih mengirim backlog. Monitor membutuhkan heartbeat, watermark dan bukti kelengkapan sesuai SRS sebelum menetapkan **READY**, yaitu input layak dianalisis.
+
+Tulis membership/urutan, penutupan window, kualitas dan revisi. Tes window terbuka, data kosong, heartbeat usang, sequence hilang, clock offset dan event terlambat. Hasil tidak layak harus mempunyai alasan yang terlihat. Perubahan data/kualitas membuat revisi baru sesuai kontrak, bukan menghapus riwayat lama.
+
+Setelah itu implementasikan rules. Rule adalah kondisi yang ditetapkan manusia, misalnya hitungan gagal mencapai ambang. Tes ambang 9/10 kegagalan dan 4/5 akun mengikuti aturan `REPEATED_FAILURES` dan `ACCOUNT_SWEEP`. Satu rule menyimpan alasan, versi, hitungan dan event pendukung.
+
+Bagi R-04 menjadi PR fitur, kemudian PR snapshot/kualitas/rules agar review lebih mudah. Requirement AA-01–AA-05 selesai ketika fitur benar, input tidak lengkap ditangani jelas, revisi dapat ditelusuri, dan tes batas lulus. Integrator wajib meninjau ekstraktor sebelum memakainya untuk training F-05.
+
+## R-05 Menulis inferensi model dan console
+
+Training membentuk parameter model dari dataset; integrator mengerjakannya pada F-05. Inferensi memakai parameter yang sudah dibentuk untuk menghitung prediksi pada fitur baru; bagian ini ditulis Arhasya. Model bukan pengganti pemeriksaan kelengkapan data: snapshot yang belum READY belum boleh diberi label normal/suspicious.
+
+### Bagian inferensi
+
+Di `model.py`, tulis loader paket numerik dan pemeriksaan checksum, schema, urutan fitur serta angka. **Checksum model** membantu mendeteksi file berubah atau korup. Integrator memberikan paket, hash dan contoh prediksi yang diharapkan agar hasil runtime dapat dibandingkan dengan hasil training.
+
+Tes paket valid, hash salah, schema tidak cocok, angka invalid dan paket hilang. Untuk input valid, bandingkan skor/label dengan fixture integrator dalam toleransi yang ditetapkan SRS. Jangan membuat target skor sendiri atau mengubah threshold supaya tes lulus. Threshold adalah batas skor untuk memilih label yang dibekukan bersama paket.
+
+Simpan hasil yang terkait dengan revisi snapshot dan hash model. Bila paket tidak tersedia atau inferensi gagal, hasil mencatat alasan dan label kosong sesuai kontrak. Menghasilkan label normal untuk kegagalan tersebut akan memberi kesan bahwa data telah dianalisis padahal belum.
+
+### Bagian console
+
+Console adalah halaman web operator. Operator perlu login, mencari event, melihat detail, dan mengetahui apakah hasil analisis sudah tersedia atau data belum layak. Mulai bagian ini pada PR terpisah, misalnya `feat/arhasya-console`; route/filter dan data uji dapat dikerjakan sambil menunggu paket model.
+
+Gunakan helper sesi/security untuk login/logout dan proteksi setiap route data. Tes pengguna tanpa sesi tidak dapat membuka data, filter invalid ditolak, pagination dibatasi, dan teks dari input di-escape sebelum dirender. **Escaping** membuat karakter input ditampilkan sebagai teks yang aman pada halaman, bukan dijalankan sebagai kode HTML.
+
+R-05 mencakup ML-05/ML-06 serta UI-01–UI-05. Tahap selesai setelah inferensi sesuai fixture dan operator dapat menelusuri input, rules/model/version serta kualitasnya. Klaim skor dunia nyata tidak dibuat dari dataset latihan sintetis.
+
+## R-06 Memasang Monitor sebagai service
+
+Sesudah kode lulus tes, buat unit systemd, aturan firewall dan template konfigurasi Monitor pada scope peran. Unit systemd memberi Debian aturan menjalankan aplikasi saat boot. Firewall membatasi koneksi ke layanan sesuai profil lab.
+
+Koordinasikan root Makefile dengan integrator agar `make setup-monitor` memakai helper umum dan file Monitor yang benar. Jalankan setup pada guest uji, ulangi setup, buka dashboard dari host melalui HTTPS, lalu reboot. Periksa kembali IP/service, event yang sudah tersimpan dan identitas paket model.
+
+Jalankan backup konsisten dan restore terisolasi. Pulihkan pada salinan/tujuan uji sehingga data aktif tidak tertimpa. R-06 selesai ketika pemasangan/reboot/recovery dapat diulang dan sesuai bagian OP-01–OP-03/OP-06 terkait Monitor. Catat masalah konfigurasi atau kode yang masih membutuhkan perbaikan.
+
+## R-07 Menyerahkan hasil peran
+
+R-07 mengumpulkan PR dan bukti Monitor **sebelum** pengujian pasangan. Tulis hasil nyata pada `docs/tasks/results/arhasya.md`: case/requirement, commit, command, expected/actual, pass/fail serta masalah. File itu dibuat ketika hasil sudah ada; raw output privat disimpan di luar Git.
+
+Catatan yang membantu reviewer menyebut kondisi, misalnya “R3-02, fixture sama dikirim dua kali, jumlah record tetap satu dan receipt kedua duplicate.” Catatan “API sudah jalan” belum menunjukkan bahwa duplikasi dicegah.
+
+Sesudah handoff peran dan audit I-01, Arhasya ikut I-02 bersama Erna untuk menerima event dari Source sebenarnya. Periksa receipt, outage/backlog, analisis dan console pada satu host/jaringan. Hasil fixture tetap berguna, tetapi belum menggantikan uji dua VM tersebut.

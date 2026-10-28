@@ -1,0 +1,23 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px"},"flowchart":{"htmlLabels":false,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    BASE["main baseline
+Versi awal yang disepakati"] --> E["Branch Erna
+Tulis login dan outbox"]
+    BASE --> R["Branch Arhasya
+Tulis penerima event"]
+    E --> ET["Jalankan tes
+Commit dan push"]
+    R --> RT["Jalankan tes
+Commit dan push"]
+    ET --> PR1["PR Erna
+Review perubahan"]
+    RT --> PR2["PR Arhasya
+Review perubahan"]
+    PR1 --> M1["Merge Erna ke main"]
+    M1 --> SYNC["Arhasya mengambil main
+Tes ulang dan update PR"]
+    PR2 --> SYNC
+    SYNC --> M2["Merge Arhasya ke main
+Kode kedua peran tersedia"]
+    M2 --> INT["Deploy dua VM
+Uji komunikasi sebenarnya"]

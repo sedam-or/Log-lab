@@ -1,0 +1,24 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px"},"flowchart":{"htmlLabels":false,"nodeSpacing":35,"rankSpacing":50}}}%%
+sequenceDiagram
+    actor Tester as Penguji login
+    participant A as VM A Source
+    participant O as Outbox SQLite A
+    participant B as API Monitor B
+    participant D as Database B
+    participant M as Analisis dan dashboard
+    Tester->>A: Coba login akun fiktif
+    A->>A: Tentukan berhasil atau gagal
+    A->>O: Simpan event dan sequence
+    O-->>A: Commit lokal selesai
+    A-->>Tester: Tampilkan hasil login
+    A->>B: Kirim event melalui HTTPS
+    alt Monitor dapat menerima
+        B->>D: Validasi lalu simpan event
+        D-->>B: Commit database selesai
+        B-->>A: Receipt berisi identitas event
+        A->>O: Simpan ACK jika receipt cocok
+        Note over D,M: Analisis berjalan terpisah dari receipt
+        D->>M: Event dan status untuk analisis
+    else Monitor sementara tidak terhubung
+        Note over A,O: Event tetap pending dan dicoba ulang
+    end

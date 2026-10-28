@@ -1,0 +1,19 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px"},"flowchart":{"htmlLabels":false,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    E1["E-01
+Kenali alur login dan cek laptop"] --> E2["E-02
+Siapkan Debian, SSH opsional, clone dan environment"]
+    E2 --> E3["E-03
+Tulis login, event dan outbox
+Tes lalu PR pertama"]
+    E3 --> E4["E-04
+Tulis sender, receipt, retry dan status
+Tes memakai receiver uji lalu PR"]
+    E4 --> E5["E-05
+Tulis deployment Source
+Uji setup ulang, reboot dan backup"]
+    E5 --> E6["E-06
+Serahkan hasil peran
+Semua PR siap diaudit integrator"]
+    E6 --> INT["I-02 bersama Arhasya
+Uji A ke B pada satu host"]

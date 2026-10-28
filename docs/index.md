@@ -1,6 +1,6 @@
 # Dokumentasi LogLab
 
-Pilih jalur sesuai pekerjaanmu. Erna dan Arhasya tidak perlu membaca arsip proyek untuk mulai memahami tugas.
+Mulai dari [dasar proyek untuk pemula](tasks/basics.md). Halaman itu menjelaskan apa yang dibangun melalui satu percobaan login. Sesudahnya, baca workspace dan panduan sesuai peran. Kamu dapat membuka SRS hanya pada bagian yang dirujuk task, tanpa membaca seluruh arsip untuk mulai bekerja.
 
 | Saya ingin | Mulai di |
 | --- | --- |

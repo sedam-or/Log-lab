@@ -1,49 +1,53 @@
-# Folder kerja dan terminal
+# Menentukan folder kerja dan tempat menjalankan perintah
 
-Tujuan panduan ini adalah memastikan anggota tahu tempat menjalankan perintah dan file apa yang akan dikirim ke GitHub. “Host” berarti laptop fisik yang menjalankan VMware. “Guest” berarti Debian di dalam VM. SSH membuka terminal guest dari host, sehingga copy-paste perintah lebih nyaman ketika clipboard VMware bermasalah.
+Kamu akan memakai laptop, VMware, Debian, terminal, dan GitHub. Masing-masing mempunyai fungsi berbeda. Memahami perbedaan ini membantu menghindari kesalahan seperti menjalankan perintah Debian di PowerShell atau mencari file Python di folder disk VMware.
 
-## Istilah yang dipakai dalam tugas
+## Laptop host dan Debian guest
 
-| Istilah | Arti praktis |
-| --- | --- |
-| Clone | Salinan repo Git di komputer/guest yang dapat diedit dan memiliki riwayat |
-| Branch | Jalur perubahan sementara untuk satu pekerjaan; bukan VM atau folder baru |
-| Commit / SHA | Rekaman perubahan; SHA mengidentifikasi versi persis yang direkam |
-| Push / pull | Mengirim commit ke GitHub / mengambil dan menggabungkan versi dari GitHub |
-| Pull Request (PR) | Permintaan review dan penggabungan perubahan branch ke main |
-| Merge | Menggabungkan riwayat/perubahan file; tidak memindahkan VM |
-| Service | Program latar belakang guest yang dikelola systemd |
-| Fixture / mock | Data uji tetap / komponen pengganti untuk tes terisolasi |
-| Outbox / receipt / ACK | Antrean tersimpan di A / jawaban penyimpanan dari B / konfirmasi lokal A sesudah memeriksa jawaban |
-| Setup / verifikasi | Memasang dan mengatur komponen / memeriksa hasil dengan kondisi lulus yang jelas |
-| Requirement / case | Kebutuhan yang harus dipenuhi / satu skenario pemeriksaan untuk membuktikannya |
+**Host** adalah laptop fisik yang kamu gunakan. VMware Workstation adalah aplikasi pada laptop itu. **Virtual machine**, disingkat VM, adalah komputer virtual yang dijalankan VMware. Sistem operasi di dalam VM disebut **guest**. Pada proyek ini, guest yang dipakai adalah Debian.
 
-## Workspace Erna dan Arhasya
+Di host, kamu membuka VMware dan browser. Di guest, kamu memasang Python, menulis kode, menjalankan tes, dan menjalankan aplikasi LogLab. Kedua lingkungan mempunyai filesystem sendiri. File yang dibuat di Debian tidak otomatis muncul sebagai file terpisah di folder Documents Windows.
 
-| Lokasi | Erna | Arhasya |
+![Terminal host mengendalikan Debian melalui SSH](../architecture/assets/learning/host-ssh.png)
+
+[Sumber Mermaid](../architecture/assets/learning/host-ssh.mmd).
+
+## Mengapa memakai SSH
+
+SSH membuka sesi terminal ke guest dari terminal host. Sesudah tersambung, perintah yang kamu ketik dijalankan di Debian. Ini memungkinkan kamu menyalin perintah dari panduan lalu menempelkannya di PowerShell/terminal host tanpa bergantung pada clipboard console VMware.
+
+Penggunaan SSH direkomendasikan pemilik proyek untuk kenyamanan copy-paste. Kamu tetap boleh memakai terminal melalui console VMware. Jika SSH bermasalah, console berguna untuk memperbaiki jaringan atau service SSH pada guest.
+
+SSH host-ke-guest berbeda dari autentikasi GitHub. Berhasil masuk Debian lewat SSH belum otomatis memberi izin push ke GitHub. Izin repo diberikan ke akun GitHub masing-masing anggota.
+
+## Folder VMware dan folder proyek
+
+Folder VM di host menyimpan file seperti `.vmx` untuk konfigurasi VM dan `.vmdk` untuk disk virtual. VMware menggunakan file tersebut untuk menjalankan guest. Kamu tidak menulis source Python di folder itu.
+
+Folder proyek adalah hasil **clone** Git di dalam guest. Kita memakai `~/LogLab`. Simbol `~` berarti home akun yang sedang login. Jika akun guest bernama `loglab`, `~/LogLab` sama dengan `/home/loglab/LogLab`. Di folder inilah ada `src/`, `tests/`, `docs/`, dan riwayat `.git/`.
+
+| Yang perlu dibedakan | Erna | Arhasya |
 | --- | --- | --- |
-| Nama VM di VMware | `LogLab-Source-Erna` | `LogLab-Monitor-Arhasya` |
-| Role VM | A / Source | B / Monitor |
-| Akun guest standar yang direncanakan | `loglab` | `loglab` |
-| Clone Git di dalam guest | `/home/loglab/LogLab` atau `~/LogLab` | `/home/loglab/LogLab` atau `~/LogLab` |
-| Contoh branch PR pertama | `feat/erna-login-outbox` | `feat/arhasya-ingest` |
-| Alamat pada profil integrasi | `172.16.202.21` | `172.16.202.22` |
-| Direktori konfigurasi peran di Git | `deployment/source/`, `config/source.example.*` | `deployment/monitor/`, `config/monitor.example.*` |
-| Catatan hasil peran yang aman | `docs/tasks/results/erna.md` | `docs/tasks/results/arhasya.md` |
+| Nama VM pada VMware | `LogLab-Source-Erna` | `LogLab-Monitor-Arhasya` |
+| Peran aplikasi | Source atau VM A | Monitor atau VM B |
+| Akun Debian yang direncanakan | `loglab` | `loglab` |
+| Clone di dalam guest | `~/LogLab` | `~/LogLab` |
+| Branch task pertama | `feat/erna-login-outbox` | `feat/arhasya-ingest` |
+| IP pada profil integrasi | `172.16.202.21` | `172.16.202.22` |
 
-Path `results/` dibuat saat ada hasil nyata. Kedua anggota menggunakan nama folder clone yang sama karena clone berada pada dua guest berbeda. Tidak perlu mengganti `src/` menjadi folder bernama anggota. Nama samaran dipakai pada branch dan bukti kontribusi; role tetap Source dan Monitor.
+Nama clone boleh sama karena kedua folder berada pada guest berbeda. Nama branch berbeda untuk menunjukkan pekerjaan yang akan diperiksa. Membuat branch tidak membuat VM atau folder baru.
 
-Folder VMware di host menyimpan `.vmx`/`.vmdk` dan dikelola VMware. Folder itu berbeda dari clone Git di dalam Debian. Jangan memasukkan file disk VM ke Git. Tidak perlu membuat salinan Git di host untuk pekerjaan ini; bila memilih meng-clone juga di host, pahami bahwa perubahan host tidak otomatis tersalin ke guest. Workflow utama adalah mengedit dan melakukan Git di satu clone guest melalui SSH atau console.
+## Persiapan yang diberikan integrator
 
-## Sebelum menjalankan perintah instalasi
+Sebelum task coding dimulai, integrator harus memberikan ISO Debian beserta checksum, versi Python/dependency, cara bootstrap environment, commit awal, dan fixture uji. **Checksum SHA-256** adalah sidik jari file untuk memeriksa bahwa ISO yang digunakan sama dengan ISO acuan.
 
-Integrator harus mengisi baseline commit/tag, ISO dan SHA-256, versi Workstation yang diuji, dependency lock, command setup/verifikasi aktual, serta cara memperoleh konfigurasi privat. Data tersebut belum lengkap. Panduan ini menyediakan lokasi dan urutan kerja; belum merupakan installer yang siap dijalankan dari awal sampai akhir.
+Commit awal yang disepakati disebut **baseline**. Commit itu harus dicatat sebagai SHA lengkap atau tag yang dapat diperiksa. Kedua anggota mulai dari baseline yang sama agar struktur dan helper sesuai. Saat ini baseline pengembangan tersebut belum dilepas; membaca dokumentasi dan mencatat resource laptop dapat dilakukan lebih dahulu.
 
-Erna dan Arhasya dapat mencatat versi OS host, versi VMware, memori/disk tersedia, dukungan virtualisasi dan resource yang akan dialokasikan. Gunakan guest Debian amd64 yang sama. Saat instalasi, akun `loglab` sebaiknya memiliki hak `sudo` sesuai panduan final, dan folder home harus dapat ditulis akun tersebut.
+## Memasang SSH setelah guest dan jaringan siap
 
-## SSH opsional yang direkomendasikan
+Bagian ini dijalankan setelah Debian terpasang, akun tersedia, dan guest memiliki jaringan. Command berikut adalah persiapan alat umum; command ini tidak memasang aplikasi LogLab.
 
-Setelah Debian terpasang dan jaringan telah disiapkan, langkah berikut dijalankan **di console guest Debian**. Ini adalah command standar persiapan SSH; paket proyek bukan bagian dari langkah ini.
+Di **terminal guest Debian**, jalankan:
 
 ```bash
 sudo apt update
@@ -52,38 +56,69 @@ sudo systemctl enable --now ssh
 ip -br address
 ```
 
-Catat IP host-only guest yang benar. Jangan memilih `127.0.0.1` atau menyalin contoh IP jika belum dikonfigurasi. Periksa fingerprint host key langsung di console guest:
+`apt update` memperbarui daftar paket. Perintah berikutnya memasang server SSH, Git dan Make. `systemctl` mengaktifkan layanan SSH sekarang serta saat guest boot. `ip -br address` menampilkan alamat antarmuka jaringan.
+
+Hasil yang dicari adalah alamat guest pada adapter host-only. `127.0.0.1` adalah alamat mesin itu sendiri dan tidak dipakai host untuk menyambung ke guest. IP `.21` dan `.22` pada panduan merupakan alamat rencana; gunakan setelah profil tersebut benar-benar dikonfigurasi. Cara memasang alamat statis dan memilih VMnet akan difinalkan bersama baseline, karena nama adapter pada setiap mesin dapat berbeda.
+
+Di console guest, periksa fingerprint server SSH:
 
 ```bash
 sudo ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
 ```
 
-Lalu buka **PowerShell/terminal host** dan sambungkan ke alamat guest. Contoh untuk profil Erna setelah IP `.21` benar-benar terpasang:
+Sekarang buka **PowerShell atau terminal host**. Untuk contoh Erna yang sudah mempunyai IP `.21`, jalankan:
 
 ```powershell
 ssh loglab@172.16.202.21
 ```
 
-Untuk Arhasya, gunakan `.22`. Bandingkan fingerprint pada prompt SSH dengan yang diperiksa di console sebelum menerima. Masukkan password akun guest secara interaktif bila login password sementara diaktifkan. Jika muncul `Permission denied (publickey)`, pasang public key milik host melalui console guest sesuai panduan final; jangan membagikan private key atau menganggap SSH selalu menerima password. Setup key dan aturan SSH/firewall akan diverifikasi integrator sebelum F-04. Pengguna yang tidak memakai SSH tetap dapat memakai terminal Debian di console VMware.
+Arhasya menggunakan `.22`. Pada koneksi pertama, SSH meminta pemeriksaan fingerprint. Cocokkan dengan fingerprint dari console guest. Jika sama, terima lalu login menggunakan metode autentikasi yang sudah disiapkan. Password dimasukkan secara interaktif bila login password diizinkan; konfigurasi yang hanya menerima public key memerlukan pemasangan key terlebih dahulu.
 
-Sesudah login SSH, `hostname` dan `pwd` membantu memeriksa mesin/lokasi kerja. `exit` keluar dari sesi SSH menuju terminal host; itu tidak mematikan VM. Mengubah firewall atau SSH harus menyisakan akses console pemulihan.
-
-## Clone dan branch di guest
-
-Bagian ini berlaku untuk Git. Baseline F-04 menyediakan environment untuk menulis kode. Setup aplikasi penuh baru diuji setelah kode/deployment E-05 dan R-06 tersedia. Login GitHub memakai identitas masing-masing; nama samaran tugas bukan alasan berbagi akun atau token.
+Sesudah tersambung, jalankan dua command berikut **di sesi SSH**:
 
 ```bash
-# Di Debian guest, melalui SSH atau console:
+hostname
+pwd
+```
+
+`hostname` menunjukkan nama guest. `pwd` menunjukkan folder tempat terminal berada. Kedua hasil itu membantu memastikan bahwa command berikutnya dijalankan pada mesin yang benar. `exit` keluar dari sesi SSH menuju host; guest tetap berjalan.
+
+Jika muncul `Permission denied (publickey)`, akses kembali melalui console lalu ikuti pemasangan public key yang ditentukan pada baseline. Jangan menyalin private key ke anggota lain. Jika koneksi timeout atau ditolak, periksa IP, adapter host-only, service SSH dan firewall dari console.
+
+## Clone repo di Debian
+
+Setelah Git tersedia, jalankan di **guest**, baik melalui SSH maupun console:
+
+```bash
 cd ~
 git clone https://github.com/sedam-or/Log-lab.git LogLab
 cd ~/LogLab
+git remote -v
 git status --short --branch
 ```
 
-Jika folder `~/LogLab` sudah ada, periksa dulu apakah benar clone repo ini dengan `git remote -v`; jangan clone di atas folder itu atau menghapus isinya. Sebelum baseline dilepas, anggota cukup membaca dokumentasi. Saat F-04 sudah siap, integrator memberikan SHA baseline dan instruksi `git switch -c <branch-peran> <SHA>` yang sudah terisi. Jangan menulis `<SHA>` secara literal ke terminal.
+Command clone mengunduh repo dan membuat folder `LogLab`. Nama di GitHub adalah `Log-lab`, tetapi argumen terakhir memilih nama folder lokal `LogLab`. `git remote -v` harus menunjuk repo `sedam-or/Log-lab`. Status Git menunjukkan branch serta perubahan lokal.
 
-`git add` hanya file task sendiri setelah `git diff` diperiksa. Commit/push dijalankan di `~/LogLab`, lalu buka PR menurut [panduan kontribusi](../../CONTRIBUTING.md). Token GitHub dimasukkan melalui mekanisme autentikasi GitHub yang tersedia, tidak ditulis pada URL repo, screenshot, atau panduan.
+Bila `~/LogLab` sudah ada, periksa isinya dan remote lebih dahulu. Gunakan clone yang benar, bukan menimpa atau menghapus folder tanpa pemeriksaan. Pekerjaan utama dilakukan pada satu clone guest ini. Jika kamu juga meng-clone di host, kedua clone merupakan salinan berbeda; perubahan tidak tersinkron otomatis.
 
-## Ketika ada masalah
+## Cara membaca path file
 
-Catat lokasi terminal (host/guest), task ID, perintah, pesan error tanpa secret, hasil yang diharapkan, serta hasil aktual. Jika bootstrap environment belum ada, laporkan dependensi F-03/F-04. Skrip setup aplikasi ditulis pada E-05/R-06 menurut antarmuka bersama; jangan mengubah Makefile/kontrak tanpa koordinasi. Jika akses SSH gagal, kembali ke console untuk memeriksa IP dan service `ssh`. Jika koneksi A–B gagal pada laptop berbeda, baca batas host-only pada panduan integrasi.
+Path seperti `src/loglab/source_app.py` dihitung dari root repo. Setelah `cd ~/LogLab`, path tersebut berarti `/home/loglab/LogLab/src/loglab/source_app.py`. Path `docs/tasks/erna.md` menunjuk panduan Erna pada clone yang sama.
+
+Saat kode sudah tersedia, kamu dapat membuka file menggunakan editor di guest atau editor host yang mengakses guest. Pilih cara yang kamu pahami dan pastikan editor benar-benar menyimpan pada clone guest. Jika ingin memeriksa perubahan tersimpan, gunakan `git diff` dari `~/LogLab`.
+
+## Membuat branch dan memulai task
+
+Integrator akan memberikan SHA baseline pada F-04. Contoh berikut menjelaskan bentuk command, sehingga `SHA_BASELINE` wajib diganti sebelum dijalankan:
+
+```text
+git switch -c feat/erna-login-outbox SHA_BASELINE
+```
+
+Erna membuat branch sesuai tasknya; Arhasya memakai `feat/arhasya-ingest`. Setelah task pertama selesai dan masuk main, task berikutnya dimulai dari main terbaru melalui branch baru. Langkah commit, push, PR dan sinkronisasi dijelaskan pelan-pelan pada [panduan kontribusi](../../CONTRIBUTING.md).
+
+## Jika task berhenti karena masalah
+
+Tuliskan task ID, mesin tempat command dijalankan, folder kerja, command, hasil yang diharapkan dan pesan aktual. Contoh: “E-02, guest Source, `~/LogLab`, bootstrap gagal karena dependency belum diterbitkan.” Dengan konteks ini, integrator dapat membedakan masalah kode, paket, jaringan, atau panduan.
+
+Jika yang belum tersedia adalah fondasi F-03/F-04, catat sebagai **blocked**, yaitu pekerjaan belum dapat dilanjutkan karena membutuhkan hasil pekerjaan lain. Jika kode sudah dapat dijalankan tetapi perilakunya salah, catat sebagai **fail**, lalu perbaiki dan tes kembali. Status **pass** hanya dipakai setelah syarat pemeriksaan terpenuhi.

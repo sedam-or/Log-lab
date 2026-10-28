@@ -17,3 +17,5 @@ Diagram dari paket Modul 3 dipertahankan bersama sumber Mermaid. Gambar menunjuk
 Label diagram berasal dari paket Modul 3: C-01 adalah login, C-03 pengiriman event/receipt, C-04 status sumber, C-10 akses console/query, C-12 administrasi SSH. Label C adalah kode aliran pada gambar, berbeda dari ID requirement EP/AA/ML/UI/OP. Detail request dan response mengikuti SRS, bukan angka C semata.
 
 [Daftar assets](assets/index.md) memuat sumber dan status. Diagram adalah dokumentasi rancangan; bukan screenshot evidence VM.
+
+Untuk memahami proses coding sebelum membaca diagram sistem, buka [diagram belajar](assets/learning/index.md) atau [dasar proyek](../tasks/basics.md).

@@ -2,6 +2,8 @@
 
 **Tanggal:** 28 Oktober 2026. **Status:** arah kerja yang disepakati pemilik; rincian instalasi dan kontrak belum dibekukan sebagai rilis. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi sebagai draf; installer dan acceptance belum tersedia. Lihat [index arsitektur](index.md) dan [task tim](../tasks/index.md).
 
+Untuk pembaca baru, [dasar proyek](../tasks/basics.md) menjelaskan istilah dan satu contoh alur. Halaman baseline ini digunakan sebagai referensi lingkungan dan batas file ketika mengerjakan task.
+
 ## Tujuan dan pembagian VM
 
 LogLab memakai akun fiktif untuk menghasilkan event login. VM A mencatat hasil autentikasi ke outbox lokal dan mengirimnya ke B. VM B menerima event, menyimpan data, membentuk analisis rules serta klasifikasi Logistic Regression lokal, dan menyajikan dashboard operator. Model dilatih offline; tidak ada LLM, broker tambahan, atau pemblokiran akun otomatis.

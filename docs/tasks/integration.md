@@ -1,52 +1,102 @@
-# Fondasi dan integrasi kedua VM
+# Menyiapkan fondasi dan menyatukan dua pekerjaan
 
-Integrator menyiapkan fondasi bersama dan menjaga perjalanan dari dua pekerjaan anggota menjadi satu sistem yang dapat diulang. Menggabungkan PR menggabungkan file/riwayat; itu tidak otomatis menyatukan dua VM pada dua laptop. Penerimaan akhir harus menguji dua peran yang dipasang dari commit sama dalam jaringan yang dapat saling terhubung.
+Integrator bertanggung jawab agar Source Erna dan Monitor Arhasya memakai aturan yang sama. Tanggung jawab ini dimulai sebelum coding paralel, lalu berlanjut ketika PR masuk dan kedua VM diuji bersama. Nama penanggung jawab integrasi belum diisi; sementara peran tersebut mengikuti pemilik repo/pemimpin tim.
 
-## F-01 sampai F-04 Sebelum coding paralel
+Ada dua hasil yang perlu dibedakan saat merencanakan pekerjaan. **Integrasi kode** menyatukan perubahan file ke main dan memeriksa tesnya. **Integrasi runtime** menjalankan dua layanan dari kode tersebut pada jaringan yang sama, lalu membuktikan komunikasi sebenarnya. Keduanya diperlukan karena Git dapat menggabungkan file meskipun URL, token, format event atau perilaku kedua layanan belum cocok.
 
-| Task | Tindakan integrator | Selesai ketika |
+![Perjalanan dari fondasi sampai rilis yang diperiksa](../architecture/assets/learning/integration-journey.png)
+
+[Sumber Mermaid](../architecture/assets/learning/integration-journey.mmd).
+
+## Tahap pertama menyiapkan bahan kerja bersama
+
+Erna dan Arhasya menulis kode aplikasi. Mereka membutuhkan batas yang jelas supaya tidak harus menebak format event, menulis helper security berbeda, atau memasang dependency yang tidak kompatibel. Integrator menyediakan fondasi F-01 sampai F-04 sebelum environment coding anggota dianggap siap.
+
+### F-01 Menetapkan kebutuhan yang dipakai
+
+Review [PRD](../requirements/PRD.md), [SRS per bagian](../requirements/srs/index.md), baseline dan diagram. PRD menjelaskan tujuan/scope, sedangkan SRS menjelaskan aturan teknis serta pemeriksaannya. Pastikan target Windows 11, Debian dan peran kedua VM konsisten. Catat usulan lama yang belum diterima agar anggota tidak menganggapnya requirement aktif.
+
+Hasil F-01 adalah versi kebutuhan yang dapat dirujuk Erna/Arhasya, beserta status review yang nyata. Tugas membaca resource laptop E-01/R-01 dapat berlangsung sambil review ini berjalan. Kode peran belum ditandai lulus hanya karena kebutuhan sudah tertulis.
+
+### F-02 Membekukan format dan interface bersama
+
+Tentukan ISO Debian beserta SHA-256, versi Python/dependency dan helper yang akan tersedia. Tetapkan field event/receipt/status, metode digest dan operasi database/security/config yang diperlukan kedua peran. Jelaskan fungsi dan cara pakai helper; anggota perlu mengetahui input, output serta error yang mungkin terjadi.
+
+Buat fixture event valid/invalid, duplikat, konflik, receipt cocok/tidak cocok dan status sumber. Fixture menjadi contoh yang dapat dijalankan, sehingga Erna dan Arhasya mempunyai jawaban yang sama untuk kasus yang sama. Contohnya, duplikat event identik harus dipahami sebagai satu kejadian oleh kedua sisi.
+
+Tetapkan feature schema serta rubrik training. Paket model final menunggu ekstraktor R-04; jangan membekukan model berdasarkan ekstraktor lain yang belum disepakati. Hasil F-02 berupa kontrak, daftar input bersama, versi lingkungan, dan pembagian file yang bisa diperiksa anggota.
+
+### F-03 Menyiapkan environment dan alat uji dasar
+
+Siapkan skeleton package, dependency lock, runner tes dan helper bersama `events.py`, `config.py`, `db.py`, `security.py`, serta `backup.py` sesuai kontrak yang ditetapkan. **Skeleton** berarti struktur awal yang menyediakan tempat dan interface untuk menambahkan kode, belum aplikasi peran yang selesai.
+
+Sediakan bootstrap environment, receiver uji untuk Erna dan fixture pengirim untuk Arhasya. Dokumentasikan command beserta expected output yang sudah dicoba pada Debian target. Root Makefile mengoordinasikan pemanggilan helper/target peran; implementasi deployment Source/Monitor diselesaikan pada E-05/R-06.
+
+Bila menggunakan ulang kode lama, periksa dependency/path dan jelaskan asalnya. Anggota tidak diminta mengklaim kode lama yang disalin penuh sebagai implementasi yang ditulis sendiri. F-03 selesai ketika environment dasar dan tes helper dapat dijalankan ulang; pengujian aplikasi penuh menunggu kode anggota.
+
+### F-04 Membagikan baseline pengembangan
+
+Catat SHA commit yang berisi fondasi, cara bootstrap, ISO/hash, contoh command yang sudah terisi, dan cara memperoleh konfigurasi privat. Periksa bahwa akun GitHub anggota dapat mengakses repo dan menyerahkan perubahan. Pengaturan review/proteksi main diperiksa pada GitHub; aturan yang ditulis pada dokumen tidak otomatis mengaktifkan fitur tersebut.
+
+Beri Erna dan Arhasya sumber panduan dengan versi yang sama. Jika mengekspor PDF, gunakan Markdown yang sama dan pastikan gambar terbaca. Baseline pengembangan ini cukup untuk mulai menulis kode; installer aplikasi yang lengkap tetap diselesaikan bersama kode peran.
+
+## Tahap kedua coding paralel dan review bertahap
+
+Erna mengerjakan login/outbox, sender, lalu deployment. Arhasya mengerjakan ingest, fitur/analisis, inferensi/console, lalu deployment. Setiap bagian mempunyai PR kecil, tes dan reviewer. PR tidak ditahan sampai seluruh task anggota selesai.
+
+Urutan bertahap itu diperlukan untuk dependency model. PR fitur R-04 harus diterima lebih dahulu agar integrator dapat melatih model pada fitur yang sama. Jika semua PR Arhasya baru boleh masuk setelah model selesai, training justru akan menunggu kode yang belum tersedia di main.
+
+### F-05 Menyiapkan training dan paket model
+
+Sesudah ekstraktor R-04 diterima, integrator menulis atau mengadaptasi `dataset.py`, `generate_dataset.py`, `training.py`, `train_model.py`, dan tests terkait. Pekerjaan ini memenuhi ML-01–ML-04: dataset berlabel yang dapat dijelaskan, split tanpa kebocoran, training offline dan evaluasi yang sesuai.
+
+**Training offline** berarti model dilatih sebagai pekerjaan terpisah, bukan dilatih ulang otomatis dari setiap login. Hasilnya adalah paket model yang memiliki schema, urutan fitur, konfigurasi, seed, checksum dan catatan asal input. Paket diberikan bersama contoh prediksi yang diharapkan untuk tes runtime Arhasya. Batas data sintetis dan review yang belum selesai ditulis dengan jelas.
+
+F-05 menunggu fitur R-04, tetapi tidak menahan Erna mengerjakan sender atau Arhasya menulis console. R-05 bagian inferensi final menunggu paket ini. Klaim metrik dan provenance harus berasal dari run yang dibuat, bukan menyalin angka laporan laptop lama.
+
+## Tahap ketiga menyiapkan satu versi gabungan
+
+E-06 dan R-07 adalah penyerahan hasil peran sebelum pengujian pasangan. Keduanya berisi PR, tes dan masalah yang masih ada. Partisipasi menguji dua VM dilakukan pada I-02 setelah audit berikut; dengan demikian tidak ada ketergantungan berputar.
+
+### I-01 Audit perubahan yang sudah masuk main
+
+Periksa seluruh PR yang dibutuhkan, termasuk helper, fitur, training, kedua aplikasi, tes dan deployment. Sebagian PR sudah masuk selama pengerjaan. I-01 memeriksa keadaan gabungan terakhir, bukan menjadi satu-satunya waktu merge sepanjang proyek.
+
+Untuk PR yang masih terbuka, merge satu per satu. Anggota yang belum merge mengambil main terbaru pada branch-nya, memeriksa/resolusikan konflik jika ada, lalu menjalankan tes yang terdampak dan memperbarui PR. Langkah command dijelaskan pada [panduan kontribusi](../../CONTRIBUTING.md).
+
+Sesudah semua perubahan yang diperlukan tersedia, jalankan pemeriksaan gabungan dan catat satu SHA commit untuk pengujian dua VM. **Mematok commit** berarti mencatat versi persis yang harus dipasang pada keduanya; memakai main yang berubah pada dua waktu berbeda dapat menghasilkan kode yang tidak sama.
+
+## Tahap keempat menjalankan dua VM pada satu jaringan
+
+![Perbedaan coding pada dua laptop dan pengujian pada satu host](../architecture/assets/learning/local-and-integration.png)
+
+[Sumber Mermaid](../architecture/assets/learning/local-and-integration.mmd).
+
+Host-only adalah jaringan privat yang dibuat VMware pada satu host. Host-only Erna dan host-only Arhasya berada pada laptop berbeda. Memberi alamat `.21` dan `.22` pada kedua laptop tidak otomatis menghubungkan jaringan itu. Karena itu tes awal memakai mock/fixture, sedangkan I-02 memasang dua peran pada satu host Windows 11 yang menjadi host integrasi.
+
+Gunakan guest relevan yang tersedia atau guest acceptance yang memang diperlukan. Pastikan VM aktif/bukti lama tetap aman; tidak perlu membuat salinan tambahan tanpa tujuan. Deploy A dan B dari commit I-01 yang sama, siapkan satu host-only, alamat dan trust CA, lalu berikan konfigurasi privat yang sesuai.
+
+### I-02 Menguji jalur sebenarnya
+
+Mulai dari keadaan layanan dan data uji yang tercatat. Jalankan case secara berurutan agar bila gagal, tim dapat mengetahui bagian mana yang bermasalah.
+
+| Case | Tindakan | Hasil yang dicari |
 | --- | --- | --- |
-| F-01 | Review adaptasi PRD, SRS, istilah, diagram, dan host Windows. Tetapkan requirement yang dipakai dan tandai usulan yang belum aktif. | Review tercatat, tidak ada kontrak saling bertentangan atau status lama yang diklaim baru |
-| F-02 | Pilih ISO resmi+SHA-256, Python/dependency lock, daftar modul dan pemilik file, schema dan fixture event/receipt/status. Tetapkan feature schema, rubrik data dan pipeline training; paket model final disiapkan setelah implementasi fitur R-04 diterima. Tetapkan bootstrap akun serta pembagian secret lewat jalur privat. | Kedua anggota memakai input yang sama dan tahu siapa mengurus bagian bersama |
-| F-03 | Migrasikan atau tulis skeleton paket, runner tes dan helper bersama (`events.py`, `config.py`, `db.py`, `security.py`, `backup.py`). Source/Monitor tidak disalin sebagai peran selesai: Erna dan Arhasya menulis implementasinya melalui task coding. Ubah path `deploy/` menjadi `deployment/` dan hapus ketergantungan path/symlink host lama. Sediakan bootstrap environment, runner tes, kontrak wrapper setup per peran, receiver uji untuk Erna, fixture producer untuk Arhasya, serta helper backup/restore. Skrip deployment aplikasi diselesaikan oleh pemilik peran pada E-05/R-06. | Environment dasar dan bootstrap dicoba pada Debian target; wrapper setup/tes memiliki interface jelas. Acceptance aplikasi penuh menunggu kode kedua peran |
-| F-04 | Periksa pengaturan main/PR, catat SHA commit baseline, isi semua placeholder panduan, dan render PDF peran dari sumber Markdown. | Erna dan Arhasya menerima versi panduan, ISO/hash, command dan baseline yang sama |
+| INT-01 | Erna membuka Source dari browser host dan membuat login benar/salah | Hasil auth sesuai; event commit dengan identitas/sequence benar |
+| INT-02 | Erna mengirim dan Arhasya memeriksa record/receipt | B menyimpan event lalu membalas; A ACK sesudah receipt cocok; jumlah/identitas sesuai |
+| INT-03 | Hentikan Monitor sementara pada environment uji, buat event, lalu hidupkan kembali | Event pending tetap ada; backlog pulih; tidak ada event hilang atau record ganda |
+| INT-04 | Arhasya memeriksa status sumber, window dan hasil analisis | Input layak dianalisis; input belum lengkap atau model gagal mempunyai state/alasan yang benar |
+| INT-05 | Erna bertindak sebagai reviewer dashboard Arhasya | Operator dapat mencari event, membuka detail dan memahami hasil/versi/kualitasnya |
+| INT-06 | Tim melakukan reboot dan restore pada tujuan terisolasi | Service/IP/data pulih; backup dapat digunakan tanpa merusak data aktif |
 
-Erna dan Arhasya menulis kode perannya, unit tests, dan deployment. Integrator bertanggung jawab atas helper/kontrak/dependency bersama serta dataset, training dan evaluasi ML-01–ML-04. Arhasya menulis ekstraktor fitur dengan review integrator, analisis, inferensi dan console. Setelah fitur R-04 diterima, integrator menghasilkan paket model dan fixture prediksi untuk R-05. Urutan ini mencegah dua ekstraktor berbeda dan menjaga beban tugas tetap terbagi. Jangan memberikan kode peran lama sebagai hasil kontribusi anggota tanpa menyatakan bagian yang digunakan ulang.
+Ketika satu case gagal, catat input, langkah dan hasilnya. Perbaikan kode dilakukan melalui PR, lalu ulangi case yang terdampak dan pemeriksaan lain yang berpotensi berubah. Perubahan commit harus tercatat agar hasil sebelum/sesudah perbaikan tidak tertukar.
 
-## F-05 Paket model setelah fitur disepakati
+Tabel ini memberi urutan awal pemeriksaan alur sistem. Acceptance penuh tetap mengikuti seluruh requirement wajib dan profil numerik/fault/security di [SRS operasi](../requirements/srs/lab-operations.md). Health HTTP 200 hanya membuktikan endpoint menjawab; delivery, analisis dan restore memerlukan bukti masing-masing.
 
-Sesudah R-04 masuk main, integrator menyiapkan atau mengadaptasi `dataset.py`, `generate_dataset.py`, `training.py`, dan `train_model.py` bersama tests dataset/training. Gunakan feature schema yang sama dengan runtime, data sintetis, rubrik label yang ditinjau, split per run, konfigurasi/seed tercatat dan pembandingan terhadap rules serta baseline sesuai ML-01–ML-04. Simpan provenance, checksum, schema, urutan fitur, expected prediction, dan batas klaim. Berikan paket melalui sumber distribusi yang dipatok hash; jangan menaruh eksperimen besar atau secret dalam repo.
+## Tahap kelima menyusun hasil dan rilis
 
-F-05 menunggu fitur R-04, tetapi tidak menahan Erna menulis sender atau Arhasya memulai route console. R-05 inferensi final menunggu paket ini. Review label independen dan metrik yang belum tersedia ditandai sebagai keterbatasan, tidak diisi dari angka laporan lama.
+I-03 mengumpulkan hasil setelah I-02: commit, environment, versi OS/runtime/VMware, konfigurasi aman, hash input/model, waktu, case/requirement, expected/actual, status dan reviewer. Jika suatu kewajiban belum lulus, tulis keterbatasan atau pengecualian yang benar-benar disetujui.
 
-## I-01 Integrasi perubahan Git
+Tag rilis menandai versi hasil yang diterima. Tag dibuat setelah syarat rilis dipenuhi, sehingga pengguna berikutnya dapat memilih versi yang telah diuji. Sumber panduan tetap berada di repo; PDF merupakan salinan baca yang diekspor dari versi tersebut.
 
-1. Erna dan Arhasya mengirim PR kecil per task. Setiap PR menunjuk requirement dan hasil perannya. Review file bersama sebelum merge.
-2. Reviewer memeriksa scope, output verifikasi dan secret. Merge PR pertama ke `main` dengan merge commit sesuai kebijakan repo.
-3. Pemilik PR kedua menjalankan `git fetch origin` dan `git merge origin/main` pada branch-nya. Periksa/resolusikan konflik jika ada, jalankan ulang checks terdampak, lalu push tanpa force.
-4. Review kembali perubahan setelah sinkronisasi, merge PR kedua, lalu catat SHA `main` untuk uji gabungan. Command yang mengeksekusi tests mengikuti runner yang sudah benar-benar tersedia; belum ada CI aktif yang boleh diklaim lulus.
-
-Jika kontrak berubah, proses berhenti pada koordinasi file bersama sampai producer dan consumer cocok. Konflik teks kosong tidak cukup untuk menganggap API kompatibel. Latihan konflik Modul 5 dilakukan pada branch latihan/dokumen aman jika tidak ada konflik alami, dan ditandai sebagai latihan.
-
-## I-02 Integrasi runtime pada satu host
-
-Pilih host integrasi Windows 11 dengan VMware Workstation. Pakai guest relevan yang tersedia, atau guest bersih yang memang disiapkan untuk acceptance; jangan menghapus VM aktif atau membuat salinan tambahan tanpa tujuan. Kedua VM berada pada host-only yang sama. Jaringan host-only pada laptop Erna dan laptop Arhasya berbeda meskipun subnetnya sama; koneksi langsung antarlaptop tidak menjadi asumsi.
-
-Pasang peran Source dan Monitor dari SHA hasil I-01. Konfigurasi alamat A `.21`, B `.22`, host `.1` pada subnet baseline yang telah diperiksa bebas. Pasang trust CA dan secret yang cocok secara privat. A harus memverifikasi sertifikat B; tidak memakai bypass TLS. Salinan disk VM boleh menjadi alat bantu transfer, tetapi sumber Git dan konfigurasi terdokumentasi tetap dasar pemasangan ulang.
-
-| Case | Siapa mengerjakan | Pemeriksaan dan syarat lulus |
-| --- | --- | --- |
-| INT-01 | Erna + integrator | Host membuka Source melalui HTTPS; login berhasil/gagal menghasilkan event dengan sequence/digest sesuai EP-01/EP-02 |
-| INT-02 | Erna + Arhasya | Sender A mengirim ke B sebenarnya; B menyimpan lalu mengembalikan receipt; A ACK hanya sesudah receipt cocok; ID/jumlah cocok di kedua sisi (EP-03/EP-04) |
-| INT-03 | Keduanya | Hentikan layanan Monitor sementara pada lingkungan uji, tetap lakukan login. Pulihkan dan buktikan backlog terkirim tanpa duplikasi/kehilangan; identitas event dipertahankan (EP-05/EP-06) |
-| INT-04 | Arhasya + integrator | Status sumber segar, kualitas window dan rules benar; input READY dianalisis, data ineligible/model gagal tidak berlabel normal; versi/hash model terlihat (EP-07, AA, ML-05/06) |
-| INT-05 | Arhasya + Erna sebagai reviewer | Login operator, filter dan detail event/hasil bekerja. Reviewer dapat menelusuri aktivitas login ke evidence (UI-01–UI-05) |
-| INT-06 | Keduanya + integrator | Reboot masing-masing guest, verifikasi IP/service/data; uji backup/restore terisolasi dan keamanan jaringan/TLS (OP-01–OP-03) |
-
-Tabel ini adalah urutan smoke integrasi, bukan pengganti semua profil numerik/fault/security pada [operasi SRS](../requirements/srs/lab-operations.md). Penerimaan final harus mencantumkan semua requirement wajib beserta hasil, pengecualian yang diterima, atau alasan belum lulus.
-
-## I-03 Handoff dan laporan
-
-Catat commit, versi Windows/VMware/Debian/Python, konfigurasi non-secret, hash model/input, waktu, case/requirement, langkah, expected/actual, pass/fail, serta reviewer. Raw evidence tetap privat; repo memuat ringkasan aman dan sumber editable. Screenshot yang diberi label VMware berasal langsung dari layar VMware; SSH output adalah bukti terminal.
-
-Rilis/tag hanya dibuat setelah acceptance disetujui dan keterbatasannya tertulis. Dokumentasi akhir menyertakan cara clone/setup per peran, startup/shutdown guest, SSH opsional, health dan log, backup/restore, serta pemulihan gangguan. PDF Modul 5 merangkum lokasi repo, graph/log, branch/merge, konflik/resolusi, dan kontribusi aktual Erna/Arhasya; tidak menampilkan hasil dari laptop lama sebagai pekerjaan mereka.
+Laporan Modul 5 merangkum lokasi repo, riwayat branch/merge, cuplikan git log, konflik/resolusi dan kontribusi anggota. Jika konflik dilakukan sebagai latihan, beri label latihan. Raw evidence privat tetap di luar Git. Screenshot VMware harus capture dari layar VMware; output SSH ditulis sebagai bukti terminal.
