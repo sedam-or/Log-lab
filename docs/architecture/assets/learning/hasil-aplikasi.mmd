@@ -1,0 +1,6 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px","edgeLabelBackground":"#ffffff"},"flowchart":{"htmlLabels":true,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    USER["Penguji<br/>Coba login akun fiktif"] --> A["VM A milik Erna<br/>Login dan simpan catatan<br/>Kirim ulang jika perlu"]
+    A -->|"HTTPS: kirim catatan"| B["VM B milik Arhasya<br/>Periksa dan simpan<br/>Hitung pola serta model"]
+    B -.->|"Jawaban penyimpanan"| A
+    B --> UI["Halaman operator<br/>Cari kejadian<br/>Baca hasil dan kondisi data"]

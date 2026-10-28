@@ -1,8 +1,12 @@
-# Baseline kerja LogLab
+# Aturan dasar proyek
 
-**Tanggal:** 28 Oktober 2026. **Status:** arah kerja yang disepakati pemilik; rincian instalasi dan kontrak belum dibekukan sebagai rilis. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi sebagai draf; installer dan acceptance belum tersedia. Lihat [index arsitektur](index.md) dan [task tim](../tasks/index.md).
+<a href="../../README.md"><kbd>README</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Hasil aplikasi</kbd></a> <a href="../tugas/erna.md"><kbd>Erna</kbd></a> <a href="../tugas/arhasya.md"><kbd>Arhasya</kbd></a>
 
-Untuk pembaca baru, [dasar proyek](../tasks/basics.md) menjelaskan istilah dan satu contoh alur. Halaman baseline ini digunakan sebagai referensi lingkungan dan batas file ketika mengerjakan task.
+Baseline berarti aturan awal yang dipakai semua anggota agar OS, format data dan bagian bersama tetap cocok. Halaman ini menjadi rujukan ketika menjalankan tugas; gambaran aplikasi saat selesai ada pada tombol di atas.
+
+**Tanggal:** 28 Oktober 2026. **Status:** arah kerja yang disepakati pemilik; rincian instalasi dan kontrak belum dibekukan sebagai rilis. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi sebagai draf; installer dan acceptance belum tersedia. Lihat [index arsitektur](index.md) dan [task tim](../tugas/index.md).
+
+Untuk pembaca baru, [dasar proyek](../tugas/bersama.md#kenali-aplikasi-yang-dibangun) menjelaskan istilah dan satu contoh alur. Halaman baseline ini digunakan sebagai referensi lingkungan dan batas file ketika mengerjakan task.
 
 ## Tujuan dan pembagian VM
 
@@ -64,4 +68,4 @@ Dokumen workspace sebelumnya memakai istilah host Linux, path `deploy/`, serta c
 
 ## Panduan peran
 
-Workspace anggota dijelaskan di [workspace](../tasks/workspace.md). Erna membuka [task Source](../tasks/erna.md); Arhasya membuka [task Monitor](../tasks/arhasya.md). Batas coding bersama dan urutan penyatuan dijelaskan pada [integrasi](../tasks/integration.md).
+Workspace anggota dijelaskan di [workspace](../tugas/bersama.md#folder-dan-terminal). Erna membuka [task Source](../tugas/erna.md); Arhasya membuka [task Monitor](../tugas/arhasya.md). Batas coding bersama dan urutan penyatuan dijelaskan pada [integrasi](../tugas/bersama.md#menyatukan-pekerjaan).

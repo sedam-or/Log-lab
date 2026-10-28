@@ -61,7 +61,7 @@ Baseline produk v1.0.0 disetujui pemilik proyek. Persetujuan tersebut bukan bukt
 
 ## 8. Hirarki dokumen
 
-PRD ini menetapkan alasan, pengguna, hasil, dan batas produk. SRS menerjemahkan batas tersebut menjadi kebutuhan sistem, state, interface, kualitas, serta metode verifikasi. Jika perubahan teknis memengaruhi hasil atau lingkup produk, PRD harus diperbarui lebih dahulu; perubahan teknis yang tidak mengubah lingkup dicatat di SRS. Workbook Modul 02 merangkum kebutuhan dan keterlacakan untuk tugas kuliah. [Panduan tugas](../tasks/index.md) mencatat fase dan task; [riwayat migrasi](../history/index.md) mencatat konteks lama dan keputusan penyesuaian.
+PRD ini menetapkan alasan, pengguna, hasil, dan batas produk. SRS menerjemahkan batas tersebut menjadi kebutuhan sistem, state, interface, kualitas, serta metode verifikasi. Jika perubahan teknis memengaruhi hasil atau lingkup produk, PRD harus diperbarui lebih dahulu; perubahan teknis yang tidak mengubah lingkup dicatat di SRS. Workbook Modul 02 merangkum kebutuhan dan keterlacakan untuk tugas kuliah. [Panduan tugas](../tugas/index.md) mencatat fase dan task; [riwayat migrasi](../history/index.md) mencatat konteks lama dan keputusan penyesuaian.
 
 Markdown adalah sumber kanonis. PDF adalah salinan baca yang dibangun dari Markdown. Jika berbeda, gunakan Markdown dan bangun ulang PDF.
 

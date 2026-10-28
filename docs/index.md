@@ -1,17 +1,22 @@
-# Dokumentasi LogLab
+# Peta dokumen
 
-Mulai dari [dasar proyek untuk pemula](tasks/basics.md). Halaman itu menjelaskan apa yang dibangun melalui satu percobaan login. Sesudahnya, baca workspace dan panduan sesuai peran. Kamu dapat membuka SRS hanya pada bagian yang dirujuk task, tanpa membaca seluruh arsip untuk mulai bekerja.
+<a href="../README.md"><kbd>README dan gambaran hasil</kbd></a> <a href="tugas/erna.md"><kbd>Erna</kbd></a> <a href="tugas/arhasya.md"><kbd>Arhasya</kbd></a> <a href="architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a>
 
-| Saya ingin | Mulai di |
+Untuk mulai bekerja, gunakan README lalu halaman nama sendiri. Daftar berikut dipakai saat kamu ingin melihat alasan atau aturan yang lebih rinci. Setiap panduan anggota juga menautkan bagian yang diperlukan pada langkah terkait.
+
+| Yang dicari | Halaman |
 | --- | --- |
-| Menulis kode dan menyiapkan Source sebagai Erna | [Panduan Erna](tasks/erna.md) |
-| Menulis kode dan menyiapkan Monitor sebagai Arhasya | [Panduan Arhasya](tasks/arhasya.md) |
-| Memahami folder, terminal host, SSH, dan branch | [Workspace bersama](tasks/workspace.md) |
-| Menyiapkan fondasi dan menyatukan pekerjaan | [Integrasi](tasks/integration.md) |
-| Memahami kebutuhan produk dan teknis | [Kebutuhan](requirements/index.md) |
-| Membaca diagram dan standar | [Arsitektur](architecture/index.md) |
-| Memeriksa asal dokumen lama | [Riwayat migrasi](history/index.md) |
+| Aplikasi yang harus bisa diperlihatkan saat selesai | [Contoh hasil di README](../README.md#hasil-aplikasi) |
+| Hasil file dan perilaku peran masing-masing | [Hasil Erna](tugas/erna.md#hasil-branch), [hasil Arhasya](tugas/arhasya.md#hasil-branch) |
+| Siapa mengerjakan apa dan sudah sampai mana | [Daftar tugas](tugas/index.md) |
+| Pengertian proyek, folder/SSH, atau urutan menguji dua VM | [Panduan bersama](tugas/bersama.md) |
+| OS, alamat, resource VM dan pembagian file bersama | [Aturan dasar proyek](architecture/BASELINE.md) |
+| Tujuan, pengguna dan batas proyek | [PRD](requirements/PRD.md) |
+| Detail kebutuhan, state, field dan cara membuktikannya | [Daftar SRS](requirements/srs/index.md) |
+| Kontrak request/response serta contoh uji bersama | [Komunikasi aplikasi](interface-contracts/index.md) |
+| Diagram sistem, standar kode dan bukti | [Arsitektur](architecture/index.md) |
+| Asal dokumen yang digunakan ulang | [Riwayat migrasi](history/index.md) |
 
-PRD menjelaskan hasil dan scope. SRS merinci requirement teknis. Panduan peran mengubah requirement menjadi langkah dan pemeriksaan, tanpa mengubah kontrak sendiri. Status pelaksanaan seluruh tim tercatat satu kali pada [daftar task](tasks/index.md).
+PRD menjelaskan hasil yang dituju. SRS menjelaskan aturan teknisnya. Panduan tugas menerjemahkan aturan tersebut menjadi langkah coding dan pemeriksaan. Jika ada perbedaan, catat untuk diperbaiki bersama, karena panduan tidak boleh mengubah aturan secara diam-diam.
 
-Dokumen ini masih tahap adaptasi dan pembagian tugas untuk diskusi. Source aplikasi, installer, fixture executable, dan PDF baru belum tersedia dalam repo. Bagian instalasi aplikasi memiliki prasyarat yang harus dipenuhi integrator; jangan menebak command untuk melewatinya.
+Repo masih tahap dokumen; hasil branch yang digambar adalah target pekerjaan. Hasil tes lama tetap disimpan sebagai riwayat, bukan sebagai bukti bahwa kode repo baru sudah tersedia atau lulus.

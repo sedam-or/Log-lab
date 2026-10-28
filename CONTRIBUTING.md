@@ -1,8 +1,10 @@
 # Menyerahkan pekerjaan melalui Git dan Pull Request
 
+<a href="README.md"><kbd>README</kbd></a> <a href="docs/tugas/erna.md"><kbd>Erna</kbd></a> <a href="docs/tugas/arhasya.md"><kbd>Arhasya</kbd></a> <a href="docs/tugas/bersama.md#menyatukan-pekerjaan"><kbd>Uji bersama</kbd></a>
+
 Git mencatat perubahan file pada clone milikmu. GitHub menyimpan repo bersama agar anggota dapat berbagi perubahan dan memeriksanya. Panduan ini menjelaskan perjalanan satu task coding sampai diterima di `main`, yaitu branch utama repo.
 
-Mulai dari [dasar proyek](docs/tasks/basics.md) dan [workspace](docs/tasks/workspace.md) bila kamu belum yakin lokasi terminal atau folder clone. Command di sini dijalankan **di Debian guest, dari `~/LogLab`**. Nama branch contoh harus disesuaikan dengan task yang sedang dikerjakan.
+Mulai dari [dasar proyek](docs/tugas/bersama.md#kenali-aplikasi-yang-dibangun) dan [workspace](docs/tugas/bersama.md#folder-dan-terminal) bila kamu belum yakin lokasi terminal atau folder clone. Command di sini dijalankan **di Debian guest, dari `~/LogLab`**. Nama branch contoh harus disesuaikan dengan task yang sedang dikerjakan.
 
 ## Memahami alur perubahan
 

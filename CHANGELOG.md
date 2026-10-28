@@ -23,3 +23,10 @@ Belum ada rilis aplikasi, installer tervalidasi, atau acceptance pasangan VM pad
 - Menulis ulang panduan coding Erna/Arhasya, alur kontribusi dan integrasi dengan hasil yang diharapkan serta case pemeriksaan.
 - Menambahkan tujuh diagram Mermaid beserta PNG render untuk dokumentasi dan ekspor berikutnya.
 - Memperbaiki dependensi penyerahan hasil peran agar mendahului pengujian pasangan, serta menjelaskan merge fitur yang diperlukan training.
+
+### Hasil branch dan navigasi tim
+
+- Menyederhanakan panduan anggota menjadi empat halaman di `docs/tugas/`: daftar, Erna, Arhasya dan panduan bersama.
+- Menambahkan target pohon file, hasil perilaku, bukti, serta isi setiap PR untuk kedua peran.
+- Memperluas README sebagai pintu masuk tujuan, aturan, pembagian kerja dan hasil repo gabungan.
+- Menambahkan tombol tautan pada halaman penting serta menyimpan catatan hasil pada panduan anggota masing-masing.

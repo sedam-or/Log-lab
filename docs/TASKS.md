@@ -1,3 +1,3 @@
-# Daftar task
+# Daftar tugas tim
 
-Daftar pekerjaan telah dipindahkan ke [index task tim](tasks/index.md), dengan panduan terpisah untuk [Erna](tasks/erna.md), [Arhasya](tasks/arhasya.md), [workspace](tasks/workspace.md), dan [integrasi](tasks/integration.md). Halaman ini dipertahankan sebagai pintu masuk link lama; status hanya diedit pada index task.
+Buka [docs/tugas/index.md](tugas/index.md). Halaman tersebut menautkan tugas Erna, tugas Arhasya, dan panduan bersama. Status pekerjaan hanya diperbarui pada daftar tugas tersebut. Halaman ini menjaga tautan instruksi agen yang sudah ada tetap berfungsi.

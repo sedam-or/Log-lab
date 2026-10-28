@@ -1,0 +1,9 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px","edgeLabelBackground":"#ffffff"},"flowchart":{"htmlLabels":true,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    BASE["main awal<br/>Aturan dan kode dasar"] --> E["Branch tugas Erna<br/>File main tetap ada<br/>Tambahkan Source dan tesnya"]
+    BASE --> R["Branch tugas Arhasya<br/>File main tetap ada<br/>Tambahkan Monitor dan tesnya"]
+    E --> PE["PR kecil<br/>Review dan tes<br/>Merge ke main"]
+    R --> PR["PR kecil<br/>Review dan tes<br/>Merge ke main"]
+    PE --> FINAL["main gabungan<br/>Source dan Monitor<br/>Tes, setup dan panduan"]
+    PR --> FINAL
+    FINAL --> VMS["Uji dua VM pada satu host<br/>Pakai satu commit yang sama"]

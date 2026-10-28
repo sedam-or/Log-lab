@@ -18,4 +18,4 @@ Label diagram berasal dari paket Modul 3: C-01 adalah login, C-03 pengiriman eve
 
 [Daftar assets](assets/index.md) memuat sumber dan status. Diagram adalah dokumentasi rancangan; bukan screenshot evidence VM.
 
-Untuk memahami proses coding sebelum membaca diagram sistem, buka [diagram belajar](assets/learning/index.md) atau [dasar proyek](../tasks/basics.md).
+Untuk memahami proses coding sebelum membaca diagram sistem, buka [diagram belajar](assets/learning/index.md) atau [dasar proyek](../tugas/bersama.md#kenali-aplikasi-yang-dibangun).

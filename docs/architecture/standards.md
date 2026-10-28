@@ -1,6 +1,6 @@
 # Standar implementasi dan evidence
 
-Diadaptasi dari standar proyek lama untuk digunakan pada repo baru. Command tes di bawah hanya berlaku setelah source, tests, dan dependency sudah dimigrasikan. Perintah setup masih menunggu implementasi. [Indeks](index.md). Untuk mulai belajar, gunakan [dasar proyek](../tasks/basics.md) lalu panduan peran. Standar di sini dibuka saat suatu task memerlukan aturan kode/tes yang lebih rinci.
+Diadaptasi dari standar proyek lama untuk digunakan pada repo baru. Command tes di bawah hanya berlaku setelah source, tests, dan dependency sudah dimigrasikan. Perintah setup masih menunggu implementasi. [Indeks](index.md). Untuk mulai belajar, gunakan [dasar proyek](../tugas/bersama.md#kenali-aplikasi-yang-dibangun) lalu panduan peran. Standar di sini dibuka saat suatu task memerlukan aturan kode/tes yang lebih rinci.
 
 ### 2. Gaya kode dan kontrak publik
 
