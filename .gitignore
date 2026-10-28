@@ -1,0 +1,60 @@
+# Environment dan cache lokal
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Konfigurasi privat dan kredensial
+.env
+.env.*
+!.env.example
+secrets/
+private/
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+authorized_keys
+passws.txt
+pass-web.md
+pass*.txt
+
+# Database, log, dan bukti mentah lokal
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.log
+evidence-local/
+backups/
+backup-pc/
+
+# Image dan state VMware bukan source Git
+*.iso
+*.ova
+*.ovf
+*.vmdk
+*.vmx
+*.vmxf
+*.vmsd
+*.vmsn
+*.vmss
+*.vmem
+*.nvram
+*.lck/
+
+# Cache editor/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
