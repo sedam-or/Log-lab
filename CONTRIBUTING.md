@@ -106,3 +106,7 @@ PR kecil dapat masuk selama pengerjaan, sehingga Erna dan Arhasya tidak harus me
 Bukti Modul 5 berasal dari commit dan PR yang benar-benar dibuat anggota. Simpan task/requirement, command tes, hasil aman, komentar review dan commit penyelesaian. Jika tidak ada konflik alami, lakukan latihan konflik pada branch dan file latihan, lalu tandai sebagai latihan pada laporan. Screenshot VMware harus capture asli dari VMware; output sesi SSH disebut bukti terminal.
 
 Dokumentasi awal di main diterbitkan atas instruksi pemilik. Perubahan coding anggota mengikuti alur branch dan PR di atas.
+
+## Pemeriksaan kontrak sebelum PR
+
+Jalankan `make check-contract` dan `make test-contract`. Workflow GitHub menjalankan pemeriksaan ini pada PR dan push main. Kode aplikasi yang baru harus membaca nama env/endpoint pada [kontrak parameter](docs/interface-contracts/index.md), memvalidasinya sebelum startup dan tidak memperkenalkan alias/nilai default lain. Kontrak dibekukan tidak berarti parser/loader aplikasi sudah tersedia. Perubahan kontrak memerlukan PR bersama serta penyesuaian versi/template dan tes; required check pada proteksi branch harus diperiksa terpisah.

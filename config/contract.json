@@ -1,0 +1,398 @@
+{
+  "contract_version": "1.0.0",
+  "profile": "vmware-host-only",
+  "date": "2026-10-29",
+  "network": {
+    "cidr": "172.16.202.0/24",
+    "host_ip": "172.16.202.1",
+    "vmnet": "VMnet1",
+    "https_port": 8443,
+    "ssh_port": 22,
+    "default_gateway": null,
+    "dns_required_at_runtime": false,
+    "runtime_nat_enabled": false,
+    "inbound_tcp": {
+      "source": [
+        {
+          "from": "172.16.202.1",
+          "ports": [
+            22,
+            8443
+          ]
+        }
+      ],
+      "monitor": [
+        {
+          "from": "172.16.202.1",
+          "ports": [
+            22,
+            8443
+          ]
+        },
+        {
+          "from": "172.16.202.21",
+          "ports": [
+            8443
+          ]
+        }
+      ]
+    }
+  },
+  "platform": {
+    "guest_family": "Debian",
+    "guest_major": 13,
+    "architecture": "amd64",
+    "python_minor": "3.13",
+    "integration_host": "Windows 11",
+    "guest_user": "loglab",
+    "service_user": "loglab-svc",
+    "service_group": "loglab-svc"
+  },
+  "paths": {
+    "project": "/home/loglab/LogLab",
+    "venv": "/home/loglab/LogLab/.venv",
+    "private_config": "/etc/loglab",
+    "data": "/var/lib/loglab",
+    "backup": "/var/backups/loglab",
+    "backup_file": "/var/backups/loglab/daily.sqlite3",
+    "ca": "/etc/loglab/ca.crt",
+    "cert": "/etc/loglab/tls.crt",
+    "key": "/etc/loglab/tls.key"
+  },
+  "roles": {
+    "source": {
+      "member": "Erna",
+      "vm_name": "LogLab-Source-Erna",
+      "hostname": "loglab-source",
+      "ip": "172.16.202.21",
+      "service": "loglab-source.service",
+      "entrypoint": "loglab.source_main:app",
+      "env_file": "/etc/loglab/source.env",
+      "db_file": "/var/lib/loglab/source.sqlite3",
+      "setup_script": "deployment/source/setup.sh",
+      "setup_target": "setup-source",
+      "config_example": "config/source.example.env",
+      "vcpu": 1,
+      "ram_mib": 1024,
+      "disk_gib": 20,
+      "test_accounts_file": "/etc/loglab/test-accounts.json",
+      "demo_usernames": [
+        "demo-user-01",
+        "demo-user-02"
+      ]
+    },
+    "monitor": {
+      "member": "Arhasya",
+      "vm_name": "LogLab-Monitor-Arhasya",
+      "hostname": "loglab-monitor",
+      "ip": "172.16.202.22",
+      "service": "loglab-monitor.service",
+      "entrypoint": "loglab.monitor_main:app",
+      "env_file": "/etc/loglab/monitor.env",
+      "db_file": "/var/lib/loglab/monitor.sqlite3",
+      "setup_script": "deployment/monitor/setup.sh",
+      "setup_target": "setup-monitor",
+      "config_example": "config/monitor.example.env",
+      "vcpu": 2,
+      "ram_mib": 2048,
+      "disk_gib": 20,
+      "operator_username": "operator",
+      "model_file": "/var/lib/loglab/model.json",
+      "model_checksum_file": "/var/lib/loglab/model.json.sha256"
+    }
+  },
+  "identity": {
+    "source_id": "login-lab-a",
+    "event_schema_version": 1,
+    "feature_schema": "login-window-v1",
+    "rules_version": "rules-v1",
+    "model_family": "LogisticRegression",
+    "seed": 42,
+    "timezone": "UTC"
+  },
+  "api": {
+    "source_origin": "https://172.16.202.21:8443",
+    "monitor_origin": "https://172.16.202.22:8443",
+    "source_login_form": {
+      "method": "GET",
+      "path": "/login",
+      "auth": "public"
+    },
+    "source_login_submit": {
+      "method": "POST",
+      "path": "/api/v1/login",
+      "auth": "fictitious_account",
+      "content_type": "application/json",
+      "fields": [
+        "username",
+        "password"
+      ]
+    },
+    "monitor_events": {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "auth": "source_bearer"
+    },
+    "monitor_status": {
+      "method": "POST",
+      "path": "/api/v1/source-status",
+      "auth": "source_bearer"
+    },
+    "dashboard": {
+      "method": "GET",
+      "path": "/",
+      "auth": "operator_session"
+    },
+    "health": {
+      "method": "GET",
+      "path": "/health",
+      "auth": "public_liveness"
+    },
+    "receipt_http_status": 200,
+    "receipt_fields": [
+      "status",
+      "source_id",
+      "event_id",
+      "event_digest"
+    ],
+    "receipt_statuses": [
+      "stored",
+      "duplicate"
+    ],
+    "health_fields": [
+      "service",
+      "state",
+      "contract_version"
+    ],
+    "health_state": "ready",
+    "source_login_form_submit": {
+      "method": "POST",
+      "path": "/login",
+      "auth": "fictitious_account",
+      "content_type": "application/x-www-form-urlencoded",
+      "fields": [
+        "username",
+        "password"
+      ]
+    }
+  },
+  "env": {
+    "LOGLAB_CONTRACT_VERSION": {
+      "python_name": "contract_version",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Versi kontrak konfigurasi",
+      "values": {
+        "source": "1.0.0",
+        "monitor": "1.0.0"
+      }
+    },
+    "LOGLAB_PORT": {
+      "python_name": "port",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Port HTTPS, dibaca sebagai integer",
+      "values": {
+        "source": "8443",
+        "monitor": "8443"
+      }
+    },
+    "LOGLAB_SOURCE_ID": {
+      "python_name": "source_id",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Identitas sumber yang harus sama pada A dan B",
+      "values": {
+        "source": "login-lab-a",
+        "monitor": "login-lab-a"
+      }
+    },
+    "LOGLAB_CA_BUNDLE": {
+      "python_name": "ca_bundle",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "CA publik untuk memverifikasi TLS",
+      "values": {
+        "source": "/etc/loglab/ca.crt",
+        "monitor": "/etc/loglab/ca.crt"
+      }
+    },
+    "LOGLAB_TLS_CERT": {
+      "python_name": "certfile",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Sertifikat milik guest ini",
+      "values": {
+        "source": "/etc/loglab/tls.crt",
+        "monitor": "/etc/loglab/tls.crt"
+      }
+    },
+    "LOGLAB_TLS_KEY": {
+      "python_name": "keyfile",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Private key milik guest ini; isi tidak dibagikan",
+      "values": {
+        "source": "/etc/loglab/tls.key",
+        "monitor": "/etc/loglab/tls.key"
+      }
+    },
+    "LOGLAB_ROLE": {
+      "python_name": "role",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Peran proses, bukan nama anggota",
+      "values": {
+        "source": "source",
+        "monitor": "monitor"
+      }
+    },
+    "LOGLAB_BIND_HOST": {
+      "python_name": "bind_host",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "IP privat tempat Uvicorn mendengarkan",
+      "values": {
+        "source": "172.16.202.21",
+        "monitor": "172.16.202.22"
+      }
+    },
+    "LOGLAB_DB_PATH": {
+      "python_name": "db_path",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Database lokal per peran",
+      "values": {
+        "source": "/var/lib/loglab/source.sqlite3",
+        "monitor": "/var/lib/loglab/monitor.sqlite3"
+      }
+    },
+    "LOGLAB_MONITOR_URL": {
+      "python_name": "monitor_url",
+      "roles": [
+        "source"
+      ],
+      "kind": "fixed",
+      "description": "Origin Monitor tanpa path dan trailing slash",
+      "values": {
+        "source": "https://172.16.202.22:8443"
+      }
+    },
+    "LOGLAB_SENDER_LOCK": {
+      "python_name": "sender_lock",
+      "roles": [
+        "source"
+      ],
+      "kind": "fixed",
+      "description": "File lock untuk satu sender",
+      "values": {
+        "source": "/run/loglab/sender.lock"
+      }
+    },
+    "LOGLAB_MODEL_PATH": {
+      "python_name": "model_path",
+      "roles": [
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Paket model numerik; sidecar checksum menambah .sha256",
+      "values": {
+        "monitor": "/var/lib/loglab/model.json"
+      }
+    },
+    "LOGLAB_OPERATOR_USERNAME": {
+      "python_name": "operator_username",
+      "roles": [
+        "monitor"
+      ],
+      "kind": "fixed",
+      "description": "Akun operator lab, password disiapkan privat",
+      "values": {
+        "monitor": "operator"
+      }
+    },
+    "LOGLAB_SOURCE_TOKEN": {
+      "python_name": "source_token",
+      "roles": [
+        "source",
+        "monitor"
+      ],
+      "kind": "hex64",
+      "description": "Token acak 32 byte hex lowercase, nilai sama di A dan B",
+      "example": "__SET_ONCE_PER_LAB__"
+    },
+    "LOGLAB_PSEUDONYM_KEY": {
+      "python_name": "pseudonym_key",
+      "roles": [
+        "source"
+      ],
+      "kind": "hex64",
+      "description": "Key HMAC 32 byte hex lowercase, hanya diperlukan Source",
+      "example": "__GENERATE_SOURCE_ONLY__"
+    },
+    "LOGLAB_OPERATOR_PASSWORD_HASH": {
+      "python_name": "operator_password_hash",
+      "roles": [
+        "monitor"
+      ],
+      "kind": "scrypt",
+      "description": "Hash scrypt operator; password mentah tidak masuk env",
+      "example": "__HASH_OPERATOR_PASSWORD__"
+    }
+  },
+  "changes": {
+    "policy": "PR bersama, bump versi kontrak, regenerasi template, tes dan review kedua peran sebelum merge",
+    "unknown_env_keys": "reject",
+    "runtime_missing_required": "reject",
+    "test_overrides": "dependency injection or dedicated temporary test settings; never publish a modified integration profile"
+  },
+  "permissions": {
+    "private_dir": {
+      "mode": "0750",
+      "owner": "root",
+      "group": "loglab-svc"
+    },
+    "env_file": {
+      "mode": "0600",
+      "owner": "root",
+      "group": "root"
+    },
+    "tls_key": {
+      "mode": "0640",
+      "owner": "root",
+      "group": "loglab-svc"
+    },
+    "data_dir": {
+      "mode": "0700",
+      "owner": "loglab-svc",
+      "group": "loglab-svc"
+    }
+  }
+}

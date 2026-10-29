@@ -9,7 +9,7 @@
 | ID | Requirement | Acceptance dan bukti |
 | --- | --- | --- |
 | OP-01 | Dua VM privat dapat dipasang ulang dari sumber dan konfigurasi yang tercatat. | Anggota tim mengulang install/startup pada VM bersih; dependency lock, image/hash, resource, IP, commit, dan perintah tercatat. Reboot memulihkan service dan alamat. |
-| OP-02 | Transport, akses jaringan, dan secret memenuhi batas lab. | TLS/SAN/trust diperiksa; sertifikat salah atau token/sesi salah ditolak. Firewall membatasi source/host; DB tidak terbuka di jaringan. Secret runtime berizin 0600, direktori privat 0700. |
+| OP-02 | Transport, akses jaringan, dan secret memenuhi batas lab. | TLS/SAN/trust diperiksa; sertifikat salah atau token/sesi salah ditolak. Firewall membatasi source/host; DB tidak terbuka di jaringan. Env privat milik root berizin 0600; direktori konfigurasi root:loglab-svc 0750, private key TLS root:loglab-svc 0640, dan direktori data service 0700 menurut kontrak parameter. |
 | OP-03 | Backup dapat dipulihkan menjadi data konsisten. | Backup harian dan sebelum reset/cleanup; salin ke lokasi privat di host di luar disk guest. Restore pada lokasi terisolasi lulus integrity check, rekonsiliasi event/outbox/ACK/revisi/hasil, dan penggunaan paket model yang tercatat. |
 | OP-04 | Sistem memenuhi profil lab yang terukur. | Jalankan profil di bawah dan simpan hasil mentah, target, actual, serta pass/fail. Keberhasilan smoke tidak menggantikan uji gangguan/performa. |
 | OP-05 | Setiap acceptance dapat dilacak dan diulang. | Manifest run mencantumkan requirement/case, commit dan dirty state, environment/config tanpa secret, input hashes, waktu, langkah, output mentah, hasil, serta reviewer. Tidak ada requirement wajib tanpa hasil/bukti pada penerimaan final. |
@@ -19,7 +19,7 @@
 
 Gunakan VMware Workstation pada host integrasi Windows 11 dan guest Debian 13 amd64 dari ISO dengan SHA-256 tercatat. Pilihan ISO final belum dibekukan; jangan memakai checksum tebakan. VM A (source) memakai 1 vCPU, RAM 1 GiB, dan disk dinamis 20 GiB; VM B (monitor) memakai 2 vCPU, RAM 2 GiB, dan disk dinamis 20 GiB. Profil ini menguji dua guest pada satu host, bukan dua server independen.
 
-Gunakan VMware host-only `vmnet1`, subnet `172.16.202.0/24`, source A `172.16.202.21`, monitor B `172.16.202.22`, dan host gateway `172.16.202.1`, setelah seluruh alamat diperiksa bebas. Login, ingest, source-status, dan dashboard menggunakan HTTPS pada port `8443`, TLS langsung pada Uvicorn, dan SAN sertifikat untuk alamat yang dipakai. Install CA lab pada host/browser dan trust store source. NAT boleh dipakai sementara untuk instalasi paket; sebelum acceptance matikan NAT/default route eksternal.
+Gunakan VMware host-only `vmnet1`, subnet `172.16.202.0/24`, source A `172.16.202.21`, monitor B `172.16.202.22`, dan alamat adapter host `172.16.202.1`, setelah seluruh alamat diperiksa bebas. Login, ingest, source-status, dan dashboard menggunakan HTTPS pada port `8443`, TLS langsung pada Uvicorn, dan SAN sertifikat untuk alamat yang dipakai. Install CA lab pada host/browser dan trust store source. NAT boleh dipakai sementara untuk instalasi paket; sebelum acceptance matikan NAT/default route eksternal.
 
 Catat versi SQLite yang benar-benar terhubung ke runtime Python. Bila memilih WAL, verifikasi patch [WAL-reset](https://sqlite.org/wal.html#the_wal_reset_bug) tersedia (SQLite 3.51.3+ atau backport yang terdokumentasi); alternatif journaling memerlukan verifikasi durability/konkurensi yang sama. Jangan menganggap versi paket Python menentukan versi SQLite sistem.
 
@@ -50,3 +50,5 @@ Backup menggunakan mekanisme snapshot database yang konsisten, bukan copy file a
 #### Verifikasi
 
 Tes otomasi memeriksa packaging/config, rekonsiliasi, dan fault yang dapat direproduksi. Acceptance TLS/firewall/reboot/restore serta task operator berjalan di VM aktual. Langkah, task, dan bukti dicatat pada `[standar implementasi](../../architecture/standards.md)`, `[catatan migrasi](../../history/index.md)`, dan manifest run; hasil uji lama tidak dihitung sebagai hasil versi baru.
+
+[IP, port, source ID dan nama konfigurasi yang wajib dipakai](../../interface-contracts/index.md) ditetapkan terpisah agar kedua peran memakai nilai yang sama.

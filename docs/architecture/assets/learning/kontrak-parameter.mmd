@@ -1,0 +1,8 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"19px"},"flowchart":{"htmlLabels":true,"nodeSpacing":35,"rankSpacing":50}}}%%
+flowchart LR
+    C["config/contract.json<br/>IP, port, nama dan versi"] --> REPO["CI pada PR dan main<br/>Cek template serta tabel"]
+    C --> A["Env privat A<br/>Isi dari contoh Source"]
+    C --> B["Env privat B<br/>Isi dari contoh Monitor"]
+    A --> CHECK["Pemeriksa pasangan<br/>Cek nilai dan token"]
+    B --> CHECK
+    CHECK --> VM["Uji dua VM<br/>TLS dan alur event"]

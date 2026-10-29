@@ -18,7 +18,7 @@ Target integrasi LogLab adalah host Windows 11 melalui VMware Workstation. Lapto
 
 Sumber diagram: [`SRS_VM_DAN_KOMUNIKASI.mmd`](../../architecture/assets/SRS_VM_DAN_KOMUNIKASI.mmd).
 
-Guest dipasang dari ISO Debian 13 amd64 yang sama; nama ISO dan SHA-256 final ditetapkan integrator sebelum panduan instalasi dibagikan. Riwayat template/reset lama hanya berlaku untuk implementasi historis. Jaringan memakai VMware host-only `vmnet1`, subnet `172.16.202.0/24`, A `172.16.202.21`, B `172.16.202.22`, dan host gateway `172.16.202.1`. Alamat diperiksa bebas sebelum provisioning. Kedua layanan memakai HTTPS pada port `8443`; runtime tidak memiliki default route internet. NAT hanya boleh aktif sementara saat instalasi paket, lalu dimatikan sebelum acceptance.
+Guest dipasang dari ISO Debian 13 amd64 yang sama; nama ISO dan SHA-256 final ditetapkan integrator sebelum panduan instalasi dibagikan. Riwayat template/reset lama hanya berlaku untuk implementasi historis. Jaringan memakai VMware host-only `vmnet1`, subnet `172.16.202.0/24`, A `172.16.202.21`, B `172.16.202.22`, dan alamat adapter host `172.16.202.1`. Alamat diperiksa bebas sebelum provisioning. Kedua layanan memakai HTTPS pada port `8443`; runtime tidak memiliki default route internet. NAT hanya boleh aktif sementara saat instalasi paket, lalu dimatikan sebelum acceptance.
 
 Sebelum menjalankan kedua VM, memori tersedia host (Task Manager Windows atau `MemAvailable` Linux) harus sekurang-kurangnya 5 GiB (3 GiB alokasi guest + 2 GiB ruang host), dan proyeksi ruang disk setelah VM, database, backup, serta evidence harus menyisakan sekurang-kurangnya 15% filesystem. Nilai ini diperiksa ulang; snapshot host saat ini bukan hasil uji berbeban.
 
@@ -49,3 +49,5 @@ VM B          --tidak mengirim perintah atau keputusan blokir--> VM A
 - HTTP dibatasi untuk health selama provisioning tanpa cookie/token/data. Semua endpoint login, ingest, status, dan dashboard pada acceptance wajib HTTPS.
 
 Kontrak field lengkap tercantum pada [kontrak event](event-pipeline.md). Event v1 memuat `schema_version`, `source_id`, `event_id`, `stream_id`, `sequence`, `occurred_at`, `event_type`, `account_token`, `client_token`, `reason_code`, dan `event_digest`. Tidak boleh ada password, token sesi, bearer token, nama akun nyata, atau IP mentah.
+
+[IP, port, source ID dan nama konfigurasi yang wajib dipakai](../../interface-contracts/index.md) ditetapkan terpisah agar kedua peran memakai nilai yang sama.

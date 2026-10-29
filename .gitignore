@@ -58,3 +58,9 @@ backup-pc/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Semua env runtime diabaikan; hanya dua template publik kontrak dilacak.
+*.env
+!config/source.example.env
+!config/monitor.example.env
+!.env.example

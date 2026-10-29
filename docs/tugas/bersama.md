@@ -75,7 +75,7 @@ Untuk mulai menguji tanpa menunggu anggota lain, kita memakai **fixture**, yaitu
 
 ### Status yang perlu diketahui sebelum mencoba command
 
-Repository sekarang memuat dokumentasi. Kode aplikasi, helper, dependency lock dan installer belum diterbitkan. Karena itu, panduan coding menjelaskan apa yang harus dibuat dan bagaimana menilainya; command seperti `make setup-source` belum dapat dipakai sampai implementasinya tersedia. Integrator menyiapkan fondasi F-01 sampai F-04, kemudian anggota mulai coding dari versi awal yang sama.
+Repository sekarang memuat dokumentasi. Kode aplikasi, helper runtime, dependency lock dan installer belum diterbitkan. Kontrak parameter, template env dan pemeriksa konfigurasi sudah tersedia. Karena itu, panduan coding menjelaskan apa yang harus dibuat dan bagaimana menilainya; command seperti `make setup-source` belum dapat dipakai sampai implementasinya tersedia. Integrator menyiapkan fondasi F-01 sampai F-04, kemudian anggota mulai coding dari versi awal yang sama.
 
 Dokumentasi menggunakan contoh untuk membantu belajar. Angka dalam contoh latihan bukan hasil pengujian proyek. Hasil nyata baru dicatat sesudah command atau tes dijalankan pada commit tertentu.
 
@@ -139,7 +139,7 @@ ip -br address
 
 `apt update` memperbarui daftar paket. Perintah berikutnya memasang server SSH, Git dan Make. `systemctl` mengaktifkan layanan SSH sekarang serta saat guest boot. `ip -br address` menampilkan alamat antarmuka jaringan.
 
-Hasil yang dicari adalah alamat guest pada adapter host-only. `127.0.0.1` adalah alamat mesin itu sendiri dan tidak dipakai host untuk menyambung ke guest. IP `.21` dan `.22` pada panduan merupakan alamat rencana; gunakan setelah profil tersebut benar-benar dikonfigurasi. Cara memasang alamat statis dan memilih VMnet akan difinalkan bersama baseline, karena nama adapter pada setiap mesin dapat berbeda.
+Hasil yang dicari adalah alamat guest pada adapter host-only. `127.0.0.1` adalah alamat mesin itu sendiri dan tidak dipakai host untuk menyambung ke guest. IP `.21` dan `.22` pada panduan adalah nilai tetap kontrak profil integrasi; pastikan benar-benar dikonfigurasi sebelum digunakan. Cara memasang alamat statis dan memilih VMnet akan difinalkan bersama baseline, karena nama adapter pada setiap mesin dapat berbeda.
 
 Di console guest, periksa fingerprint server SSH:
 
@@ -308,3 +308,7 @@ Tag rilis menandai versi hasil yang diterima. Tag dibuat setelah syarat rilis di
 Laporan Modul 5 merangkum lokasi repo, riwayat branch/merge, cuplikan git log, konflik/resolusi dan kontribusi anggota. Jika konflik dilakukan sebagai latihan, beri label latihan. Raw evidence privat tetap di luar Git. Screenshot VMware harus capture dari layar VMware; output SSH ditulis sebagai bukti terminal.
 
 [↑ Kembali ke pilihan bagian](#panduan-bersama-untuk-tiga-orang) · [Kembali ke README](../../README.md)
+
+## Memeriksa konfigurasi sebelum uji bersama
+
+[Kontrak parameter](../interface-contracts/index.md) menetapkan IP, port, path, nama dan env. `make check-contract` serta `make test-contract` sudah tersedia untuk pemeriksaan repo. Integrator memeriksa kedua env privat dan salinan CA memakai mode pasangan yang dijelaskan pada kontrak sebelum menjalankan dua VM. Pemeriksaan tidak mencetak token, dan tidak menggantikan uji TLS/SAN maupun delivery sebenarnya. Source ID tetap; token pasangan dan CA harus cocok; setiap private key guest tetap terpisah.

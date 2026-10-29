@@ -1,12 +1,18 @@
 # Tugas Arhasya membuat aplikasi pemantauan
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 Arhasya bertanggung jawab atas penerima log serta halaman tempat operator memeriksa hasilnya. Kodenya harus menerima event sesuai kontrak, menyimpan data sebelum menjawab Source, mengelompokkan aktivitas, menghitung hasil, dan menampilkannya dengan konteks yang benar.
 
 Beban Monitor lebih luas daripada Source. Karena itu pekerjaan dibagi menjadi ingest, analisis, inferensi, console, lalu deployment. Integrator menyiapkan training offline dan paket model. Arhasya tetap menulis loader serta jalur inferensi runtime, yaitu pemakaian model yang sudah dilatih untuk menghitung prediksi pada input baru.
 
 Baca [dasar proyek](bersama.md#kenali-aplikasi-yang-dibangun) dan [workspace](bersama.md#folder-dan-terminal) sebelum mulai. Kerjakan satu tahap lalu baca SRS yang dirujuk tahap tersebut. Source/helper dan command bootstrap belum diterbitkan; coding dimulai setelah fondasi F-04 siap.
+
+## Konfigurasi yang wajib dipakai
+
+Baca [kontrak parameter 1.0.0](../interface-contracts/index.md), lalu gunakan [contoh env monitor](../../config/monitor.example.env). Nama env sudah final; jangan membuat alias sendiri. IP peran adalah `172.16.202.22`, HTTPS `8443`, dan source ID `login-lab-a`. Secret placeholder diganti privat saat pemasangan; nilai rahasia tidak dimasukkan PR.
+
+Sebelum mengirim PR, jalankan `make check-contract` dari `~/LogLab` dan tulis hasil aktualnya. Saat skrip setup sudah dibuat dan memasang env privat, jalankan `sudo python3 scripts/check_contract.py --role monitor --env /etc/loglab/monitor.env` sebelum service dinyalakan. Setup wajib melakukan pemeriksaan setara dan memberi error jika nilai salah; menulis template saja belum memenuhi kewajiban ini. Bind/port launcher dibaca dari variabel yang ditetapkan, bukan angka lain pada file service.
 
 ## Pilih bagian
 
@@ -59,7 +65,9 @@ LogLab/
 │   ├── test_analysis.py               tes window, kualitas dan rules
 │   ├── test_features.py               tes nilai tujuh fitur
 │   ├── test_model.py                  tes paket dan inferensi
+│   ├── test_contract.py               tes aturan konfigurasi bersama dari main
 │   └── fixtures/                      contoh request, receipt dan prediksi bersama
+├── config/contract.json                nilai publik yang ditetapkan bersama
 ├── config/monitor.example.env         nama konfigurasi dan nilai contoh aman
 ├── deployment/monitor/
 │   ├── setup.sh                       pemasangan peran Monitor
@@ -278,7 +286,7 @@ Bagian ini belum berisi hasil run. Setelah mengerjakan task, isi tabel dengan ha
 
 Sebelum meminta review akhir, pastikan file pada target repo tersedia, pemeriksaan peran lulus atau keterbatasannya tertulis, dan perubahan bersama telah direview. Daftar PR menunjukkan bagian yang ditulis sendiri dan bagian yang menggunakan ulang sumber lama.
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 
 [Lihat cara menguji dua VM bersama](bersama.md#menyatukan-pekerjaan).

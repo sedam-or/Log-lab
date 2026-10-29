@@ -20,7 +20,7 @@ Jika baru bergabung, baca halaman ini sampai bagian pembagian pekerjaan. Sesudah
 
 ## Keadaan repo sekarang
 
-Yang sudah tersedia adalah dokumen kebutuhan, gambar, aturan kerja dan panduan tugas. Kode aplikasi, library yang dipatok versinya, alat uji bersama, dan installer belum tersedia. Nama file serta hasil yang disebut pada panduan anggota merupakan target pekerjaan. `make setup-source` dan `make setup-monitor` juga masih rencana sampai dibuat dan diuji.
+Yang sudah tersedia adalah dokumen kebutuhan, gambar, aturan kerja dan panduan tugas. Kode aplikasi, library yang dipatok versinya, fixture event dan installer belum tersedia. Pemeriksa kontrak konfigurasi serta tes alat tersebut sudah tersedia. Nama file serta hasil yang disebut pada panduan anggota merupakan target pekerjaan. `make setup-source` dan `make setup-monitor` juga masih rencana sampai dibuat dan diuji.
 
 Kita membangun repo ini kembali dari dokumen dan bahan lama yang dipilih. Hasil tes pada laptop lama tidak dianggap sebagai hasil pekerjaan Erna/Arhasya atau bukti bahwa commit baru sudah berjalan. Lihat [asal dokumen](docs/history/inventory.md) jika perlu menelusuri bahan migrasi.
 
@@ -56,6 +56,14 @@ Hasil itu adalah tujuan sistem gabungan. Saat menguji sendiri, Erna memakai pene
 
 Istilah teknis untuk penanggung jawab penyatuan adalah *integrator*. Pada tim ini, peran tersebut mengikuti pemilik repo/pemimpin tim sampai nama lain ditetapkan. Anggota memakai akun GitHub masing-masing; nama Erna dan Arhasya adalah samaran tugas. Keduanya tetap menulis kode perannya, bukan hanya memasang VM.
 
+## IP dan nama variabel sudah menjadi kontrak
+
+<a href="docs/interface-contracts/index.md"><kbd>Kontrak IP dan variabel 1.0.0</kbd></a> <a href="config/source.example.env"><kbd>Contoh env Erna</kbd></a> <a href="config/monitor.example.env"><kbd>Contoh env Arhasya</kbd></a>
+
+[config/contract.json](config/contract.json) adalah sumber nilai publik yang sama untuk kedua anggota. Kontrak menetapkan IP, port, source ID, nama service/file, endpoint dan variabel `LOGLAB_*`. Contoh env berisi placeholder rahasia, bukan credential siap pakai. `172.16.202.1` adalah alamat adapter host, bukan default gateway internet.
+
+Dari root repo jalankan `make check-contract` (atau `python3 scripts/check_contract.py`) sebelum meminta review. Jalankan `make test-contract` untuk tes alat pemeriksa. Workflow PR/main menjalankan pemeriksaan yang sama. Sesudah provisioning, [petunjuk pemeriksaan env privat dan pasangan](docs/interface-contracts/index.md#periksa-sebelum-meminta-review) mendeteksi typo, placeholder dan token yang tidak cocok tanpa mencetak nilainya. Pengujian aplikasi dua VM tetap dilakukan setelah kode tersedia.
+
 ## Aturan yang dipakai bersama
 
 Aturan awal yang disebut baseline adalah kesepakatan agar pekerjaan tidak memakai versi dan format berbeda. Rinciannya ada di [Aturan dasar proyek](docs/architecture/BASELINE.md); berikut hal yang perlu diketahui sebelum mulai:
@@ -66,7 +74,7 @@ Aturan awal yang disebut baseline adalah kesepakatan agar pekerjaan tidak memaka
 | OS guest | Debian 13 amd64 yang sama; nama ISO/hash final harus diberikan sebelum panduan instalasi dilepas |
 | Tempat coding | Clone `~/LogLab` di dalam guest anggota masing-masing |
 | Host uji akhir | Windows 11 dengan VMware Workstation dan kedua VM pada satu host-only |
-| Alamat rencana saat integrasi | Host `172.16.202.1`, Source `.21`, Monitor `.22`; diperiksa tidak bentrok sebelum dipasang |
+| Alamat tetap profil integrasi | Host `172.16.202.1`, Source `.21`, Monitor `.22`; diperiksa tidak bentrok sebelum dipasang |
 | Port aplikasi | HTTPS `8443`; SSH `22` untuk akses terminal bila diaktifkan |
 | Format catatan/jawaban | Satu [kontrak event](docs/requirements/srs/event-pipeline.md), ditinjau bersama dan diuji dengan contoh yang sama |
 | Rahasia dan data hidup | Password/token, private key, database aktif, file VM dan log privat disimpan di luar Git |

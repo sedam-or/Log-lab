@@ -4,9 +4,13 @@
 
 Baseline berarti aturan awal yang dipakai semua anggota agar OS, format data dan bagian bersama tetap cocok. Halaman ini menjadi rujukan ketika menjalankan tugas; gambaran aplikasi saat selesai ada pada tombol di atas.
 
-**Tanggal:** 28 Oktober 2026. **Status:** arah kerja yang disepakati pemilik; rincian instalasi dan kontrak belum dibekukan sebagai rilis. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi sebagai draf; installer dan acceptance belum tersedia. Lihat [index arsitektur](index.md) dan [task tim](../tugas/index.md).
+**Tanggal:** 29 Oktober 2026. **Status:** parameter integrasi sudah dibekukan sebagai kontrak konfigurasi 1.0.0; installer, ISO/hash final dan acceptance aplikasi masih menunggu pengerjaan. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi sebagai draf; installer dan acceptance belum tersedia. Lihat [index arsitektur](index.md) dan [task tim](../tugas/index.md).
 
 Untuk pembaca baru, [dasar proyek](../tugas/bersama.md#kenali-aplikasi-yang-dibangun) menjelaskan istilah dan satu contoh alur. Halaman baseline ini digunakan sebagai referensi lingkungan dan batas file ketika mengerjakan task.
+
+## Kontrak IP dan nama variabel
+
+[Kontrak parameter](../interface-contracts/index.md) menetapkan nilai final profil integrasi dalam [config/contract.json](../../config/contract.json), contoh env Source/Monitor, serta cara memeriksanya. Kedua anggota wajib menjalankan `make check-contract` sebelum PR dan pemeriksaan env privat sebelum startup. Perubahan IP/nama/port lewat satu branch saja tidak diterima. Nilai contoh yang ada di tabel baseline ini merujuk kontrak tersebut.
 
 ## Tujuan dan pembagian VM
 
@@ -30,7 +34,7 @@ Nomor interface guest dan pemetaan VMnet ditentukan dari mesin aktual, bukan di-
 
 Rekomendasi SSH berasal dari kebutuhan menyalin perintah di terminal host tanpa bergantung pada clipboard VMware. Panduan anggota harus menjelaskan pemasangan OpenSSH Server di guest, pemeriksaan IP, login host-ke-guest, pemasangan public key, serta verifikasi fingerprint. Console VMware tetap menjadi alternatif dan jalur pemulihan jika jaringan/SSH belum siap. Jangan menaruh password atau private key dalam task PDF.
 
-SSH tidak diperlukan di antara VM A dan B untuk jalur aplikasi. A mengirim event melalui HTTPS. Konfigurasi TLS, CA, token sumber, dan sesi operator mengikuti kontrak yang akan dibekukan.
+SSH tidak diperlukan di antara VM A dan B untuk jalur aplikasi. A mengirim event melalui HTTPS. Nama/path TLS, CA, token sumber dan env mengikuti kontrak parameter 1.0.0; nilai rahasia dibuat privat saat provisioning.
 
 ## Reproducibility yang dinilai
 

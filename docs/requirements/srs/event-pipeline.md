@@ -47,3 +47,5 @@ Kapasitas awal outbox adalah 10.000 event atau 64 MiB payload tersimpan, termasu
 #### Verifikasi
 
 `unittest` menguji kontrak, commit/ACK, konflik, counters, dan restart. Uji fault serta evidence dua VM mengikuti OP-04/OP-05. Layout, commands, dan gaya mengikuti standar pada [standar implementasi](../../architecture/standards.md). Implementasi mekanisme transaksi/penguncian dipilih dalam desain teknis; kontrak di atas tetap mengikat.
+
+[IP, port, source ID dan nama konfigurasi yang wajib dipakai](../../interface-contracts/index.md) ditetapkan terpisah agar kedua peran memakai nilai yang sama.

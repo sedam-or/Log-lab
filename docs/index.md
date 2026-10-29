@@ -10,6 +10,7 @@ Untuk mulai bekerja, gunakan README lalu halaman nama sendiri. Daftar berikut di
 | Hasil file dan perilaku peran masing-masing | [Hasil Erna](tugas/erna.md#hasil-branch), [hasil Arhasya](tugas/arhasya.md#hasil-branch) |
 | Siapa mengerjakan apa dan sudah sampai mana | [Daftar tugas](tugas/index.md) |
 | Pengertian proyek, folder/SSH, atau urutan menguji dua VM | [Panduan bersama](tugas/bersama.md) |
+| Nilai IP/port, nama env dan cara memeriksa pasangan | [Kontrak parameter 1.0.0](interface-contracts/index.md) |
 | OS, alamat, resource VM dan pembagian file bersama | [Aturan dasar proyek](architecture/BASELINE.md) |
 | Tujuan, pengguna dan batas proyek | [PRD](requirements/PRD.md) |
 | Detail kebutuhan, state, field dan cara membuktikannya | [Daftar SRS](requirements/srs/index.md) |

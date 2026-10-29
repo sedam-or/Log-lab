@@ -1,10 +1,16 @@
 # Tugas Erna membuat aplikasi login
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 Erna bertanggung jawab atas aplikasi yang dipakai penguji untuk mencoba login. Selain menampilkan berhasil atau gagal, aplikasi harus menghasilkan catatan kejadian dan mengirimkannya dengan aman ke Monitor. Karena itu pekerjaan Erna mencakup kode login, penyimpanan event lokal, pengiriman, tes, dan pemasangan service di Debian.
 
 Jika baru mulai, baca [dasar proyek](bersama.md#kenali-aplikasi-yang-dibangun) dahulu, kemudian [folder kerja dan SSH](bersama.md#folder-dan-terminal). Seluruh langkah coding di panduan ini dikerjakan pada clone guest `~/LogLab`. Aplikasi/helper belum diterbitkan di repo; tahap persiapan F-01 sampai F-04 harus menyediakan environment dan kontrak yang dibutuhkan sebelum E-02 dan coding dimulai.
+
+## Konfigurasi yang wajib dipakai
+
+Baca [kontrak parameter 1.0.0](../interface-contracts/index.md), lalu gunakan [contoh env source](../../config/source.example.env). Nama env sudah final; jangan membuat alias sendiri. IP peran adalah `172.16.202.21`, HTTPS `8443`, dan source ID `login-lab-a`. Secret placeholder diganti privat saat pemasangan; nilai rahasia tidak dimasukkan PR.
+
+Sebelum mengirim PR, jalankan `make check-contract` dari `~/LogLab` dan tulis hasil aktualnya. Saat skrip setup sudah dibuat dan memasang env privat, jalankan `sudo python3 scripts/check_contract.py --role source --env /etc/loglab/source.env` sebelum service dinyalakan. Setup wajib melakukan pemeriksaan setara dan memberi error jika nilai salah; menulis template saja belum memenuhi kewajiban ini. Bind/port launcher dibaca dari variabel yang ditetapkan, bukan angka lain pada file service.
 
 ## Pilih bagian
 
@@ -60,7 +66,9 @@ LogLab/
 ├── tests/
 │   ├── test_source.py                 tes login dan penyimpanan
 │   ├── test_sender.py                 tes pengiriman dan receipt
+│   ├── test_contract.py               tes aturan konfigurasi bersama dari main
 │   └── fixtures/                      contoh uji bersama dari main
+├── config/contract.json                nilai publik yang ditetapkan bersama
 ├── config/source.example.env          nama konfigurasi dan nilai contoh aman
 ├── deployment/source/
 │   ├── setup.sh                       pemasangan peran Source
@@ -248,7 +256,7 @@ Bagian ini belum berisi hasil run. Setelah mengerjakan task, isi tabel dengan ha
 
 Sebelum meminta review akhir, pastikan file pada target repo tersedia, pemeriksaan peran lulus atau keterbatasannya tertulis, dan perubahan bersama telah direview. Daftar PR menunjukkan bagian yang ditulis sendiri dan bagian yang menggunakan ulang sumber lama.
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 
 [Lihat cara menguji dua VM bersama](bersama.md#menyatukan-pekerjaan).

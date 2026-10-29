@@ -1,7 +1,5 @@
 # Pengujian
 
-Direktori ini akan berisi unit tests, contract tests, dan integration tests. Konvensi awal mengikuti proyek Python sebelumnya: `unittest`, file `test_*.py`, dan method `test_*`. Command final ditetapkan setelah paket dan dependency tersedia; saat ini belum ada tes yang dapat dijalankan di repo ini.
+Tes pemeriksa kontrak sudah tersedia di `test_contract.py`. Jalankan `make test-contract` dari root repo; tes memakai nilai sintetis, bukan credential deployment. Tes memeriksa drift env/template/dokumen, salah alamat/URL, token pasangan, placeholder, format secret, serta pesan error yang tidak mencetak nilai privat.
 
-Tes kontrak memakai schema/fixture yang sama untuk producer A dan consumer B. Tes peran di laptop anggota boleh memakai mock yang diberi label. Acceptance dua VM harus memeriksa HTTPS, penyimpanan dan receipt, retry/duplikat, analisis/dashboard, serta startup setelah reboot pada jaringan integrasi sebenarnya.
-
-Bukti menyebut commit, lingkungan, input, command, output, dan status aktual. Tidak ada klaim lulus hanya karena direktori atau dokumen tes sudah dibuat.
+Tes aplikasi, API event, delivery, analisis dan dua VM belum tersedia; harus ditulis pada task anggota. Konvensinya `unittest`, file `test_*.py`, method `test_*`. Lulus pemeriksaan konfigurasi tidak berarti layanan atau acceptance sudah lulus.

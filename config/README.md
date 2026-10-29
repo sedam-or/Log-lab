@@ -1,5 +1,7 @@
-# Template konfigurasi
+# Konfigurasi yang dipakai kedua anggota
 
-Simpan nilai contoh tanpa secret di sini, misalnya `source.example.*` dan `monitor.example.*`. Template aktual dibuat melalui F-02 dan ditinjau bersama karena alamat tujuan, trust TLS, identitas sumber, dan versi schema harus cocok.
+[contract.json](contract.json) menetapkan parameter publik versi 1.0.0. [source.example.env](source.example.env) adalah titik awal Erna; [monitor.example.env](monitor.example.env) untuk Arhasya. Penjelasan nama, nilai, rahasia, scope peran dan command pemeriksaan ada pada [kontrak parameter](../docs/interface-contracts/index.md).
 
-Alamat layanan harus dapat dikonfigurasi. Setup meminta atau menghasilkan secret lokal dengan izin terbatas dan tidak menimpanya pada pemanggilan ulang. Password, bearer token, private key, database, serta konfigurasi runtime privat tidak disimpan di repo atau task PDF. File yang telanjur di-commit tidak hilang dari riwayat hanya karena ditambahkan ke `.gitignore`.
+Jalankan `python3 scripts/check_contract.py` dari root repo. Jika kontrak diubah melalui PR bersama, `python3 scripts/check_contract.py --sync` menghasilkan ulang contoh dan tabel. Jangan mengedit template terpisah dari JSON. Contoh berisi placeholder sehingga tidak dapat dipakai sebagai env runtime sebelum diisi privat dan lulus validasi.
+
+Env runtime berada di `/etc/loglab/`, bukan dalam clone. Token/password/private key/database tidak masuk Git. Konfigurasi berbentuk literal KEY=value; jangan menjalankan file env dengan shell source karena hash password mengandung karakter dolar.

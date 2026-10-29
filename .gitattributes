@@ -16,3 +16,4 @@ Makefile text eol=lf
 *.pdf binary
 *.docx binary
 *.xlsx binary
+*.env text eol=lf

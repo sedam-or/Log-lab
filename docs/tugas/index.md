@@ -21,7 +21,7 @@ Kerjakan satu task dari panduan peran. Setelah hasil dan tesnya dapat diperiksa,
 | ID | Orang | Hasil yang harus ada | Menunggu hasil | Sudah sampai mana |
 | --- | --- | --- | --- | --- |
 | F-01 | Penanggung jawab repo | Tujuan dan aturan sistem ditulis jelas serta dapat ditinjau | Inventaris lama | Draf tersedia; review isi belum selesai |
-| F-02 | Penanggung jawab repo + tim | Format data, contoh uji, ISO/hash, versi library dan aturan paket model disepakati | F-01 | Belum |
+| F-02 | Penanggung jawab repo + tim | Parameter/env 1.0.0 selesai; fixture event, ISO/hash dan dependency aktual belum | F-01 | Sebagian: kontrak parameter tersedia |
 | F-03 | Penanggung jawab repo | Struktur kode awal, fungsi bersama, environment dan alat tes siap dipakai | F-02 | Belum |
 | F-04 | Penanggung jawab repo | Versi awal coding dicatat; akses GitHub, review dan panduan anggota siap | F-03 | Belum |
 | F-05 | Penanggung jawab repo | Latih/evaluasi model; serahkan paket/hash dan contoh prediksi | F-02 + R-04 diterima | Belum |
@@ -57,3 +57,5 @@ PDF Erna dan PDF Arhasya dibuat dari Markdown peran yang sama setelah F-04, dile
 ## Bedakan penyerahan pekerjaan sendiri dan uji bersama
 
 E-06 dan R-07 hanya menunggu hasil coding/tes/deployment peran. Setelah keduanya diserahkan, integrator melakukan I-01 dan tim menjalankan I-02. Erna/Arhasya ikut I-02 sebagai pekerjaan bersama. Penyerahan peran tidak menunggu I-02, sehingga urutan dependensi dapat dijalankan tanpa berputar. PR fitur R-04 tetap dapat masuk lebih awal untuk memungkinkan training F-05.
+
+Kontrak parameter 1.0.0 beserta pemeriksa/template sudah tersedia pada [halaman kontrak](../interface-contracts/index.md). F-02 belum seluruhnya selesai: fixture event, pilihan ISO/hash final, dependency aplikasi dan paket model tidak boleh dianggap tersedia hanya karena parameter sudah dikunci. Workflow pemeriksaan konfigurasi sudah ditambahkan; proteksi main dan kode service masih memerlukan pekerjaan masing-masing.

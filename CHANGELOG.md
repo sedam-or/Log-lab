@@ -30,3 +30,10 @@ Belum ada rilis aplikasi, installer tervalidasi, atau acceptance pasangan VM pad
 - Menambahkan target pohon file, hasil perilaku, bukti, serta isi setiap PR untuk kedua peran.
 - Memperluas README sebagai pintu masuk tujuan, aturan, pembagian kerja dan hasil repo gabungan.
 - Menambahkan tombol tautan pada halaman penting serta menyimpan catatan hasil pada panduan anggota masing-masing.
+
+### Kontrak parameter 1.0.0 pada 29 Oktober 2026
+
+- Membekukan IP/port, hostname, source ID, service/path, nama Settings/env dan endpoint untuk pasangan lab.
+- Menambahkan manifest publik, template env per peran, pemeriksa repo/env/pasangan, tes alat dan workflow PR/main.
+- Memastikan alamat host-only bukan default gateway, scope HMAC hanya Source, dan secret pasangan diprovision privat.
+- Menyelaraskan panduan dengan command yang benar-benar tersedia; installer/aplikasi dan acceptance tetap belum tersedia.

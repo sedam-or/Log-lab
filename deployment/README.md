@@ -7,3 +7,5 @@ Rencana antarmuka setup adalah `make setup-source` dan `make setup-monitor` dari
 Setup memeriksa OS, memasang dependensi yang tercatat, menyiapkan konfigurasi lokal, memasang service/firewall, lalu memeriksa layanan. Pemanggilan ulang harus aman terhadap data dan secret yang ada. Perubahan yang bisa memutus SSH memerlukan pemeriksaan akses dan langkah pemulihan console. Panduan mencantumkan perintah console guest yang sama dengan yang dipakai lewat SSH dari host.
 
 Saat memigrasikan konfigurasi lama dari `deploy/`, ubah semua referensi ke `deployment/`. Hindari path host privat, nomor interface yang diasumsikan, symlink menuju laptop pengembang, dan dependensi yang hanya kebetulan sudah ada.
+
+Nama service, path env/DB/TLS, user service, bind IP, port dan entrypoint sudah dikunci pada [kontrak parameter 1.0.0](../docs/interface-contracts/index.md). Setup peran wajib memvalidasi env sebelum startup, membaca bind/port dari env untuk launcher, serta menolak placeholder/alias. Root Makefile kini memiliki `check-contract` dan `test-contract`; target setup peran tetap belum diimplementasikan.
