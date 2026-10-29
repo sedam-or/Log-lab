@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:loglab:event:1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_id",
+    "event_id",
+    "stream_id",
+    "sequence",
+    "occurred_at",
+    "event_type",
+    "account_token",
+    "client_token",
+    "reason_code",
+    "event_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[\\x00-\\x7f]+$"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "stream_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?Z$"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "login.success",
+        "login.failure"
+      ]
+    },
+    "account_token": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "client_token": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "reason_code": {
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "INVALID_CREDENTIALS"
+      ]
+    },
+    "event_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "login.success"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "const": "SUCCESS"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "login.failure"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "const": "INVALID_CREDENTIALS"
+          }
+        }
+      }
+    }
+  ]
+}

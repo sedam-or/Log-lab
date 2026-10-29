@@ -4,7 +4,7 @@
 
 **Ditetapkan 29 Oktober 2026 atas arahan pemilik.** Kontrak ini mengikat parameter jaringan, nama proses/file, variabel konfigurasi dan nama endpoint pada repo baru. Erna dan Arhasya mengikuti nilai yang sama; perubahan yang memengaruhi keduanya masuk melalui PR bersama dan menaikkan versi kontrak.
 
-Sumber nilai yang dibaca alat adalah [config/contract.json](../../config/contract.json). Tabel di bawah dan kedua contoh env diturunkan dari file tersebut; pemeriksa menolak tabel/template yang tertinggal. Ini kontrak konfigurasi versi 1.0.0, berbeda dari versi produk pada PRD dan `schema_version=1` pada event. Menetapkan kontrak tidak menyatakan aplikasi/VM sudah terpasang atau diuji.
+Untuk membaca kesepakatan tanpa JSON, buka [config/contract.md](../../config/contract.md). Halaman tersebut dihasilkan otomatis dan diperiksa bersama template. Sumber nilai yang dibaca alat adalah [config/contract.json](../../config/contract.json). Tabel di bawah dan kedua contoh env diturunkan dari file tersebut; pemeriksa menolak tabel/template yang tertinggal. Ini kontrak konfigurasi versi 1.0.0, berbeda dari versi produk pada PRD dan `schema_version=1` pada event. Menetapkan kontrak tidak menyatakan aplikasi/VM sudah terpasang atau diuji.
 
 ![Kontrak publik dan pemeriksaan env privat](../architecture/assets/learning/kontrak-parameter.png)
 
@@ -126,7 +126,7 @@ sudo python3 scripts/check_contract.py --role source --env /etc/loglab/source.en
 sudo python3 scripts/check_contract.py --role monitor --env /etc/loglab/monitor.env
 ```
 
-Mode runtime menolak key tak dikenal/hilang, nilai tetap yang berbeda, secret placeholder dan format secret salah. Pesan gagal menyebut key atau kategori, tanpa mencetak nilainya. Installer/loader baru harus memanggil pemeriksaan setara sebelum menyalakan service; parser aplikasi belum tersedia hari ini.
+Mode runtime menolak key tak dikenal/hilang, nilai tetap yang berbeda, secret placeholder dan format secret salah. Pesan gagal menyebut key atau kategori, tanpa mencetak nilainya. Installer/loader baru harus memanggil pemeriksaan setara sebelum menyalakan service; loader `Settings.from_env` sudah tersedia pada helper config; pemanggilan loader/validasi sebelum startup harus dipasang pada entrypoint peran yang ditulis anggota.
 
 Untuk memeriksa dua env, integrator memerlukan salinan privatnya pada satu mesin yang berwenang. Gunakan path yang benar dan simpan salinan tersebut di luar clone. Bentuk command berikut adalah contoh path, bukan file yang sudah dibuat repo:
 
@@ -149,3 +149,11 @@ Aturan yang baru dipastikan: key HMAC hanya pada Source; bind/port berasal dari 
 ## Pemeriksaan otomatis pada GitHub
 
 Workflow `contract.yml` menjalankan pemeriksa repo dan tes alatnya pada PR serta push main. Job ini tidak memakai secret deployment dan tidak menguji service VM. Pengaturan required check pada proteksi main merupakan pengaturan repo terpisah; keberadaan workflow tidak otomatis memblokir tombol merge. Hasil run aktual diperiksa setelah workflow dikirim.
+
+## Bahan coding yang sudah dapat dipakai
+
+[Helper event](../../src/loglab/events.py) menyediakan validasi event, receipt dan source status. [Data contoh](../../tests/fixtures/) serta [schema event](event.schema.json) menjadi acuan yang sama pada tes kedua peran. Schema JSON memeriksa bentuk; helper juga memeriksa kecocokan reason_code, timestamp/UUID dan digest yang tidak cukup dibuktikan oleh JSON Schema. Receiver simulasi ada pada [testing.py](../../src/loglab/testing.py); ia tidak menggantikan receiver nyata.
+
+Field status sumber yang dipakai adalah source_id, stream_id, committed_sequence, acknowledged_sequence, pending_count, held_count, rejected_count, offered_count, accepted_local_count, source_time. Tidak ada alias field dan tidak ada secret pada payload. Pengukuran kesehatan/jam tetap mengikuti SRS saat analisis diimplementasikan; fixture awal tidak membuktikan jam dua VM sudah sinkron.
+
+Titik awal coding `mulai-v1` sudah menyediakan loader/runtime validation bersama, schema/fixture dan bootstrap web/test. Detail sederhana termasuk ISO/hash ada di [contract.md](../../config/contract.md). Aplikasi peran dan setup service tetap ditulis anggota; bukti uji VM dan model aktual tidak dihasilkan oleh fondasi ini.

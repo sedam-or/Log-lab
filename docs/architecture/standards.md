@@ -1,6 +1,6 @@
 # Standar implementasi dan evidence
 
-Diadaptasi dari standar proyek lama untuk digunakan pada repo baru. Command tes di bawah hanya berlaku setelah source, tests, dan dependency sudah dimigrasikan. Perintah setup masih menunggu implementasi. [Indeks](index.md). Untuk mulai belajar, gunakan [dasar proyek](../tugas/bersama.md#kenali-aplikasi-yang-dibangun) lalu panduan peran. Standar di sini dibuka saat suatu task memerlukan aturan kode/tes yang lebih rinci.
+Diadaptasi dari standar proyek lama untuk repo baru. `make dev-setup`, `make test` dan helper bersama sudah tersedia; aplikasi peran dan setup service masih dikerjakan anggota. [Indeks](index.md). Untuk mulai belajar, gunakan [dasar proyek](../tugas/bersama.md#kenali-aplikasi-yang-dibangun) lalu panduan peran. Standar di sini dibuka saat suatu task memerlukan aturan kode/tes yang lebih rinci.
 
 ### 2. Gaya kode dan kontrak publik
 
@@ -25,7 +25,7 @@ Diadaptasi dari standar proyek lama untuk digunakan pada repo baru. Command tes 
 - Endpoint v1: `POST /api/v1/events`, `POST /api/v1/source-status`; dashboard dan login berjalan pada VM masing-masing. Payload event maksimal 8 KiB; pagination maksimal 100; ukuran/filter/rate limit mengikuti kontrak API pada SRS nomor bagian 5.1 dan 5.4.
 - Semua endpoint aplikasi pada acceptance memakai HTTPS/8443 dan sertifikat CA lab yang hostname/IP SAN-nya diperiksa. Client selalu memverifikasi CA dan identitas server; opsi skip TLS verification dilarang.
 - A→B memakai bearer token sumber terpisah dari credential operator. Jawaban receipt hanya dianggap sah jika source/event/digest cocok. Kode error HTTP mengikuti kontrak `event-pipeline` pada SRS nomor bagian 5.1.
-- Network VMware host-only dan firewall default-deny. A boleh konek ke B untuk event/status; host gateway boleh akses UI dan SSH yang disetujui. Port database tidak diekspos. Tidak ada public bind atau port forwarding.
+- Network VMware host-only dan firewall default-deny. A boleh konek ke B untuk event/status; adapter host boleh akses UI dan SSH yang disetujui. Port database tidak diekspos. Tidak ada public bind atau port forwarding.
 - Akun uji memakai password hash; pseudonim akun/client memakai HMAC domain terpisah. Event tidak membawa password, cookie, token, username nyata, atau IP mentah.
 - Dashboard memeriksa sesi pada setiap route data. Cookie HTTPS `Secure`, `HttpOnly`, `SameSite=Strict`, expiry, logout, CSRF/origin protection; semua log yang dirender di-escape.
 - Secret runtime ditempatkan di `/etc/loglab/*.env` atau secret file setara dengan owner khusus dan permission ketat. Secret tidak masuk Git, terminal transcript, screenshot, backup laporan, atau example config.
@@ -48,10 +48,10 @@ Diadaptasi dari standar proyek lama untuk digunakan pada repo baru. Command tes 
 
 ### 7. Uji, acceptance, dan evidence
 
-- Framework `unittest`; file `tests/test_*.py`, kelas `*Tests`, metode `test_*`. Jalankan dari root clone guest `~/LogLab` setelah kode dan dependensi diterbitkan:
+- Framework `unittest`; file `tests/test_*.py`, kelas `*Tests`, metode `test_*`. Jalankan dari root clone guest `~/LogLab` setelah `make dev-setup`:
 
   ```bash
-  PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
+  make test
   ```
 
 - Setiap bug/perubahan perilaku menambah tes kontrak atau regresi yang paling dekat. Uji minimal mencakup transaksi/restart, retry/idempotensi, konflik, quality state, snapshot revision, label/split leakage, model parity, sesi, escaping, backup/restore, serta fault injection dua VM.

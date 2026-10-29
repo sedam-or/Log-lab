@@ -1,5 +1,5 @@
-# Source aplikasi
+# Kode aplikasi
 
-Kode Python akan berada di `src/loglab/`. Source meliputi login fiktif, outbox, dan sender; Monitor meliputi ingest, analisis, model lokal, serta dashboard. Schema event dan utilitas yang dipakai kedua sisi dikelola sebagai kode bersama.
+Fondasi bersama sudah tersedia pada `loglab/`: contract, config, events, db, security, backup dan testing. Kode berasal dari adaptasi terpilih workspace lama serta fungsi baru untuk repo ini. API helper dijelaskan pada [panduan bersama](../docs/tugas/bersama.md#fungsi-yang-sudah-tersedia).
 
-Belum ada kode aplikasi yang diterbitkan di direktori ini. Petakan modul lama terhadap kontrak yang diterima sebelum migrasi. Tetapkan pemilik modul di baseline; jangan menyalin paket yang sama menjadi dua versi terpisah untuk A dan B.
+File aplikasi Source ditulis Erna; file aplikasi Monitor/analisis/model/dashboard ditulis Arhasya. Integrator menyiapkan training offline setelah fitur disepakati. Tidak ada entrypoint Source/Monitor yang berpura-pura sudah berjalan pada fondasi ini.

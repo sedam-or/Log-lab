@@ -18,11 +18,69 @@ Jika baru bergabung, baca halaman ini sampai bagian pembagian pekerjaan. Sesudah
 | Kapan pekerjaan dua anggota digabung dan diuji | [Uji bersama](docs/tugas/bersama.md#menyatukan-pekerjaan) |
 | Butuh aturan teknis lebih rinci | [Daftar dokumen](docs/index.md) |
 
-## Keadaan repo sekarang
+## Sudah bisa mulai coding
 
-Yang sudah tersedia adalah dokumen kebutuhan, gambar, aturan kerja dan panduan tugas. Kode aplikasi, library yang dipatok versinya, fixture event dan installer belum tersedia. Pemeriksa kontrak konfigurasi serta tes alat tersebut sudah tersedia. Nama file serta hasil yang disebut pada panduan anggota merupakan target pekerjaan. `make setup-source` dan `make setup-monitor` juga masih rencana sampai dibuat dan diuji.
+Fondasi coding sekarang tersedia: fungsi event/config/database/security/backup, contoh event/receipt/status, penerima simulasi untuk tes sender, dependency lock ber-hash dan perintah setup environment. Aplikasi login/pengirim milik Erna dan aplikasi Monitor/dashboard milik Arhasya belum ditulis. Keduanya mulai dari fondasi yang sama melalui tag **`mulai-v1`**. Tag ini titik awal belajar, bukan rilis aplikasi yang sudah selesai.
 
-Kita membangun repo ini kembali dari dokumen dan bahan lama yang dipilih. Hasil tes pada laptop lama tidak dianggap sebagai hasil pekerjaan Erna/Arhasya atau bukti bahwa commit baru sudah berjalan. Lihat [asal dokumen](docs/history/inventory.md) jika perlu menelusuri bahan migrasi.
+<a href="config/contract.md"><kbd>Kesepakatan untuk dibaca manusia</kbd></a> <a href="docs/tugas/erna.md#mulai-sekarang"><kbd>Mulai Erna</kbd></a> <a href="docs/tugas/arhasya.md#mulai-sekarang"><kbd>Mulai Arhasya</kbd></a>
+
+![Urutan mulai coding](docs/architecture/assets/learning/mulai-kerja.png)
+
+[Sumber Mermaid](docs/architecture/assets/learning/mulai-kerja.mmd).
+
+### 1. Siapkan guest Debian
+
+Unduh [Debian 13.7 netinst amd64](https://cdimage.debian.org/debian-cd/13.7.0/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso) dan cocokkan SHA-256 pada [kesepakatan OS](config/contract.md#os-yang-diunduh). Buat/pakai guest yang relevan di VMware laptopmu: Erna 1 CPU/1 GiB RAM/20 GiB disk, Arhasya 2 CPU/2 GiB RAM/20 GiB disk. Buat user `loglab` yang dapat memakai sudo. Petunjuk layar instalasi ada di [panduan bersama](docs/tugas/bersama.md#pasang-debian-sebelum-clone).
+
+Untuk memasang paket dan clone, guest perlu internet melalui NAT sementara. Saat coding, tes memakai database sementara serta data simulasi, sehingga belum membutuhkan VM anggota lain atau secret produksi. Profil IP host-only tetap dipasang dan diuji sebelum menjalankan service akhir. SSH opsional membantu copy-paste; terminal console guest juga cukup untuk langkah di bawah.
+
+### 2. Pasang alat dan clone dari terminal Debian
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-venv git make
+cd ~
+git clone --branch mulai-v1 https://github.com/sedam-or/Log-lab.git LogLab
+cd ~/LogLab
+```
+
+Clone tag dapat menampilkan pesan detached HEAD. Segera buat branch task berikut agar perubahanmu mempunyai branch sendiri. Jika `~/LogLab` sudah ada, periksa `git remote -v` dan `git status` dahulu; panduan bersama menjelaskan cara memakai clone yang sudah ada tanpa menimpanya.
+
+### 3. Pilih branch sendiri dan siapkan environment
+
+| Orang | Command branch pertama | Pemeriksaan awal sesudah setup |
+| --- | --- | --- |
+| Erna | `git switch -c feat/erna-login-outbox` | `make first-check ROLE=source` |
+| Arhasya | `git switch -c feat/arhasya-ingest` | `make first-check ROLE=monitor` |
+
+Sesudah memilih branch, jalankan:
+
+```bash
+make dev-setup
+```
+
+Command ini memerlukan Python **3.13**, membuat `.venv`, memasang versi paket beserta hash dari `requirements.lock`, memasang package lokal, memeriksa dependency, lalu menjalankan tes yang tersedia. Jika `.venv` lama memakai Python lain, command berhenti dan meminta pemeriksaan; ia tidak menghapus environment lama. Setup yang sama dapat dijalankan ulang.
+
+Jalankan pemeriksaan awal peran pada tabel. Hasil yang dicari adalah `PASS fondasi source` atau `PASS fondasi monitor`. Itu membuktikan Settings test, DB sementara, fixture dan jawaban simulasi bekerja. Tulisan SIMULASI pada output berarti aplikasi dua VM belum diuji.
+
+### 4. Mulai tugas pertama lalu kirim PR
+
+Erna membuka [langkah 3: login dan penyimpanan](docs/tugas/erna.md#langkah-3). Arhasya membuka [langkah 3: penerima catatan](docs/tugas/arhasya.md#langkah-3). Gunakan fungsi bersama yang sudah ada; tugas pertama tidak menunggu model ML, sertifikat produksi, atau VM anggota lain. Jalankan `make test` setelah mengubah kode dan `make check-contract` sebelum PR. Cara menyerahkan ada di [panduan Git](CONTRIBUTING.md).
+
+Clone dan coding lokal tidak membutuhkan izin push. Jika push ditolak, pemilik repo perlu memberi akses akun GitHub anggota atau menyepakati PR dari fork. Gunakan akun sendiri; jangan membagikan token pemilik.
+
+## Command yang benar-benar tersedia
+
+| Command dari root repo | Yang dikerjakan |
+| --- | --- |
+| `make dev-setup` | Menyiapkan environment Python 3.13 dan memeriksa fondasi |
+| `make first-check ROLE=source` / `ROLE=monitor` | Contoh kecil menggunakan DB sementara dan receiver simulasi |
+| `make test` | Menjalankan semua tes yang sudah tersedia dalam `.venv` |
+| `make check-contract` | Memeriksa JSON, versi untuk manusia, tabel dan contoh env |
+| `make test-contract` | Hanya tes alat pemeriksa konfigurasi |
+| `python3 scripts/check_iso.py /path/ke/ISO` | Memeriksa nama dan SHA-256 installer yang sudah diunduh |
+
+`make setup-source` dan `make setup-monitor` belum tersedia: skrip pemasangan service adalah hasil tugas anggota E-05/R-06. `make dev-setup` menyiapkan coding, bukan memasang aplikasi jadi atau membuat VM secara otomatis.
 
 <a id="hasil-aplikasi"></a>
 
@@ -60,7 +118,7 @@ Istilah teknis untuk penanggung jawab penyatuan adalah *integrator*. Pada tim in
 
 <a href="docs/interface-contracts/index.md"><kbd>Kontrak IP dan variabel 1.0.0</kbd></a> <a href="config/source.example.env"><kbd>Contoh env Erna</kbd></a> <a href="config/monitor.example.env"><kbd>Contoh env Arhasya</kbd></a>
 
-[config/contract.json](config/contract.json) adalah sumber nilai publik yang sama untuk kedua anggota. Kontrak menetapkan IP, port, source ID, nama service/file, endpoint dan variabel `LOGLAB_*`. Contoh env berisi placeholder rahasia, bukan credential siap pakai. `172.16.202.1` adalah alamat adapter host, bukan default gateway internet.
+Baca [config/contract.md](config/contract.md) untuk tabel berbahasa sederhana. [contract.json](config/contract.json) adalah sumber nilainya untuk alat; halaman manusia dihasilkan otomatis dan diperiksa agar tidak berbeda. Kontrak menetapkan IP, port, source ID, nama service/file, endpoint dan variabel `LOGLAB_*`. Contoh env berisi placeholder rahasia, bukan credential siap pakai. `172.16.202.1` adalah alamat adapter host, bukan default gateway internet.
 
 Dari root repo jalankan `make check-contract` (atau `python3 scripts/check_contract.py`) sebelum meminta review. Jalankan `make test-contract` untuk tes alat pemeriksa. Workflow PR/main menjalankan pemeriksaan yang sama. Sesudah provisioning, [petunjuk pemeriksaan env privat dan pasangan](docs/interface-contracts/index.md#periksa-sebelum-meminta-review) mendeteksi typo, placeholder dan token yang tidak cocok tanpa mencetak nilainya. Pengujian aplikasi dua VM tetap dilakukan setelah kode tersedia.
 
@@ -71,7 +129,7 @@ Aturan awal yang disebut baseline adalah kesepakatan agar pekerjaan tidak memaka
 | Yang disamakan | Arah yang dipakai |
 | --- | --- |
 | Repo | Satu repo `sedam-or/Log-lab`, dipakai oleh kedua anggota |
-| OS guest | Debian 13 amd64 yang sama; nama ISO/hash final harus diberikan sebelum panduan instalasi dilepas |
+| OS guest | Debian 13 amd64 yang sama; installer 13.7.0 dan SHA-256 resmi sudah dicatat di kesepakatan OS |
 | Tempat coding | Clone `~/LogLab` di dalam guest anggota masing-masing |
 | Host uji akhir | Windows 11 dengan VMware Workstation dan kedua VM pada satu host-only |
 | Alamat tetap profil integrasi | Host `172.16.202.1`, Source `.21`, Monitor `.22`; diperiksa tidak bentrok sebelum dipasang |

@@ -158,6 +158,11 @@ class ContractTests(unittest.TestCase):
             with self.assertRaises(contract.ContractError):
                 contract.check_repo(self.c, root=root)
             contract.check_repo(self.c, root=root, sync=True)
+            human = root / 'config/contract.md'
+            human.write_text(human.read_text().replace('172.16.202.21', '172.16.202.99'))
+            with self.assertRaises(contract.ContractError):
+                contract.check_repo(self.c, root=root)
+            contract.check_repo(self.c, root=root, sync=True)
             p.write_text(p.read_text().replace('`8443`', '`8081`'))
             with self.assertRaises(contract.ContractError):
                 contract.check_repo(self.c, root=root)

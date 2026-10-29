@@ -1,18 +1,41 @@
 # Tugas Arhasya membuat aplikasi pemantauan
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../config/contract.md"><kbd>Kesepakatan IP</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 Arhasya bertanggung jawab atas penerima log serta halaman tempat operator memeriksa hasilnya. Kodenya harus menerima event sesuai kontrak, menyimpan data sebelum menjawab Source, mengelompokkan aktivitas, menghitung hasil, dan menampilkannya dengan konteks yang benar.
 
 Beban Monitor lebih luas daripada Source. Karena itu pekerjaan dibagi menjadi ingest, analisis, inferensi, console, lalu deployment. Integrator menyiapkan training offline dan paket model. Arhasya tetap menulis loader serta jalur inferensi runtime, yaitu pemakaian model yang sudah dilatih untuk menghitung prediksi pada input baru.
 
-Baca [dasar proyek](bersama.md#kenali-aplikasi-yang-dibangun) dan [workspace](bersama.md#folder-dan-terminal) sebelum mulai. Kerjakan satu tahap lalu baca SRS yang dirujuk tahap tersebut. Source/helper dan command bootstrap belum diterbitkan; coding dimulai setelah fondasi F-04 siap.
+Baca [dasar proyek](bersama.md#kenali-aplikasi-yang-dibangun) dan [workspace](bersama.md#folder-dan-terminal) sebelum mulai. Kerjakan satu tahap lalu baca SRS yang dirujuk tahap tersebut. Helper, fixture dan command bootstrap sudah tersedia melalui tag mulai-v1; file aplikasi Monitor ditulis Arhasya.
+
+<a id="mulai-sekarang"></a>
+
+## Mulai sekarang
+
+Jika guest belum ada, ikuti [pemasangan Debian](bersama.md#pasang-debian-sebelum-clone), kemudian kembali ke bagian ini. Jalankan command berikut di terminal **Debian guest**, melalui console atau SSH. Pastikan Git, Make dan python3-venv sudah terpasang menurut README.
+
+```bash
+cd ~
+git clone --branch mulai-v1 https://github.com/sedam-or/Log-lab.git LogLab
+cd ~/LogLab
+git switch -c feat/arhasya-ingest
+make dev-setup
+make first-check ROLE=monitor
+```
+
+Jika clone sudah ada, jangan mengulang clone di atasnya. Periksa status dan remote; cara mengambil tag ada di panduan bersama. Command ini belum menjalankan aplikasi final. Hasil awal yang dicari adalah `PASS fondasi monitor` tanpa mengubah data VM aktif atau secret produksi.
+
+Sesudah tes fondasi lulus, langsung kerjakan [langkah 3](#langkah-3). Kamu dapat mengisi catatan resource dan penyiapan dari langkah 1/2 sambil mengikuti urutan di atas. Tidak perlu menunggu anggota lain menyelesaikan aplikasinya.
 
 ## Konfigurasi yang wajib dipakai
 
 Baca [kontrak parameter 1.0.0](../interface-contracts/index.md), lalu gunakan [contoh env monitor](../../config/monitor.example.env). Nama env sudah final; jangan membuat alias sendiri. IP peran adalah `172.16.202.22`, HTTPS `8443`, dan source ID `login-lab-a`. Secret placeholder diganti privat saat pemasangan; nilai rahasia tidak dimasukkan PR.
 
 Sebelum mengirim PR, jalankan `make check-contract` dari `~/LogLab` dan tulis hasil aktualnya. Saat skrip setup sudah dibuat dan memasang env privat, jalankan `sudo python3 scripts/check_contract.py --role monitor --env /etc/loglab/monitor.env` sebelum service dinyalakan. Setup wajib melakukan pemeriksaan setara dan memberi error jika nilai salah; menulis template saja belum memenuhi kewajiban ini. Bind/port launcher dibaca dari variabel yang ditetapkan, bukan angka lain pada file service.
+
+## Fungsi yang sudah bisa dipakai
+
+[Daftar fungsi bersama dan contoh panggilannya](bersama.md#fungsi-yang-sudah-tersedia) menjelaskan `Settings`, event, database, password dan backup. [Data contoh](../../tests/fixtures/) berisi login berhasil/gagal dan receipt yang sesuai. File pada bagian hasil akhir peran tetap menjadi target codingmu, sedangkan helper tidak perlu dibuat ulang.
 
 ## Pilih bagian
 
@@ -38,7 +61,7 @@ R-03 dapat diuji memakai fixture tanpa menunggu Source Erna. Setelah fitur R-04 
 
 ## Hasil pekerjaan Arhasya yang harus ada di repo
 
-Ini adalah target setelah kode dan pemasangan Monitor selesai. File aplikasi tersebut belum tersedia hari ini. Branch Arhasya memuat fondasi dari main beserta perubahan Monitor. Bila Source Erna sudah masuk main, file Source juga muncul setelah branch Arhasya disinkronkan. Kehadiran file itu normal pada satu repo bersama.
+Ini adalah target setelah kode dan pemasangan Monitor selesai. File aplikasi Monitor belum tersedia; helper bersama sudah ada. Branch Arhasya memuat fondasi dari main beserta perubahan Monitor. Bila Source Erna sudah masuk main, file Source juga muncul setelah branch Arhasya disinkronkan. Kehadiran file itu normal pada satu repo bersama.
 
 ### Bentuk folder yang diharapkan
 
@@ -134,9 +157,9 @@ Nomor catatan pekerjaan: `R-02`. Gunakan nomor ini ketika menulis PR atau hasil 
 
 <a href="bersama.md#folder-dan-terminal"><kbd>Panduan folder dan SSH</kbd></a>
 
-Menunggu baseline F-04. Pasang Debian dari ISO/hash yang sama dengan Erna, gunakan VM `LogLab-Monitor-Arhasya`, akun `loglab`, dan jaringan host-only. SSH direkomendasikan untuk menempelkan perintah dari host, dengan console sebagai alternatif.
+Gunakan tag mulai-v1 dan pasang Debian dari ISO/hash yang sama dengan Erna, gunakan VM `LogLab-Monitor-Arhasya`, akun `loglab`, dan jaringan host-only. SSH direkomendasikan untuk menempelkan perintah dari host, dengan console sebagai alternatif.
 
-Clone ke `~/LogLab`, buat branch task dari baseline yang diberikan, lalu ikuti bootstrap Python/dependency. Periksa OS, remote repo, branch, folder dan tes fondasi. Simpan hasil aman. Jika environment atau fixture belum disediakan, laporkan dependensi agar kode berikutnya tidak ditulis berdasarkan format tebakan.
+Clone ke `~/LogLab`, buat branch task dari baseline yang diberikan, lalu ikuti bootstrap Python/dependency. Periksa OS, remote repo, branch, folder dan tes fondasi. Simpan hasil aman. Fixture dan loader sudah tersedia; jika tidak ditemukan, periksa bahwa clone berada pada tag/commit yang benar dan package lokal sudah dipasang dengan make dev-setup.
 
 [Kembali ke hasil yang dituju](#hasil-branch) · [Aturan bersama](../architecture/BASELINE.md) · [Lanjut ke langkah 3](#langkah-3)
 
@@ -150,7 +173,7 @@ Nomor catatan pekerjaan: `R-03`. Gunakan nomor ini ketika menulis PR atau hasil 
 
 **Ingest** berarti proses menerima data masuk. **API** adalah cara aplikasi bertukar request dan response dengan format yang disepakati. Pada tahap ini, Arhasya membuat endpoint penerima event dan status sumber sesuai [EP-03/EP-04/EP-05/EP-07](../requirements/srs/event-pipeline.md).
 
-Mulai di branch `feat/arhasya-ingest`. Kerjakan endpoint pada aplikasi Monitor, pemanggilan helper DB dan tes ingest. Fixture integrator menyediakan event valid, event invalid, digest dan response yang diharapkan.
+Mulai di branch `feat/arhasya-ingest`. Kerjakan endpoint pada aplikasi Monitor, pemanggilan helper DB dan tes ingest. Fixture bersama menyediakan event valid dan receipt. Buat varian invalid dengan mengganti satu field pada salinan fixture; periksa memakai `validate_event` dan tests yang sesuai. Helper `build_receipt` membentuk jawaban; transaksi sebelum response tetap ditulis Arhasya.
 
 ### Langkah pengerjaan
 
@@ -286,7 +309,7 @@ Bagian ini belum berisi hasil run. Setelah mengerjakan task, isi tabel dengan ha
 
 Sebelum meminta review akhir, pastikan file pada target repo tersedia, pemeriksaan peran lulus atau keterbatasannya tertulis, dan perubahan bersama telah direview. Daftar PR menunjukkan bagian yang ditulis sendiri dan bagian yang menggunakan ulang sumber lama.
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../config/contract.md"><kbd>Kesepakatan IP</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 
 [Lihat cara menguji dua VM bersama](bersama.md#menyatukan-pekerjaan).

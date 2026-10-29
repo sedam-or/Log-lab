@@ -37,3 +37,10 @@ Belum ada rilis aplikasi, installer tervalidasi, atau acceptance pasangan VM pad
 - Menambahkan manifest publik, template env per peran, pemeriksa repo/env/pasangan, tes alat dan workflow PR/main.
 - Memastikan alamat host-only bukan default gateway, scope HMAC hanya Source, dan secret pasangan diprovision privat.
 - Menyelaraskan panduan dengan command yang benar-benar tersedia; installer/aplikasi dan acceptance tetap belum tersedia.
+
+### Fondasi agar anggota dapat mulai coding
+
+- Menambahkan config/contract.md yang dihasilkan dari JSON, serta pilihan ISO/hash resmi.
+- Menyediakan package bersama, lock web/test ber-hash, loader, schema/fixture/receiver simulasi dan bootstrap yang dapat dijalankan.
+- Menambahkan make dev-setup, test dan first-check, memperbarui README serta tugas awal tanpa menunggu model/deployment final.
+- Menandai mulai-v1 sebagai titik awal coding, bukan tag rilis aplikasi; asal helper lama dan batas pengujian dicatat.

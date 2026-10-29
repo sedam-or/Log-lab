@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source_id": "login-lab-a",
+  "event_id": "33333333-3333-4333-8333-333333333333",
+  "stream_id": "11111111-1111-4111-8111-111111111111",
+  "sequence": 2,
+  "occurred_at": "2026-01-01T00:00:10.000Z",
+  "event_type": "login.failure",
+  "account_token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "client_token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "reason_code": "INVALID_CREDENTIALS",
+  "event_digest": "5368ecb437e9dad24b09613ee3fb519e66acd407a33692fd1f0d90cd7f33db1b"
+}

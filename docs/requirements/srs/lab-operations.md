@@ -17,7 +17,7 @@
 
 #### Profil lingkungan baseline implementasi 1.0.0
 
-Gunakan VMware Workstation pada host integrasi Windows 11 dan guest Debian 13 amd64 dari ISO dengan SHA-256 tercatat. Pilihan ISO final belum dibekukan; jangan memakai checksum tebakan. VM A (source) memakai 1 vCPU, RAM 1 GiB, dan disk dinamis 20 GiB; VM B (monitor) memakai 2 vCPU, RAM 2 GiB, dan disk dinamis 20 GiB. Profil ini menguji dua guest pada satu host, bukan dua server independen.
+Gunakan VMware Workstation pada host integrasi Windows 11 dan guest Debian 13 amd64 dari ISO dengan SHA-256 tercatat. Nama ISO dan checksum resmi sudah dicatat pada [kesepakatan OS](../../../config/contract.md#os-yang-diunduh). VM A (source) memakai 1 vCPU, RAM 1 GiB, dan disk dinamis 20 GiB; VM B (monitor) memakai 2 vCPU, RAM 2 GiB, dan disk dinamis 20 GiB. Profil ini menguji dua guest pada satu host, bukan dua server independen.
 
 Gunakan VMware host-only `vmnet1`, subnet `172.16.202.0/24`, source A `172.16.202.21`, monitor B `172.16.202.22`, dan alamat adapter host `172.16.202.1`, setelah seluruh alamat diperiksa bebas. Login, ingest, source-status, dan dashboard menggunakan HTTPS pada port `8443`, TLS langsung pada Uvicorn, dan SAN sertifikat untuk alamat yang dipakai. Install CA lab pada host/browser dan trust store source. NAT boleh dipakai sementara untuk instalasi paket; sebelum acceptance matikan NAT/default route eksternal.
 

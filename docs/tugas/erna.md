@@ -1,16 +1,39 @@
 # Tugas Erna membuat aplikasi login
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../config/contract.md"><kbd>Kesepakatan IP</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 Erna bertanggung jawab atas aplikasi yang dipakai penguji untuk mencoba login. Selain menampilkan berhasil atau gagal, aplikasi harus menghasilkan catatan kejadian dan mengirimkannya dengan aman ke Monitor. Karena itu pekerjaan Erna mencakup kode login, penyimpanan event lokal, pengiriman, tes, dan pemasangan service di Debian.
 
-Jika baru mulai, baca [dasar proyek](bersama.md#kenali-aplikasi-yang-dibangun) dahulu, kemudian [folder kerja dan SSH](bersama.md#folder-dan-terminal). Seluruh langkah coding di panduan ini dikerjakan pada clone guest `~/LogLab`. Aplikasi/helper belum diterbitkan di repo; tahap persiapan F-01 sampai F-04 harus menyediakan environment dan kontrak yang dibutuhkan sebelum E-02 dan coding dimulai.
+Jika baru mulai, baca [dasar proyek](bersama.md#kenali-aplikasi-yang-dibangun) dahulu, kemudian [folder kerja dan SSH](bersama.md#folder-dan-terminal). Seluruh langkah coding di panduan ini dikerjakan pada clone guest `~/LogLab`. Helper dan environment sudah tersedia melalui tag mulai-v1; file aplikasi Source ditulis Erna.
+
+<a id="mulai-sekarang"></a>
+
+## Mulai sekarang
+
+Jika guest belum ada, ikuti [pemasangan Debian](bersama.md#pasang-debian-sebelum-clone), kemudian kembali ke bagian ini. Jalankan command berikut di terminal **Debian guest**, melalui console atau SSH. Pastikan Git, Make dan python3-venv sudah terpasang menurut README.
+
+```bash
+cd ~
+git clone --branch mulai-v1 https://github.com/sedam-or/Log-lab.git LogLab
+cd ~/LogLab
+git switch -c feat/erna-login-outbox
+make dev-setup
+make first-check ROLE=source
+```
+
+Jika clone sudah ada, jangan mengulang clone di atasnya. Periksa status dan remote; cara mengambil tag ada di panduan bersama. Command ini belum menjalankan aplikasi final. Hasil awal yang dicari adalah `PASS fondasi source` tanpa mengubah data VM aktif atau secret produksi.
+
+Sesudah tes fondasi lulus, langsung kerjakan [langkah 3](#langkah-3). Kamu dapat mengisi catatan resource dan penyiapan dari langkah 1/2 sambil mengikuti urutan di atas. Tidak perlu menunggu anggota lain menyelesaikan aplikasinya.
 
 ## Konfigurasi yang wajib dipakai
 
 Baca [kontrak parameter 1.0.0](../interface-contracts/index.md), lalu gunakan [contoh env source](../../config/source.example.env). Nama env sudah final; jangan membuat alias sendiri. IP peran adalah `172.16.202.21`, HTTPS `8443`, dan source ID `login-lab-a`. Secret placeholder diganti privat saat pemasangan; nilai rahasia tidak dimasukkan PR.
 
 Sebelum mengirim PR, jalankan `make check-contract` dari `~/LogLab` dan tulis hasil aktualnya. Saat skrip setup sudah dibuat dan memasang env privat, jalankan `sudo python3 scripts/check_contract.py --role source --env /etc/loglab/source.env` sebelum service dinyalakan. Setup wajib melakukan pemeriksaan setara dan memberi error jika nilai salah; menulis template saja belum memenuhi kewajiban ini. Bind/port launcher dibaca dari variabel yang ditetapkan, bukan angka lain pada file service.
+
+## Fungsi yang sudah bisa dipakai
+
+[Daftar fungsi bersama dan contoh panggilannya](bersama.md#fungsi-yang-sudah-tersedia) menjelaskan `Settings`, event, database, password dan backup. [Data contoh](../../tests/fixtures/) berisi login berhasil/gagal dan receipt yang sesuai. File pada bagian hasil akhir peran tetap menjadi target codingmu, sedangkan helper tidak perlu dibuat ulang.
 
 ## Pilih bagian
 
@@ -41,7 +64,7 @@ Requirement utama adalah [EP-01 sampai EP-07](../requirements/srs/event-pipeline
 
 ## Hasil pekerjaan Erna yang harus ada di repo
 
-Bagian ini adalah gambaran yang dituju, bukan daftar file aplikasi yang sudah tersedia hari ini. Setelah seluruh pekerjaan Erna selesai, clone yang dipakai untuk menyerahkan hasil harus memuat fondasi dari main dan hasil Source di bawah. Karena ini satu repo bersama, file Monitor yang sudah masuk main juga boleh terlihat pada branch Erna. Tidak perlu menghapus file anggota lain untuk membuat branch terlihat khusus Source.
+Bagian ini adalah gambaran yang dituju, bukan klaim aplikasi Source sudah tersedia; helper bersama sudah ada. Setelah seluruh pekerjaan Erna selesai, clone yang dipakai untuk menyerahkan hasil harus memuat fondasi dari main dan hasil Source di bawah. Karena ini satu repo bersama, file Monitor yang sudah masuk main juga boleh terlihat pada branch Erna. Tidak perlu menghapus file anggota lain untuk membuat branch terlihat khusus Source.
 
 ### Bentuk folder yang diharapkan
 
@@ -131,11 +154,11 @@ Nomor catatan pekerjaan: `E-02`. Gunakan nomor ini ketika menulis PR atau hasil 
 
 <a href="bersama.md#folder-dan-terminal"><kbd>Panduan folder dan SSH</kbd></a>
 
-Tahap ini menunggu baseline F-04. Integrator memberikan ISO/hash, versi dependency, helper, fixture, dan command bootstrap. Pasang Debian sesuai acuan pada VM `LogLab-Source-Erna`, siapkan akun `loglab`, jaringan, serta SSH jika ingin mengerjakan terminal dari host.
+Tag mulai-v1 sudah memuat ISO/hash, dependency lock, helper, fixture dan bootstrap. Pasang Debian sesuai acuan pada VM `LogLab-Source-Erna`, siapkan akun `loglab`, jaringan, serta SSH jika ingin mengerjakan terminal dari host.
 
 Ikuti [workspace](bersama.md#folder-dan-terminal) untuk clone ke `~/LogLab`. Buat branch task dari baseline yang diberikan, kemudian jalankan bootstrap environment. **Environment** di sini berarti Python beserta library yang diperlukan agar kode kedua anggota dijalankan pada versi yang sama.
 
-Periksa empat hasil: guest memakai Debian yang ditetapkan, repo remote benar, branch kerja benar, dan tes fondasi dari integrator dapat dijalankan. Simpan output yang relevan tanpa credential. Jika command bootstrap belum tersedia, laporkan sebagai blocked F-03/F-04; tugas coding berikutnya belum dapat dinilai dengan environment yang sesuai.
+Periksa empat hasil: guest memakai Debian yang ditetapkan, repo remote benar, branch kerja benar, dan tes fondasi dari integrator dapat dijalankan. Simpan output yang relevan tanpa credential. Jika bootstrap gagal, catat command dan error yang aman. Periksa Python 3.13 serta akses internet untuk paket; jangan menandai tes lulus sebelum outputnya benar.
 
 [Kembali ke hasil yang dituju](#hasil-branch) · [Aturan bersama](../architecture/BASELINE.md) · [Lanjut ke langkah 3](#langkah-3)
 
@@ -151,9 +174,9 @@ Tujuannya adalah merekam hasil login sebelum pekerjaan pengiriman dimulai. Fokus
 
 ### Langkah pengerjaan
 
-1. Gunakan helper security untuk menyimpan hash password akun fiktif. **Hash password** adalah nilai turunan untuk pemeriksaan password, sehingga penyimpanan akun tidak memerlukan password mentah. Fungsi seed hanya menambah akun yang diperlukan dan aman dijalankan ulang.
+1. Gunakan `loglab.security.hash_password` dan `verify_password` dari helper security untuk menyimpan hash password akun fiktif. **Hash password** adalah nilai turunan untuk pemeriksaan password, sehingga penyimpanan akun tidak memerlukan password mentah. Fungsi seed hanya menambah akun yang diperlukan dan aman dijalankan ulang.
 2. Tulis route login yang menerima input form, memeriksa akun dan menghasilkan keputusan berhasil/gagal. Pisahkan keputusan autentikasi dari detail pengiriman ke Monitor agar login tidak menunggu jaringan A–B.
-3. Gunakan pembentuk event bersama untuk membuat field sesuai schema. Field adalah nama data seperti `event_id` atau `occurred_at`; schema menetapkan tipe, format dan batas yang diizinkan. Akun/client dalam event memakai pseudonim sesuai kontrak, bukan identitas nyata.
+3. Gunakan `loglab.events.build_event` sebagai pembentuk event bersama untuk membuat field sesuai schema. Field adalah nama data seperti `event_id` atau `occurred_at`; schema menetapkan tipe, format dan batas yang diizinkan. Akun/client dalam event memakai pseudonim sesuai kontrak, bukan identitas nyata.
 4. Simpan event, sequence dan counter terkait pada transaksi lokal. **Transaksi** adalah kelompok perubahan database yang harus berhasil bersama atau dibatalkan bersama. Event dianggap diterima lokal setelah commit berhasil. Ikuti penanganan kegagalan enqueue pada SRS tanpa mengubah keputusan autentikasi hanya karena Monitor sedang mati.
 5. Tulis tes skenario di bawah, lalu buka PR pertama. Reviewer harus dapat melihat pemisahan input form, keputusan auth dan transaksi pencatatan.
 
@@ -181,7 +204,7 @@ Nomor catatan pekerjaan: `E-04`. Gunakan nomor ini ketika menulis PR atau hasil 
 
 <a href="../requirements/srs/event-pipeline.md"><kbd>Aturan pengiriman dan jawaban</kbd></a>
 
-Tujuan tahap ini adalah memindahkan event dari antrean A ke penyimpanan B tanpa menghitung ulang kejadian yang sama. Requirement: EP-03, EP-06, EP-07 dan kesesuaian API EP-04. Mulai dari main yang sudah berisi E-03 melalui branch `feat/erna-sender`. Integrator menyediakan receiver uji dan fixture receipt.
+Tujuan tahap ini adalah memindahkan event dari antrean A ke penyimpanan B tanpa menghitung ulang kejadian yang sama. Requirement: EP-03, EP-06, EP-07 dan kesesuaian API EP-04. Mulai dari main yang sudah berisi E-03 melalui branch `feat/erna-sender`. Receiver uji sudah tersedia sebagai `loglab.testing.ReceiverStub`, dengan `post(path, payload, source_token)`. Gunakan callback ini pada tes transport sender; ia tidak membuka server jaringan atau menguji TLS.
 
 ### Memahami receipt sebelum menulis kode
 
@@ -256,7 +279,7 @@ Bagian ini belum berisi hasil run. Setelah mengerjakan task, isi tabel dengan ha
 
 Sebelum meminta review akhir, pastikan file pada target repo tersedia, pemeriksaan peran lulus atau keterbatasannya tertulis, dan perubahan bersama telah direview. Daftar PR menunjukkan bagian yang ditulis sendiri dan bagian yang menggunakan ulang sumber lama.
 
-<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../interface-contracts/index.md"><kbd>IP dan variabel tetap</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
+<a href="../../README.md"><kbd>Mulai dari README</kbd></a> <a href="../architecture/BASELINE.md"><kbd>Aturan bersama</kbd></a> <a href="../../config/contract.md"><kbd>Kesepakatan IP</kbd></a> <a href="../../README.md#hasil-aplikasi"><kbd>Aplikasi saat selesai</kbd></a> <a href="index.md"><kbd>Daftar tugas</kbd></a> <a href="#hasil-branch"><kbd>Hasil branch saya</kbd></a>
 
 
 [Lihat cara menguji dua VM bersama](bersama.md#menyatukan-pekerjaan).

@@ -1,0 +1,8 @@
+%%{init: {"theme":"neutral","themeVariables":{"fontFamily":"Arial","fontSize":"20px","edgeLabelBackground":"#ffffff"},"flowchart":{"htmlLabels":true,"nodeSpacing":30,"rankSpacing":35}}}%%
+flowchart LR
+    VM["Debian di VMware<br/>Python 3.13, Git, Make"] --> CLONE["Clone tag mulai-v1<br/>Buat branch sendiri"]
+    CLONE --> SETUP["make dev-setup<br/>Lalu first-check peran"]
+    SETUP --> ERNA["Erna: langkah 3<br/>Login dan outbox"]
+    SETUP --> ARH["Arhasya: langkah 3<br/>Penerima event"]
+    ERNA --> PR["Tes dan PR kecil<br/>Review oleh integrator"]
+    ARH --> PR

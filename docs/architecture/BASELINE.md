@@ -4,7 +4,7 @@
 
 Baseline berarti aturan awal yang dipakai semua anggota agar OS, format data dan bagian bersama tetap cocok. Halaman ini menjadi rujukan ketika menjalankan tugas; gambaran aplikasi saat selesai ada pada tombol di atas.
 
-**Tanggal:** 29 Oktober 2026. **Status:** parameter integrasi sudah dibekukan sebagai kontrak konfigurasi 1.0.0; installer, ISO/hash final dan acceptance aplikasi masih menunggu pengerjaan. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi sebagai draf; installer dan acceptance belum tersedia. Lihat [index arsitektur](index.md) dan [task tim](../tugas/index.md).
+**Tanggal:** 29 Oktober 2026. **Status:** parameter integrasi sudah dibekukan sebagai kontrak konfigurasi 1.0.0; fondasi coding dan ISO/hash telah disediakan; installer service dan acceptance aplikasi masih dikerjakan pada tugas anggota. Dokumen ini mengikat pembagian pekerjaan awal. PRD/SRS dan standar telah diadaptasi, helper serta environment coding tersedia. Aplikasi peran/installer/acceptance belum selesai. Lihat [index arsitektur](index.md) dan [task tim](../tugas/index.md).
 
 Untuk pembaca baru, [dasar proyek](../tugas/bersama.md#kenali-aplikasi-yang-dibangun) menjelaskan istilah dan satu contoh alur. Halaman baseline ini digunakan sebagai referensi lingkungan dan batas file ketika mengerjakan task.
 
@@ -19,7 +19,7 @@ LogLab memakai akun fiktif untuk menghasilkan event login. VM A mencatat hasil a
 | Aspek | Baseline kerja |
 | --- | --- |
 | Host integrasi akhir | Windows 11 dengan VMware Workstation; versi aktual dicatat saat acceptance |
-| Guest A dan B | Debian 13 amd64 yang sama; ISO dan SHA-256 persis ditetapkan sebelum task instalasi dibagikan |
+| Guest A dan B | Debian 13 amd64 yang sama; ISO 13.7.0 dan SHA-256 persis ada pada config/contract.md |
 | Profil A | 1 vCPU, RAM 1 GiB, disk dinamis 20 GiB |
 | Profil B | 2 vCPU, RAM 2 GiB, disk dinamis 20 GiB |
 | Runtime | Python 3.13 dengan virtual environment dan dependency lock; paket yang dipakai harus diverifikasi pada Debian target |
@@ -58,7 +58,7 @@ Repo akan menyediakan satu target setup per peran. Nama yang direncanakan adalah
 | Arhasya | Implementasi dan tes ingest/analysis/inferensi/dashboard, setup dan verifikasi peran, `deployment/monitor/`, template `config/monitor.example.*`, tes Monitor, panduan tugas B |
 | Integrator dengan review Erna/Arhasya | Schema/helper bersama, training/evaluasi offline, paket model, root Makefile, dependency lock, `deployment/common/`, tes kontrak/integrasi, PRD/SRS, baseline, serta daftar task |
 
-Path per peran dibuat ketika berisi implementasi; direktori kosong tidak perlu ditambahkan. Tentukan daftar modul aktual sebelum implementasi. Jika kode lama masih memakai modul datar dalam `src/loglab/`, petakan kepemilikannya tanpa refactor besar hanya demi pembagian tugas.
+Helper aktual tersedia di src/loglab dan API-nya ada pada panduan bersama. Path aplikasi/deployment peran dibuat ketika mulai berisi implementasi; direktori kosong tidak perlu ditambahkan. Jika kode lama masih memakai modul datar dalam `src/loglab/`, petakan kepemilikannya tanpa refactor besar hanya demi pembagian tugas.
 
 ## Pengujian di laptop anggota dan integrasi
 

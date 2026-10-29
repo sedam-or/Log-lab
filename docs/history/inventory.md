@@ -52,3 +52,7 @@ Dokumen aktif kebutuhan dan standar dipindahkan atau dipecah. Riwayat implementa
 ## Tindak lanjut format pengumpulan
 
 Workbook Modul 2 memerlukan pembaruan referensi ke SRS yang kini terpecah. DOCX/PDF Modul 3 perlu memastikan link dan status rancangan sesuai repo; assets gambar sudah tersedia. Modul 4 perlu sinkronisasi referensi dengan kebutuhan saat ini. Modul 5 dibuat dari riwayat kontribusi Erna dan Arhasya yang benar-benar terjadi. PRD/SRS dan panduan tugas baru akan diekspor sesudah review isi; jangan mengunggah PDF lama yang belum diselaraskan sebagai padanan Markdown baru.
+
+## Penggunaan ulang kode bersama
+
+Modul events.py, security.py, db.py dan backup.py serta tes event/security/backup dipilih sebagai fondasi. DB disesuaikan untuk schema baru, primary key event mengikuti source_id/event_id dan koneksi backup ditutup eksplisit. Config/contract/testing serta bootstrap adalah bagian fondasi baru/hasil refactor validator. Aplikasi Source/Monitor, analisis, model dan training lama tidak disalin sebagai hasil anggota.

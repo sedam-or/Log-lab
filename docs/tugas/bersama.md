@@ -73,11 +73,9 @@ Untuk mulai menguji tanpa menunggu anggota lain, kita memakai **fixture**, yaitu
 3. Gunakan [panduan Git dan PR](../../CONTRIBUTING.md) untuk menyerahkan perubahan. Reviewer membaca hasil sebelum menggabungkannya.
 4. Ikuti [integrasi](bersama.md#menyatukan-pekerjaan) setelah kode peran siap. Di sini kedua VM diuji pada satu lingkungan bersama.
 
-### Status yang perlu diketahui sebelum mencoba command
+### Yang tersedia saat mulai
 
-Repository sekarang memuat dokumentasi. Kode aplikasi, helper runtime, dependency lock dan installer belum diterbitkan. Kontrak parameter, template env dan pemeriksa konfigurasi sudah tersedia. Karena itu, panduan coding menjelaskan apa yang harus dibuat dan bagaimana menilainya; command seperti `make setup-source` belum dapat dipakai sampai implementasinya tersedia. Integrator menyiapkan fondasi F-01 sampai F-04, kemudian anggota mulai coding dari versi awal yang sama.
-
-Dokumentasi menggunakan contoh untuk membantu belajar. Angka dalam contoh latihan bukan hasil pengujian proyek. Hasil nyata baru dicatat sesudah command atau tes dijalankan pada commit tertentu.
+Tag `mulai-v1` menyediakan helper event/config/DB/security/backup, lock dependency, fixture dan receiver simulasi. Ikuti README untuk `make dev-setup`, lalu `make first-check` sesuai peran. Aplikasi peran, installer service, analisis/dashboard dan training model bukan hasil yang boleh diklaim selesai dari tes fondasi.
 
 ## Folder dan terminal
 
@@ -118,11 +116,23 @@ Folder proyek adalah hasil **clone** Git di dalam guest. Kita memakai `~/LogLab`
 
 Nama clone boleh sama karena kedua folder berada pada guest berbeda. Nama branch berbeda untuk menunjukkan pekerjaan yang akan diperiksa. Membuat branch tidak membuat VM atau folder baru.
 
-### Persiapan yang diberikan integrator
+### Bahan awal yang sudah disediakan
 
-Sebelum task coding dimulai, integrator harus memberikan ISO Debian beserta checksum, versi Python/dependency, cara bootstrap environment, commit awal, dan fixture uji. **Checksum SHA-256** adalah sidik jari file untuk memeriksa bahwa ISO yang digunakan sama dengan ISO acuan.
+Baca [kesepakatan sederhana](../../config/contract.md): installer Debian dan checksum sudah dicatat, nama variabel/peran sudah disamakan. Versi paket ada di requirements.lock, contoh JSON di tests/fixtures, helper di src/loglab, dan tag mulai-v1 menjadi titik awal coding. Token, password dan sertifikat final baru dipasang privat saat membuat service; tes awal memakai Settings.for_test dan tidak memerlukannya.
 
-Commit awal yang disepakati disebut **baseline**. Commit itu harus dicatat sebagai SHA lengkap atau tag yang dapat diperiksa. Kedua anggota mulai dari baseline yang sama agar struktur dan helper sesuai. Saat ini baseline pengembangan tersebut belum dilepas; membaca dokumentasi dan mencatat resource laptop dapat dilakukan lebih dahulu.
+<a id="pasang-debian-sebelum-clone"></a>
+
+### Pasang Debian sebelum clone
+
+1. Di host Windows, unduh ISO yang ditunjuk pada kesepakatan OS lalu jalankan Get-FileHash sesuai contoh di sana. Hash harus sama sebelum pemasangan. Repo mencatat hash resmi; agen belum mengunduh seluruh ISO atau memasang ulang VM pada laptop anggota.
+2. Di VMware pilih membuat VM baru hanya jika belum ada guest latihan yang relevan. Pilih installer ISO tersebut dan guest Linux Debian 64-bit. Simpan folder VM di lokasi yang mudah ditemukan, terpisah dari repo Git.
+3. Beri nama VM sesuai anggota dan resource pada kesepakatan. Gunakan disk virtual dinamis 20 GiB. Jangan mengganti/menimpa VM aktif yang masih berisi pekerjaan lain.
+4. Untuk instalasi dan paket awal, adapter NAT dapat dipakai agar Debian mendapat internet. Nyalakan VM, pilih pemasangan Debian dan ikuti bahasa/keyboard/waktu yang sesuai. Pada pilihan akun, gunakan user `loglab`; atur hak sudo. Bila memakai installer standar, membiarkan password root kosong dan menetapkan password user pertama membuat administrasi menggunakan sudo. Simpan password privat.
+5. Pilih partisi pada **disk virtual VM yang disiapkan**, bukan disk fisik host. Untuk lab sederhana, gunakan satu partisi otomatis pada disk virtual. Pilih SSH server jika diperlukan dan standard system utilities; desktop guest tidak wajib untuk coding melalui SSH.
+6. Selesaikan pemasangan bootloader dan reboot guest. Login user loglab, jalankan `python3 --version` dan `sudo apt update`. Pasang `python3-venv git make` sesuai README. Jika sudo belum tersedia atau user belum berhak, selesaikan konfigurasi admin melalui console sesuai pilihan akun saat instalasi.
+7. Ikuti clone dan setup pada halaman nama sendiri. Saat coding awal, gunakan IP guest yang ditampilkan `ip -br address` bila ingin SSH melalui jaringan NAT host. IP kontrak `.21/.22` digunakan setelah adapter host-only disiapkan pada tahap deployment; tes unit awal memakai data/DB sementara tanpa mengubah profil integrasi.
+
+Console VMware cukup untuk mulai jika SSH atau alamat jaringan belum siap. Jangan menjalankan service final pada NAT/bridged publik; setelah kode siap, pemilik peran menyiapkan host-only statis dan mematikan route eksternal untuk acceptance sesuai kontrak.
 
 ### Memasang SSH setelah guest dan jaringan siap
 
@@ -139,7 +149,7 @@ ip -br address
 
 `apt update` memperbarui daftar paket. Perintah berikutnya memasang server SSH, Git dan Make. `systemctl` mengaktifkan layanan SSH sekarang serta saat guest boot. `ip -br address` menampilkan alamat antarmuka jaringan.
 
-Hasil yang dicari adalah alamat guest pada adapter host-only. `127.0.0.1` adalah alamat mesin itu sendiri dan tidak dipakai host untuk menyambung ke guest. IP `.21` dan `.22` pada panduan adalah nilai tetap kontrak profil integrasi; pastikan benar-benar dikonfigurasi sebelum digunakan. Cara memasang alamat statis dan memilih VMnet akan difinalkan bersama baseline, karena nama adapter pada setiap mesin dapat berbeda.
+Hasil yang dicari adalah alamat guest pada adapter host-only. `127.0.0.1` adalah alamat mesin itu sendiri dan tidak dipakai host untuk menyambung ke guest. IP `.21` dan `.22` pada panduan adalah nilai tetap kontrak profil integrasi; pastikan benar-benar dikonfigurasi sebelum digunakan. Pilih VMnet1 dan subnet sesuai kontrak, lalu gunakan nama adapter hasil pemeriksaan mesin sendiri pada skrip deployment E-05/R-06; nama seperti ens33 bukan nilai kontrak. Catat perubahan jaringan dan verifikasi koneksi melalui console sebelum mengandalkan SSH.
 
 Di console guest, periksa fingerprint server SSH:
 
@@ -190,19 +200,24 @@ Saat kode sudah tersedia, kamu dapat membuka file menggunakan editor di guest at
 
 ### Membuat branch dan memulai task
 
-Integrator akan memberikan SHA baseline pada F-04. Contoh berikut menjelaskan bentuk command, sehingga `SHA_BASELINE` wajib diganti sebelum dijalankan:
+Tag `mulai-v1` adalah versi awal fondasi. Clone tag lalu segera buat branch sendiri seperti contoh halaman anggota. Untuk clone yang sudah ada, periksa perubahan lokal dahulu:
 
-```text
-git switch -c feat/erna-login-outbox SHA_BASELINE
+```bash
+cd ~/LogLab
+git status --short --branch
+git remote -v
+git fetch origin --tags
 ```
 
-Erna membuat branch sesuai tasknya; Arhasya memakai `feat/arhasya-ingest`. Setelah task pertama selesai dan masuk main, task berikutnya dimulai dari main terbaru melalui branch baru. Langkah commit, push, PR dan sinkronisasi dijelaskan pelan-pelan pada [panduan kontribusi](../../CONTRIBUTING.md).
+Jika belum ada pekerjaan yang belum disimpan, Erna dapat menjalankan `git switch -c feat/erna-login-outbox mulai-v1`; Arhasya memakai `feat/arhasya-ingest`. Jangan memaksa switch atau reset saat masih ada perubahan yang belum dipahami. Setelah PR task selesai masuk main, task berikutnya mulai dari main terbaru, bukan selalu kembali ke tag awal.
+
+Jalankan `make dev-setup`, kemudian `make first-check ROLE=source` atau `ROLE=monitor`. Langkah Git berikutnya dijelaskan di CONTRIBUTING. Jika push ditolak karena izin, coding lokal tetap bisa dilakukan; pemilik repo perlu memberi akses akun yang benar atau menyepakati PR melalui fork.
 
 ### Jika task berhenti karena masalah
 
 Tuliskan task ID, mesin tempat command dijalankan, folder kerja, command, hasil yang diharapkan dan pesan aktual. Contoh: “E-02, guest Source, `~/LogLab`, bootstrap gagal karena dependency belum diterbitkan.” Dengan konteks ini, integrator dapat membedakan masalah kode, paket, jaringan, atau panduan.
 
-Jika yang belum tersedia adalah fondasi F-03/F-04, catat sebagai **blocked**, yaitu pekerjaan belum dapat dilanjutkan karena membutuhkan hasil pekerjaan lain. Jika kode sudah dapat dijalankan tetapi perilakunya salah, catat sebagai **fail**, lalu perbaiki dan tes kembali. Status **pass** hanya dipakai setelah syarat pemeriksaan terpenuhi.
+Jika pekerjaan membutuhkan hasil yang memang belum ada, seperti paket model F-05 setelah R-04, catat sebagai **blocked** dan sebutkan dependensinya. Fondasi coding awal sekarang sudah tersedia. Jika kode sudah dapat dijalankan tetapi perilakunya salah, catat sebagai **fail**, lalu perbaiki dan tes kembali. Status **pass** hanya dipakai setelah syarat pemeriksaan terpenuhi.
 
 ## Menyatukan pekerjaan
 
@@ -214,7 +229,11 @@ Ada dua hasil yang perlu dibedakan saat merencanakan pekerjaan. **Penggabungan k
 
 [Sumber Mermaid](../architecture/assets/learning/integration-journey.mmd).
 
-### Tahap pertama menyiapkan bahan kerja bersama
+### Tahap pertama bahan kerja bersama sudah tersedia
+
+Parameter publik, pilihan ISO, lock web/test, helper dan fixture awal telah disiapkan untuk coding. F-01–F-04 berikut menjelaskan tanggung jawab yang dijaga pemilik repo; ini tidak lagi menjadi instruksi menunggu kode awal yang belum diberikan. Penerapan pada laptop anggota, izin push per akun dan hasil uji VM tetap perlu dicatat. Model/training F-05 memang menunggu fitur Arhasya.
+
+### Rincian tanggung jawab fondasi
 
 Erna dan Arhasya menulis kode aplikasi. Mereka membutuhkan batas yang jelas supaya tidak harus menebak format event, menulis helper security berbeda, atau memasang dependency yang tidak kompatibel. Integrator menyediakan fondasi F-01 sampai F-04 sebelum environment coding anggota dianggap siap.
 
@@ -236,7 +255,7 @@ Tetapkan feature schema serta rubrik training. Paket model final menunggu ekstra
 
 Siapkan skeleton package, dependency lock, runner tes dan helper bersama `events.py`, `config.py`, `db.py`, `security.py`, serta `backup.py` sesuai kontrak yang ditetapkan. **Skeleton** berarti struktur awal yang menyediakan tempat dan interface untuk menambahkan kode, belum aplikasi peran yang selesai.
 
-Sediakan bootstrap environment, receiver uji untuk Erna dan fixture pengirim untuk Arhasya. Dokumentasikan command beserta expected output yang sudah dicoba pada Debian target. Root Makefile mengoordinasikan pemanggilan helper/target peran; implementasi deployment Source/Monitor diselesaikan pada E-05/R-06.
+Sediakan bootstrap environment, receiver uji untuk Erna dan fixture pengirim untuk Arhasya. Dokumentasikan command beserta expected output dan lingkungan uji aktual. Fondasi awal diuji pada CPython 3.13 Linux; anggota mencatat hasil Debian guest mereka sebelum mengklaim lulus pada target. Root Makefile mengoordinasikan pemanggilan helper/target peran; implementasi deployment Source/Monitor diselesaikan pada E-05/R-06.
 
 Bila menggunakan ulang kode lama, periksa dependency/path dan jelaskan asalnya. Anggota tidak diminta mengklaim kode lama yang disalin penuh sebagai implementasi yang ditulis sendiri. F-03 selesai ketika environment dasar dan tes helper dapat dijalankan ulang; pengujian aplikasi penuh menunggu kode anggota.
 
@@ -270,7 +289,7 @@ Periksa seluruh PR yang dibutuhkan, termasuk helper, fitur, training, kedua apli
 
 Untuk PR yang masih terbuka, merge satu per satu. Anggota yang belum merge mengambil main terbaru pada branch-nya, memeriksa/resolusikan konflik jika ada, lalu menjalankan tes yang terdampak dan memperbarui PR. Langkah command dijelaskan pada [panduan kontribusi](../../CONTRIBUTING.md).
 
-Sesudah semua perubahan yang diperlukan tersedia, jalankan pemeriksaan gabungan dan catat satu SHA commit untuk pengujian dua VM. **Mematok commit** berarti mencatat versi persis yang harus dipasang pada keduanya; memakai main yang berubah pada dua waktu berbeda dapat menghasilkan kode yang tidak sama.
+Sesudah semua perubahan aplikasi yang diperlukan tersedia, jalankan pemeriksaan gabungan dan catat satu SHA commit untuk pengujian dua VM. **Mematok commit** berarti mencatat versi persis yang harus dipasang pada keduanya; memakai main yang berubah pada dua waktu berbeda dapat menghasilkan kode yang tidak sama.
 
 ### Tahap keempat menjalankan dua VM pada satu jaringan
 
@@ -312,3 +331,49 @@ Laporan Modul 5 merangkum lokasi repo, riwayat branch/merge, cuplikan git log, k
 ## Memeriksa konfigurasi sebelum uji bersama
 
 [Kontrak parameter](../interface-contracts/index.md) menetapkan IP, port, path, nama dan env. `make check-contract` serta `make test-contract` sudah tersedia untuk pemeriksaan repo. Integrator memeriksa kedua env privat dan salinan CA memakai mode pasangan yang dijelaskan pada kontrak sebelum menjalankan dua VM. Pemeriksaan tidak mencetak token, dan tidak menggantikan uji TLS/SAN maupun delivery sebenarnya. Source ID tetap; token pasangan dan CA harus cocok; setiap private key guest tetap terpisah.
+
+<a id="fungsi-yang-sudah-tersedia"></a>
+
+## Fungsi yang sudah tersedia
+
+Semua modul berikut berada di `src/loglab/` dan dapat di-import setelah `make dev-setup`. Fungsinya adalah bahan bersama, bukan implementasi peran anggota.
+
+| Fungsi | Masukan dan hasil utama | Dipakai untuk |
+| --- | --- | --- |
+| `Settings.from_env(role)` | role source/monitor; membaca dan memvalidasi LOGLAB_* dari environment | Startup service final; env privat harus dimasukkan oleh launcher |
+| `Settings.for_test(role, directory)` | role dan Path folder sementara; mengembalikan Settings test dengan secret acak | Tes tanpa env produksi, sertifikat atau VM anggota lain |
+| `build_event(...)` / `validate_event(event)` | Keyword field menurut SRS; menghasilkan event dengan digest / error jika salah | Erna membuat event, Arhasya memeriksa event |
+| `build_receipt(event, status)` / `validate_receipt(receipt, event)` | Event valid dan status stored/duplicate / jawaban yang akan dibandingkan | Jawaban receiver dan pemeriksaan sender; tidak melakukan commit DB otomatis |
+| `validate_source_status(data)` | Sepuluh field status sumber pada fixture | Pemeriksaan input heartbeat tanpa menambah event login |
+| `initialize_source(path)` / `initialize_monitor(path)` | Path DB baru/lab; membuat schema bila diperlukan | Persiapan penyimpanan; bukan migrasi semua DB lama |
+| `connect(path)` | Path DB; context manager koneksi, row sqlite3.Row | SQL aplikasi; commit/transaksi domain tetap tanggung jawab penulis peran |
+| `hash_password(password)` / `verify_password(password, hash)` | Password/hash; menghasilkan hash acak / bool cocok | Akun uji dan operator; password seed minimal 12 karakter |
+| `pseudonym(key, namespace, value)` | Key bytes, namespace account/client dan teks | Token pseudonim pada event |
+| `create_atomic_backup(source, destination)` | Dua Path berbeda; membuat backup konsisten dan metadata hasil | Skrip backup peran; restore tetap diuji terisolasi |
+| `fixture(name)` | login-success, login-failure, stored-receipt atau source-status | Membaca data contoh bersama |
+| `ReceiverStub(token).post(path, event, token)` | Event dan token uji; mengembalikan tuple HTTP status/body | Simulasi transport Erna; tidak mencakup server HTTPS/DB/concurrency asli |
+
+Contoh latihan berikut dapat dijalankan di guest setelah environment dipasang. Ia hanya memakai memori dan data contoh, bukan service A/B:
+
+```bash
+.venv/bin/python - <<'PYCODE'
+import secrets
+from loglab.events import validate_receipt
+from loglab.testing import ReceiverStub, fixture
+
+token = secrets.token_hex(32)
+receiver = ReceiverStub(token)
+event = fixture('login-success')
+code, receipt = receiver.post('/api/v1/events', event, token)
+validate_receipt(receipt, event)
+print(code, receipt['status'])
+code, receipt = receiver.post('/api/v1/events', event, token)
+print(code, receipt['status'], len(receiver.events))
+PYCODE
+```
+
+Hasil yang diharapkan: `200 stored`, lalu `200 duplicate 1`. Arti angka 1 adalah jumlah event pada receiver simulasi. Untuk mensimulasikan timeout di unit test, set `receiver.available = False` sebelum memanggil post. Sender yang ditulis Erna perlu menerima callback transport agar simulasi dapat dipakai. Arhasya tetap menulis receiver asli dengan transaksi DB dan HTTPS, bukan menjalankan ReceiverStub sebagai aplikasi Monitor.
+
+Untuk tes route FastAPI pada dependency yang dipatok, gunakan `httpx.AsyncClient` dengan `httpx.ASGITransport(app=app)`; contoh nyata ada di `tests/test_foundation.py`. Ini menghindari ketergantungan pada wrapper TestClient yang memberi peringatan pada versi Starlette saat ini.
+
+Schema baru menolak identitas event yang sama pada source yang sama, termasuk jika stream diubah. Database dari versi schema lebih baru ditolak, bukan diturunkan diam-diam. Helper awal diadaptasi dari workspace lama dan perbaikannya dicatat pada riwayat; angka tes lama tidak dipakai sebagai hasil fondasi ini.

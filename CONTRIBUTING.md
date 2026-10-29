@@ -18,7 +18,7 @@ Merge tidak memindahkan atau menyatukan disk VM. Sesudah kode kedua peran digabu
 
 ## Memulai task dari versi yang benar
 
-Untuk task pertama, gunakan baseline commit yang diberikan integrator menurut panduan workspace. Untuk task berikutnya, pastikan pekerjaan sebelumnya sudah di-commit dan branch yang akan menjadi dasar sudah diterima di main. Lalu jalankan:
+Untuk task pertama, clone/buat branch dari tag mulai-v1 pada panduan anggota. Untuk task berikutnya, pastikan pekerjaan sebelumnya sudah di-commit dan branch yang akan menjadi dasar sudah diterima di main. Lalu jalankan:
 
 ```bash
 git status --short --branch
@@ -33,7 +33,7 @@ Branch baru tetap memakai folder `~/LogLab` yang sama. Erna bekerja pada file So
 
 ## Menulis dan memeriksa perubahan
 
-Kerjakan satu hasil yang dapat diuji. Contohnya, PR pertama Erna dapat berisi login dan outbox, sedangkan PR Arhasya berisi penerimaan event. Saat kode berubah, jalankan tes yang sesuai dari runner yang diterbitkan integrator. Catat hasil aktual; jangan mengisi daftar tes sebagai lulus sebelum command dijalankan.
+Kerjakan satu hasil yang dapat diuji. Contohnya, PR pertama Erna dapat berisi login dan outbox, sedangkan PR Arhasya berisi penerimaan event. Saat kode berubah, jalankan tes yang sesuai dari runner `make test` yang sudah tersedia. Catat hasil aktual; jangan mengisi daftar tes sebagai lulus sebelum command dijalankan.
 
 Periksa file yang berubah:
 
