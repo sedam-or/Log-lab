@@ -9,7 +9,7 @@ from loglab.events import build_event, validate_event
 from loglab.security import pseudonym, verify_password
 
 
-class SourceApp:
+class SourceService:
     def __init__(self, settings: Settings):
         self.settings = settings
         initialize_source(self.settings.db_path)

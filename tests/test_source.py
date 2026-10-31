@@ -7,14 +7,14 @@ from pathlib import Path
 from loglab.config import Settings
 from loglab.db import connect
 from loglab.security import hash_password
-from loglab.source_app import SourceApp
+from loglab.source_service import SourceService
 
 PASSWORD = "a-long-fictitious-password"
 
 
 def make_app(tmp_dir):
     settings = Settings.for_test("source", Path(tmp_dir))
-    return settings, SourceApp(settings)
+    return settings, SourceService(settings)
 
 
 class TestErnaOutbox(unittest.TestCase):
