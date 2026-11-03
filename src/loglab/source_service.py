@@ -10,6 +10,14 @@ from loglab.events import build_event, validate_event
 from loglab.security import hash_password, pseudonym, verify_password
 
 
+OUTBOX_MAX_EVENTS = 10_000  # kapasitas outbox (EP-05): 10.000 event atau 64 MiB payload
+OUTBOX_MAX_BYTES = 64 * 1024 * 1024
+
+
+class OutboxFull(Exception):
+    """Outbox penuh: event baru ditolak, event lama tetap utuh (tidak ada penghapusan diam-diam)."""
+
+
 class SourceService:
     """Keputusan auth + pencatatan event ke outbox (EP-01, EP-02, EP-05)."""
 
@@ -74,6 +82,11 @@ class SourceService:
             with connect(self.settings.db_path) as conn:
                 conn.execute("BEGIN IMMEDIATE")
                 try:
+                    stored, stored_bytes = conn.execute(
+                        "SELECT COUNT(*), COALESCE(SUM(LENGTH(payload_json)), 0) FROM outbox"
+                    ).fetchone()
+                    if stored >= OUTBOX_MAX_EVENTS or stored_bytes >= OUTBOX_MAX_BYTES:
+                        raise OutboxFull()
                     stream_id = conn.execute(
                         "SELECT value FROM meta WHERE key='stream_id'"
                     ).fetchone()[0]
@@ -121,7 +134,7 @@ class SourceService:
                 except Exception:
                     conn.rollback()
                     raise
-        except sqlite3.Error:
+        except (sqlite3.Error, OutboxFull):
             self._count_enqueue_rejected()
             return is_success, None
 

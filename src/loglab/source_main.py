@@ -7,11 +7,14 @@ Settings.from_env("source") menolak LOGLAB_ROLE selain `source`.
 import uvicorn
 
 from loglab.config import Settings
+from loglab.sender import Sender, sender_lifespan
 from loglab.source_app import create_app
 
 
-def build_app():
-    return create_app(Settings.from_env("source"))
+def build_app(settings: Settings | None = None):
+    """Aplikasi Source beserta sender di dalam proses yang sama (satu service, kontrak 1.0.0)."""
+    settings = settings or Settings.from_env("source")
+    return create_app(settings, lifespan=sender_lifespan(Sender(settings)))
 
 
 class _LazyApp:
@@ -32,7 +35,7 @@ app = _LazyApp()
 def main() -> None:
     settings = Settings.from_env("source")
     uvicorn.run(
-        create_app(settings),
+        build_app(settings),
         host=settings.bind_host,
         port=settings.port,
         ssl_certfile=str(settings.certfile),
