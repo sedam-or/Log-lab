@@ -1,0 +1,31 @@
+#!/usr/sbin/nft -f
+# Firewall Source (kontrak 1.0.0). Masuk: default-deny. Hanya host yang diizinkan.
+# Keluar dibiarkan terbuka: Source perlu menghubungi Monitor (172.16.202.22:8443).
+flush ruleset
+
+table inet loglab_source {
+    chain input {
+        type filter hook input priority filter; policy drop;
+
+        ct state established,related accept
+        ct state invalid drop
+        iifname "lo" accept
+
+        # Balasan DHCP (alamat NAT saat instalasi)
+        udp sport 67 udp dport 68 accept
+
+        # Host: SSH dan aplikasi login HTTPS
+        ip saddr 172.16.202.1 tcp dport { 22, 8443 } accept
+
+        # Ping dari host untuk diagnosis
+        ip saddr 172.16.202.1 icmp type echo-request accept
+    }
+
+    chain forward {
+        type filter hook forward priority filter; policy drop;
+    }
+
+    chain output {
+        type filter hook output priority filter; policy accept;
+    }
+}
