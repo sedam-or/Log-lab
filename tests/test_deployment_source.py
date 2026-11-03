@@ -1,4 +1,4 @@
-"""Tes statis deployment Source (kontrak 1.0.0). Tidak menjalankan systemd atau firewall nyata."""
+"""Tes statis deployment Source (kontrak). Tidak menjalankan systemd atau firewall nyata."""
 import json
 import re
 import shutil

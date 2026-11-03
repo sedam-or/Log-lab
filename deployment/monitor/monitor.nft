@@ -1,5 +1,5 @@
 #!/usr/sbin/nft -f
-# Firewall Monitor (kontrak 1.0.0). Masuk: default-deny. Hanya host dan Source yang diizinkan.
+# Firewall Monitor (kontrak). Masuk: default-deny. Hanya host dan Source yang diizinkan.
 flush ruleset
 
 table inet loglab_monitor {

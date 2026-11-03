@@ -2,6 +2,19 @@
 
 ## Belum dirilis
 
+### Kontrak parameter 1.1.0 (MINOR, 3 November 2026)
+
+- Menambah status endpoint (`implemented`/`planned`), rute UI Monitor, kode error beserta perilaku retry, aturan retry sender, pemetaan counter status Source, test vector digest event, dan izin berkas tambahan (CA/sertifikat, daftar akun uji, backup, `/run/loglab`).
+- Menambah aturan versi (MAJOR/MINOR/PATCH) dan riwayat perubahan kontrak.
+- `LOGLAB_CONTRACT_VERSION` berubah menjadi `1.1.0`: env yang dibuat dari templat 1.0.0 harus dibuat ulang (mis. lewat `make lab-bundle`).
+- Tes baru memeriksa rute aplikasi terhadap kontrak.
+
+### Source, sender, dan deployment
+
+- Source: `/health`, `GET /login`, `POST /api/v1/login`, entrypoint `loglab.source_main:app`, seed akun dari `test-accounts.json`, kapasitas outbox (10.000 event / 64 MiB).
+- Sender di dalam proses Source (file lock, retry backoff, validasi receipt, heartbeat).
+- `deployment/source/*`, `scripts/make_lab_bundle.py`, `make lab-bundle|setup-source|setup-monitor`, `docs/OPERASI-VM.md`. Belum dibuktikan pada VM.
+
 ### Dokumentasi
 
 - Menetapkan struktur repository mengikuti contoh materi Pertemuan 5.

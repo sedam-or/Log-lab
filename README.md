@@ -117,7 +117,7 @@ Istilah teknis untuk penanggung jawab penyatuan adalah *integrator*. Pada tim in
 
 ## IP dan nama variabel sudah menjadi kontrak
 
-<a href="docs/interface-contracts/index.md"><kbd>Kontrak IP dan variabel 1.0.0</kbd></a> <a href="config/source.example.env"><kbd>Contoh env Erna</kbd></a> <a href="config/monitor.example.env"><kbd>Contoh env Arhasya</kbd></a>
+<a href="docs/interface-contracts/index.md"><kbd>Kontrak IP dan variabel 1.1.0</kbd></a> <a href="config/source.example.env"><kbd>Contoh env Erna</kbd></a> <a href="config/monitor.example.env"><kbd>Contoh env Arhasya</kbd></a>
 
 Baca [config/contract.md](config/contract.md) untuk tabel berbahasa sederhana. [contract.json](config/contract.json) adalah sumber nilainya untuk alat; halaman manusia dihasilkan otomatis dan diperiksa agar tidak berbeda. Kontrak menetapkan IP, port, source ID, nama service/file, endpoint dan variabel `LOGLAB_*`. Contoh env berisi placeholder rahasia, bukan credential siap pakai. `172.16.202.1` adalah alamat adapter host, bukan default gateway internet.
 

@@ -1,5 +1,5 @@
 #!/usr/sbin/nft -f
-# Firewall Source (kontrak 1.0.0). Masuk: default-deny. Hanya host yang diizinkan.
+# Firewall Source (kontrak). Masuk: default-deny. Hanya host yang diizinkan.
 # Keluar dibiarkan terbuka: Source perlu menghubungi Monitor (172.16.202.22:8443).
 flush ruleset
 

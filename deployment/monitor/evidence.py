@@ -82,7 +82,7 @@ def main() -> int:
         raw += [f"=== {label} ({module}, {needle})", text]
         actual = f"{run} tes dijalankan, {bad} gagal, {err} error"
         rows.append((label, tag, action, expected, actual, "Lulus" if ok else "GAGAL"))
-    for target, expected in (("check-contract", "PASS: contract 1.0.0 ..."), ("test-contract", "semua tes kontrak OK")):
+    for target, expected in (("check-contract", "PASS: contract ..."), ("test-contract", "semua tes kontrak OK")):
         ok, text = make_check(target)
         failed = failed or not ok
         raw += [f"=== make {target}", text]

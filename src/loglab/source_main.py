@@ -12,7 +12,7 @@ from loglab.source_app import create_app
 
 
 def build_app(settings: Settings | None = None):
-    """Aplikasi Source beserta sender di dalam proses yang sama (satu service, kontrak 1.0.0)."""
+    """Aplikasi Source beserta sender di dalam proses yang sama (satu service, kontrak)."""
     settings = settings or Settings.from_env("source")
     return create_app(settings, lifespan=sender_lifespan(Sender(settings)))
 
