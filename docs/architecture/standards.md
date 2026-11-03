@@ -62,6 +62,7 @@ Diadaptasi dari standar proyek lama untuk repo baru. `make dev-setup`, `make tes
 ### 8. Git, review, dan perubahan
 
 - Commit subject singkat dan imperatif, misalnya `Persist source heartbeat watermark`.
+- Branch: `dev` (kerja), `staging` (uji dua VM), `production` (demo final). Promosi lewat PR + merge commit + CI hijau + review anggota lain; lihat `CONTRIBUTING.md`.
 - Satu perubahan memuat requirement IDs, alasan, metode verifikasi, hasil aktual, dan link run manifest. Perubahan API/schema/model/threshold/config kritis membutuhkan review anggota kedua.
 - Perubahan baseline mencatat keputusan, requirement terdampak, evidence baru, dampak resource/jadwal dan test ulang. Jangan mengedit hasil test setelah kandidat/test final dibuka.
 - Jangan commit `.env`, DB runtime, private keys, VM disk, dataset terunduh, paket model eksperimen yang belum disanitasi, token, atau raw evidence sensitif.

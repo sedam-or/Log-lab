@@ -20,7 +20,7 @@ Jika baru bergabung, baca halaman ini sampai bagian pembagian pekerjaan. Sesudah
 
 ## Sudah bisa mulai coding
 
-Fondasi coding sekarang tersedia: fungsi event/config/database/security/backup, contoh event/receipt/status, penerima simulasi untuk tes sender, dependency lock ber-hash dan perintah setup environment. Aplikasi login/pengirim milik Erna dan aplikasi Monitor/dashboard milik Arhasya belum ditulis. Keduanya mulai dari fondasi yang sama melalui tag **`mulai-v1`**. Tag ini titik awal belajar, bukan rilis aplikasi yang sudah selesai.
+Fondasi coding sekarang tersedia: fungsi event/config/database/security/backup, contoh event/receipt/status, penerima simulasi untuk tes sender, dependency lock ber-hash dan perintah setup environment. Aplikasi login/pengirim milik Erna dan aplikasi Monitor/dashboard milik Arhasya belum ditulis. Keduanya mulai dari fondasi yang sama: clone branch **`dev`** (tag **`mulai-v1`** tetap menjadi baseline sejarah). Repo memakai tiga branch: `dev` (kerja), `staging` (uji dua VM), `production` (demo final); lihat [CONTRIBUTING](CONTRIBUTING.md#branch-dan-promosi) dan [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md).
 
 <a href="config/contract.md"><kbd>Kesepakatan untuk dibaca manusia</kbd></a> <a href="docs/tugas/erna.md#mulai-sekarang"><kbd>Mulai Erna</kbd></a> <a href="docs/tugas/arhasya.md#mulai-sekarang"><kbd>Mulai Arhasya</kbd></a>
 
@@ -40,7 +40,7 @@ Untuk memasang paket dan clone, guest perlu internet melalui NAT sementara. Saat
 sudo apt update
 sudo apt install -y python3 python3-venv git make
 cd ~
-git clone --branch mulai-v1 https://github.com/sedam-or/Log-lab.git LogLab
+git clone --branch dev https://github.com/sedam-or/Log-lab.git LogLab
 cd ~/LogLab
 ```
 
@@ -120,7 +120,7 @@ Istilah teknis untuk penanggung jawab penyatuan adalah *integrator*. Pada tim in
 
 Baca [config/contract.md](config/contract.md) untuk tabel berbahasa sederhana. [contract.json](config/contract.json) adalah sumber nilainya untuk alat; halaman manusia dihasilkan otomatis dan diperiksa agar tidak berbeda. Kontrak menetapkan IP, port, source ID, nama service/file, endpoint dan variabel `LOGLAB_*`. Contoh env berisi placeholder rahasia, bukan credential siap pakai. `172.16.202.1` adalah alamat adapter host, bukan default gateway internet.
 
-Dari root repo jalankan `make check-contract` (atau `python3 scripts/check_contract.py`) sebelum meminta review. Jalankan `make test-contract` untuk tes alat pemeriksa. Workflow PR/main menjalankan pemeriksaan yang sama. Sesudah provisioning, [petunjuk pemeriksaan env privat dan pasangan](docs/interface-contracts/index.md#periksa-sebelum-meminta-review) mendeteksi typo, placeholder dan token yang tidak cocok tanpa mencetak nilainya. Pengujian aplikasi dua VM tetap dilakukan setelah kode tersedia.
+Dari root repo jalankan `make check-contract` (atau `python3 scripts/check_contract.py`) sebelum meminta review. Jalankan `make test-contract` untuk tes alat pemeriksa. Workflow PR dan push ke dev/staging/production menjalankan pemeriksaan yang sama. Sesudah provisioning, [petunjuk pemeriksaan env privat dan pasangan](docs/interface-contracts/index.md#periksa-sebelum-meminta-review) mendeteksi typo, placeholder dan token yang tidak cocok tanpa mencetak nilainya. Pengujian aplikasi dua VM tetap dilakukan setelah kode tersedia.
 
 ## Aturan yang dipakai bersama
 
@@ -141,15 +141,15 @@ SSH direkomendasikan untuk memudahkan copy-paste dari terminal host ke guest. Co
 
 ## Seperti apa hasil setiap branch
 
-Branch adalah jalur perubahan Git di dalam repo yang sama. Saat Erna membuat branch, semua file dari main tetap terlihat di clone Erna. Arhasya juga mendapat semua file main. Yang dibedakan adalah **file yang diubah dan hasil kerja yang ditambahkan**, bukan isi repo yang dipangkas menjadi dua aplikasi terpisah.
+Branch adalah jalur perubahan Git di dalam repo yang sama. Saat Erna membuat branch, semua file dari dev tetap terlihat di clone Erna. Arhasya juga mendapat semua file dev. Yang dibedakan adalah **file yang diubah dan hasil kerja yang ditambahkan**, bukan isi repo yang dipangkas menjadi dua aplikasi terpisah.
 
 ![Hasil branch anggota sampai repo gabungan](docs/architecture/assets/learning/hasil-branch.png)
 
 [Sumber Mermaid](docs/architecture/assets/learning/hasil-branch.mmd).
 
-Contoh PR pertama Erna berisi login/outbox serta tesnya; PR pertama Arhasya berisi penerima catatan serta tesnya. Keduanya tidak harus menyelesaikan seluruh peran pada satu branch panjang. Setelah PR masuk main, branch tugas berikutnya dimulai dari main terbaru. Tabel pada [Erna](docs/tugas/erna.md#hasil-branch) dan [Arhasya](docs/tugas/arhasya.md#hasil-branch) menunjukkan isi setiap PR serta pohon file hasil akhir peran.
+Contoh PR pertama Erna berisi login/outbox serta tesnya; PR pertama Arhasya berisi penerima catatan serta tesnya. Keduanya tidak harus menyelesaikan seluruh peran pada satu branch panjang. Setelah PR masuk dev, branch tugas berikutnya dimulai dari dev terbaru. Tabel pada [Erna](docs/tugas/erna.md#hasil-branch) dan [Arhasya](docs/tugas/arhasya.md#hasil-branch) menunjukkan isi setiap PR serta pohon file hasil akhir peran.
 
-Sesudah seluruh PR yang diperlukan diterima, main berisi fondasi bersama, Source, Monitor, tes keduanya, konfigurasi pemasangan, dan panduan yang sesuai. Kedua VM dipasang dari satu commit yang sama, lalu diuji bersama. Git dapat menggabungkan file, tetapi keberhasilan komunikasi aplikasi perlu dibuktikan pada VM.
+Sesudah seluruh PR yang diperlukan diterima, dev berisi fondasi bersama, Source, Monitor, tes keduanya, konfigurasi pemasangan, dan panduan yang sesuai. Kedua VM dipasang dari satu commit yang sama, lalu diuji bersama. Git dapat menggabungkan file, tetapi keberhasilan komunikasi aplikasi perlu dibuktikan pada VM.
 
 ## Susunan folder
 

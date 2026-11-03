@@ -148,7 +148,7 @@ Aturan yang baru dipastikan: key HMAC hanya pada Source; bind/port berasal dari 
 
 ## Pemeriksaan otomatis pada GitHub
 
-Workflow `contract.yml` menjalankan pemeriksa repo dan tes alatnya pada PR serta push main. Job ini tidak memakai secret deployment dan tidak menguji service VM. Pengaturan required check pada proteksi main merupakan pengaturan repo terpisah; keberadaan workflow tidak otomatis memblokir tombol merge. Hasil run aktual diperiksa setelah workflow dikirim.
+Workflow `contract.yml` menjalankan pemeriksa repo dan tes alatnya pada PR serta push ke dev/staging/production. Job ini tidak memakai secret deployment dan tidak menguji service VM. Pengaturan required check pada proteksi branch merupakan pengaturan repo terpisah; keberadaan workflow tidak otomatis memblokir tombol merge. Hasil run aktual diperiksa setelah workflow dikirim.
 
 ## Bahan coding yang sudah dapat dipakai
 

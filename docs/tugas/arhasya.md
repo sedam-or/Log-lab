@@ -16,7 +16,7 @@ Jika guest belum ada, ikuti [pemasangan Debian](bersama.md#pasang-debian-sebelum
 
 ```bash
 cd ~
-git clone --branch mulai-v1 https://github.com/sedam-or/Log-lab.git LogLab
+git clone --branch dev https://github.com/sedam-or/Log-lab.git LogLab
 cd ~/LogLab
 git switch -c feat/arhasya-ingest
 make dev-setup
@@ -61,23 +61,23 @@ R-03 dapat diuji memakai fixture tanpa menunggu Source Erna. Setelah fitur R-04 
 
 ## Hasil pekerjaan Arhasya yang harus ada di repo
 
-Ini adalah target setelah kode dan pemasangan Monitor selesai. File aplikasi Monitor belum tersedia; helper bersama sudah ada. Branch Arhasya memuat fondasi dari main beserta perubahan Monitor. Bila Source Erna sudah masuk main, file Source juga muncul setelah branch Arhasya disinkronkan. Kehadiran file itu normal pada satu repo bersama.
+Ini adalah target setelah kode dan pemasangan Monitor selesai. File aplikasi Monitor belum tersedia; helper bersama sudah ada. Branch Arhasya memuat fondasi dari dev beserta perubahan Monitor. Bila Source Erna sudah masuk dev, file Source juga muncul setelah branch Arhasya disinkronkan. Kehadiran file itu normal pada satu repo bersama.
 
 ### Bentuk folder yang diharapkan
 
 ```text
 LogLab/
-├── README.md                          penjelasan proyek dari main
+├── README.md                          penjelasan proyek dari dev
 ├── Makefile                           target bersama dari penanggung jawab repo
-├── pyproject.toml                     aturan package/Python dari main
-├── requirements.lock                  versi library dari main
+├── pyproject.toml                     aturan package/Python dari dev
+├── requirements.lock                  versi library dari dev
 ├── src/loglab/
-│   ├── __init__.py                     fondasi package dari main
-│   ├── events.py                      aturan event bersama dari main
-│   ├── db.py                          fungsi database bersama dari main
-│   ├── config.py                      pembacaan konfigurasi dari main
-│   ├── security.py                    fungsi keamanan bersama dari main
-│   ├── backup.py                      fungsi backup bersama dari main
+│   ├── __init__.py                     fondasi package dari dev
+│   ├── events.py                      aturan event bersama dari dev
+│   ├── db.py                          fungsi database bersama dari dev
+│   ├── config.py                      pembacaan konfigurasi dari dev
+│   ├── security.py                    fungsi keamanan bersama dari dev
+│   ├── backup.py                      fungsi backup bersama dari dev
 │   ├── monitor_app.py                 API penerima dan halaman operator
 │   ├── monitor_main.py                menjalankan aplikasi Monitor
 │   ├── analysis.py                    window, kualitas, revisi dan rules
@@ -88,7 +88,7 @@ LogLab/
 │   ├── test_analysis.py               tes window, kualitas dan rules
 │   ├── test_features.py               tes nilai tujuh fitur
 │   ├── test_model.py                  tes paket dan inferensi
-│   ├── test_contract.py               tes aturan konfigurasi bersama dari main
+│   ├── test_contract.py               tes aturan konfigurasi bersama dari dev
 │   └── fixtures/                      contoh request, receipt dan prediksi bersama
 ├── config/contract.json                nilai publik yang ditetapkan bersama
 ├── config/monitor.example.env         nama konfigurasi dan nilai contoh aman
@@ -99,7 +99,7 @@ LogLab/
 └── docs/tugas/arhasya.md               panduan ini dan catatan hasil nyata Arhasya
 ```
 
-Pohon ini menampilkan bagian yang relevan untuk Monitor. Dokumen dan file lain dari main tetap ada. Nama skrip/konfigurasi di atas menjadi target penulisan tugas, bukan bukti bahwa installer sekarang sudah tersedia. Integrator menangani helper bersama serta `dataset.py`, `generate_dataset.py`, `training.py`, dan `train_model.py` untuk training offline.
+Pohon ini menampilkan bagian yang relevan untuk Monitor. Dokumen dan file lain dari dev tetap ada. Nama skrip/konfigurasi di atas menjadi target penulisan tugas, bukan bukti bahwa installer sekarang sudah tersedia. Integrator menangani helper bersama serta `dataset.py`, `generate_dataset.py`, `training.py`, dan `train_model.py` untuk training offline.
 
 Paket model disediakan integrator beserta hash dan contoh prediksi yang diharapkan. Arhasya memasang paket itu pada lokasi runtime sesuai konfigurasi, lalu menulis loader/inferensi pada `model.py`. Model eksperimen, database aktif, log privat dan secret tidak dimasukkan ke PR. Lokasi runtime serta cara memperoleh paket dicatat pada panduan pemasangan setelah paket tersedia.
 
@@ -119,7 +119,7 @@ Fixture memungkinkan Arhasya membuktikan bagian Monitor sendiri. Uji dari Source
 
 ### Isi setiap branch dan PR
 
-Buat beberapa branch pendek. Setiap PR mempunyai hasil yang bisa diperiksa; tidak perlu menunggu seluruh Monitor selesai untuk meminta review. Branch berikutnya dimulai dari main yang sudah memuat PR sebelumnya.
+Buat beberapa branch pendek. Setiap PR mempunyai hasil yang bisa diperiksa; tidak perlu menunggu seluruh Monitor selesai untuk meminta review. Branch berikutnya dimulai dari dev yang sudah memuat PR sebelumnya.
 
 | Branch contoh | Perubahan yang diharapkan pada PR | Syarat sebelum meminta merge |
 | --- | --- | --- |

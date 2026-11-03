@@ -2,9 +2,21 @@
 
 <a href="README.md"><kbd>README</kbd></a> <a href="docs/tugas/erna.md"><kbd>Erna</kbd></a> <a href="docs/tugas/arhasya.md"><kbd>Arhasya</kbd></a> <a href="docs/tugas/bersama.md#menyatukan-pekerjaan"><kbd>Uji bersama</kbd></a>
 
-Git mencatat perubahan file pada clone milikmu. GitHub menyimpan repo bersama agar anggota dapat berbagi perubahan dan memeriksanya. Panduan ini menjelaskan perjalanan satu task coding sampai diterima di `main`, yaitu branch utama repo.
+Git mencatat perubahan file pada clone milikmu. GitHub menyimpan repo bersama agar anggota dapat berbagi perubahan dan memeriksanya. Panduan ini menjelaskan perjalanan satu task coding sampai diterima di `dev`, yaitu branch kerja repo, lalu dipromosikan ke `staging` dan `production` (lihat [Branch dan promosi](#branch-dan-promosi)).
 
 Mulai dari [dasar proyek](docs/tugas/bersama.md#kenali-aplikasi-yang-dibangun) dan [workspace](docs/tugas/bersama.md#folder-dan-terminal) bila kamu belum yakin lokasi terminal atau folder clone. Command di sini dijalankan **di Debian guest, dari `~/LogLab`**. Nama branch contoh harus disesuaikan dengan task yang sedang dikerjakan.
+
+## Branch dan promosi
+
+Syarat dosen (Pertemuan 6, Environment Engineering): repo memiliki tiga branch dan tidak lebih.
+
+| Branch | Fungsi | Siapa yang mengubah | Syarat masuk |
+| --- | --- | --- | --- |
+| `dev` | Pengembangan dan pengujian awal (default repo) | Integrator commit langsung; anggota lain memakai branch pendek + PR ke `dev` | CI hijau (`make check-contract`, `make test`) |
+| `staging` | Uji pasangan dua VM (I-02) | Hanya PR `dev` → `staging` | CI hijau + minimal satu anggota lain me-review |
+| `production` | Demo final dan bukti penyerahan | Hanya PR `staging` → `production` | Bukti uji VM di staging lulus + review + tag rilis |
+
+Promosi memindahkan versi yang sudah diperiksa lewat PR dengan merge commit, bukan menyalin folder. Commit langsung ke `dev` berarti belum ada review pada branch itu; review terjadi pada PR promosi, dan deskripsi PR mencatat siapa menulis serta siapa me-review. Detail environment ada di [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md).
 
 ## Memahami alur perubahan
 
@@ -12,22 +24,22 @@ Mulai dari [dasar proyek](docs/tugas/bersama.md#kenali-aplikasi-yang-dibangun) d
 
 [Sumber Mermaid](docs/architecture/assets/learning/git-journey.mmd). Urutan pada gambar memakai PR Erna lebih dahulu sebagai contoh. PR yang lebih siap dapat masuk lebih dahulu; aturan sinkronisasi berlaku bagi branch yang belum digabung.
 
-Satu **commit** merekam perubahan file yang telah kamu pilih. **Push** mengirim commit ke branch di GitHub. **Pull Request**, disingkat PR, membuka ruang pemeriksaan perubahan sebelum branch digabung ke main. **Merge** adalah penggabungan perubahan file dan riwayat tersebut.
+Satu **commit** merekam perubahan file yang telah kamu pilih. **Push** mengirim commit ke branch di GitHub. **Pull Request**, disingkat PR, membuka ruang pemeriksaan perubahan sebelum branch digabung ke branch tujuan. **Merge** adalah penggabungan perubahan file dan riwayat tersebut.
 
 Merge tidak memindahkan atau menyatukan disk VM. Sesudah kode kedua peran digabung, tim masih harus memasang dan menguji kedua layanan dalam satu jaringan integrasi.
 
 ## Memulai task dari versi yang benar
 
-Untuk task pertama, clone/buat branch dari tag mulai-v1 pada panduan anggota. Untuk task berikutnya, pastikan pekerjaan sebelumnya sudah di-commit dan branch yang akan menjadi dasar sudah diterima di main. Lalu jalankan:
+Untuk task pertama, clone branch `dev` lalu buat branch dari sana (tag `mulai-v1` tetap ada sebagai baseline sejarah). Untuk task berikutnya, pastikan pekerjaan sebelumnya sudah di-commit dan branch yang akan menjadi dasar sudah diterima di `dev`. Lalu jalankan:
 
 ```bash
 git status --short --branch
-git switch main
-git pull --ff-only origin main
+git switch dev
+git pull --ff-only origin dev
 git switch -c feat/erna-sender
 ```
 
-Jika status awal menunjukkan perubahan yang belum disimpan, pahami dan selesaikan dahulu sebelum berpindah branch. `pull --ff-only` mengambil main terbaru dengan syarat tidak perlu menggabungkan riwayat lokal yang berbeda. Jika command menolak, laporkan kondisi riwayat kepada integrator sebelum memilih tindakan lain.
+Jika status awal menunjukkan perubahan yang belum disimpan, pahami dan selesaikan dahulu sebelum berpindah branch. `pull --ff-only` mengambil `dev` terbaru dengan syarat tidak perlu menggabungkan riwayat lokal yang berbeda. Jika command menolak, laporkan kondisi riwayat kepada integrator sebelum memilih tindakan lain.
 
 Branch baru tetap memakai folder `~/LogLab` yang sama. Erna bekerja pada file Source. Arhasya bekerja pada file Monitor. Perubahan helper, schema, dependency, atau root Makefile dibahas bersama karena perubahan itu dapat memengaruhi kedua sisi.
 
@@ -68,7 +80,7 @@ git push -u origin feat/erna-login-outbox
 
 Argumen `-u` menghubungkan branch lokal ke branch remote. Push memerlukan akun GitHub dengan izin tulis yang sesuai; integrator harus memeriksa akses anggota pada F-04. Jika autentikasi gagal, tangani akses GitHub tanpa menaruh token pada URL atau berkas repo.
 
-Buka halaman GitHub repo melalui browser. Pilih branch tugasmu lalu buat PR dengan target main. Jelaskan masalah yang dikerjakan, task/requirement terkait, perubahan penting, cara tes, hasil aktual, dan bagian yang belum selesai. Contoh isi PR:
+Buka halaman GitHub repo melalui browser. Pilih branch tugasmu lalu buat PR dengan target `dev`. Jelaskan masalah yang dikerjakan, task/requirement terkait, perubahan penting, cara tes, hasil aktual, dan bagian yang belum selesai. Contoh isi PR:
 
 ```text
 Task: E-03; requirement EP-01, EP-02, EP-05.
@@ -79,17 +91,17 @@ Batas: pengiriman ke Monitor belum termasuk PR ini; dikerjakan pada E-04.
 
 Reviewer membaca diff dan dapat meminta perbaikan. Lakukan perbaikan pada branch yang sama, commit, lalu push. PR akan mengikuti commit baru pada branch itu. Setidaknya satu anggota lain meninjau sebelum integrator melakukan merge.
 
-## Mengambil perubahan main ketika PR lain sudah masuk
+## Mengambil perubahan dev ketika PR lain sudah masuk
 
-Misalnya PR Erna masuk lebih dahulu, sementara PR Arhasya masih terbuka. Arhasya mengambil main terbaru ke branch-nya:
+Misalnya PR Erna masuk lebih dahulu, sementara PR Arhasya masih terbuka. Arhasya mengambil `dev` terbaru ke branch-nya:
 
 ```bash
 git fetch origin
 git switch feat/arhasya-ingest
-git merge origin/main
+git merge origin/dev
 ```
 
-`fetch` memperbarui informasi remote. `merge origin/main` memasukkan perubahan main ke branch aktif. Jika tidak ada konflik, jalankan kembali tes yang terdampak lalu push. Reviewer memeriksa keadaan PR yang sudah diperbarui.
+`fetch` memperbarui informasi remote. `merge origin/dev` memasukkan perubahan `dev` ke branch aktif. Jika tidak ada konflik, jalankan kembali tes yang terdampak lalu push. Reviewer memeriksa keadaan PR yang sudah diperbarui.
 
 Jika Git menandai konflik, artinya dua perubahan pada bagian file tertentu memerlukan keputusan manusia. Buka file yang disebut. Tanda `<<<<<<<`, `=======`, dan `>>>>>>>` memperlihatkan dua versi yang belum dipadukan. Pahami keduanya, pilih atau gabungkan perilaku yang benar, hapus penanda konflik, lalu simpan.
 
@@ -105,8 +117,8 @@ PR kecil dapat masuk selama pengerjaan, sehingga Erna dan Arhasya tidak harus me
 
 Bukti Modul 5 berasal dari commit dan PR yang benar-benar dibuat anggota. Simpan task/requirement, command tes, hasil aman, komentar review dan commit penyelesaian. Jika tidak ada konflik alami, lakukan latihan konflik pada branch dan file latihan, lalu tandai sebagai latihan pada laporan. Screenshot VMware harus capture asli dari VMware; output sesi SSH disebut bukti terminal.
 
-Dokumentasi awal di main diterbitkan atas instruksi pemilik. Perubahan coding anggota mengikuti alur branch dan PR di atas.
+Dokumentasi awal diterbitkan atas instruksi pemilik. Perubahan coding anggota mengikuti alur branch dan PR di atas.
 
 ## Pemeriksaan kontrak sebelum PR
 
-Jalankan `make check-contract` dan `make test-contract`. Workflow GitHub menjalankan pemeriksaan ini pada PR dan push main. Kode aplikasi yang baru harus membaca nama env/endpoint pada [kontrak parameter](docs/interface-contracts/index.md), memvalidasinya sebelum startup dan tidak memperkenalkan alias/nilai default lain. Kontrak dibekukan tidak berarti parser/loader aplikasi sudah tersedia. Perubahan kontrak memerlukan PR bersama serta penyesuaian versi/template dan tes; required check pada proteksi branch harus diperiksa terpisah.
+Jalankan `make check-contract` dan `make test-contract`. Workflow GitHub menjalankan pemeriksaan ini pada PR dan push ke `dev`, `staging` dan `production`, termasuk `make test` pada Python 3.13. Kode aplikasi yang baru harus membaca nama env/endpoint pada [kontrak parameter](docs/interface-contracts/index.md), memvalidasinya sebelum startup dan tidak memperkenalkan alias/nilai default lain. Kontrak dibekukan tidak berarti parser/loader aplikasi sudah tersedia. Perubahan kontrak memerlukan PR bersama serta penyesuaian versi/template dan tes; required check pada proteksi branch harus diperiksa terpisah.
