@@ -1,0 +1,34 @@
+[Unit]
+Description=LogLab Source (aplikasi login fiktif, outbox, pengirim event)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/loglab/source.env
+
+[Service]
+Type=simple
+User=loglab-svc
+Group=loglab-svc
+WorkingDirectory=/home/loglab/LogLab
+# Env dibaca systemd (root) sebelum proses berjalan sebagai loglab-svc.
+EnvironmentFile=/etc/loglab/source.env
+Environment=PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+# /run/loglab dibuat systemd untuk loglab-svc; file lock sender (LOGLAB_SENDER_LOCK) ada di sana.
+RuntimeDirectory=loglab
+RuntimeDirectoryMode=0750
+# Satu worker saja: sender berjalan sebagai thread di proses ini dan dijaga file lock.
+ExecStart=/home/loglab/LogLab/.venv/bin/python -m uvicorn loglab.source_main:app --host ${LOGLAB_BIND_HOST} --port ${LOGLAB_PORT} --ssl-keyfile ${LOGLAB_TLS_KEY} --ssl-certfile ${LOGLAB_TLS_CERT} --no-access-log --no-server-header --log-level warning --timeout-graceful-shutdown 5
+Restart=always
+RestartSec=2
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/loglab
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

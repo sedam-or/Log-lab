@@ -4,7 +4,7 @@
 
 Ini versi untuk dibaca anggota tim. Kamu tidak perlu memahami JSON untuk mengikuti kesepakatan ini. Isi halaman dibuat otomatis dari contract.json, sehingga isinya harus sama dengan aturan yang dipakai alat pemeriksa.
 
-**Versi aturan: 1.0.0.** Perubahan alamat/nama tidak dilakukan sendiri oleh satu anggota.
+**Versi aturan: 1.1.0.** Perubahan alamat/nama tidak dilakukan sendiri oleh satu anggota.
 
 ## Apa yang kita hubungkan
 
@@ -59,6 +59,14 @@ Saat coding awal, gunakan data contoh dan receiver simulasi. Tabel berikut adala
 | Mengirim satu catatan login | Arhasya | `POST /api/v1/events` |
 | Mengirim kondisi antrean Source | Arhasya | `POST /api/v1/source-status` |
 | Membuka halaman pemantauan operator | Arhasya | `GET /` |
+| Membuka login operator | Arhasya | `GET /login` |
+| Mengirim login operator | Arhasya | `POST /login` |
+| Keluar dari sesi operator | Arhasya | `POST /logout` |
+| Daftar catatan | Arhasya | `GET /events` |
+| Rincian satu catatan | Arhasya | `GET /events/{event_id}` |
+| Daftar snapshot analisis | Arhasya | `GET /snapshots` |
+| Rincian snapshot | Arhasya | `GET /snapshots/{sid}` |
+| Revisi snapshot | Arhasya | `GET /snapshots/{sid}/{revision}` |
 | Memeriksa proses hidup | Kedua VM | `GET /health` |
 
 Login form dan JSON memakai username/password akun fiktif. Pengiriman event/status memakai token pasangan. Dashboard memerlukan sesi operator. Monitor menjawab event yang sudah disimpan dengan stored, atau duplicate bila identitas dan isi yang sama sudah tersimpan. Source hanya menganggap selesai setelah source_id, event_id dan digest pada jawaban cocok.
@@ -90,7 +98,11 @@ Kode mode di tabel ini dipakai saat menulis skrip setup. Owner adalah pemilik fi
 | Folder konfigurasi privat | `root:loglab-svc` | `0750` |
 | File env privat | `root:root` | `0600` |
 | Private key TLS | `root:loglab-svc` | `0640` |
+| Sertifikat TLS dan CA publik | `root:loglab-svc` | `0644` |
+| Daftar akun uji Source | `root:root` | `0600` |
 | Folder data | `loglab-svc:loglab-svc` | `0700` |
+| Folder backup | `loglab-svc:loglab-svc` | `0700` |
+| Folder runtime Source (/run/loglab) | `loglab-svc:loglab-svc` | `0750` |
 
 Env dibaca systemd sebagai root lalu diteruskan ke proses service. Service berjalan sebagai loglab-svc; ia tidak perlu diberi izin membaca file env root secara langsung.
 

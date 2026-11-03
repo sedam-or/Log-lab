@@ -22,4 +22,4 @@ Rujukan seperti “Bagian 5.1” pada dokumen sumber menunjuk file Event pipelin
 
 [Sumber diagram](../../architecture/assets/SRS_PETA_KEMAMPUAN.mmd).
 
-Parameter jaringan, nama service/path, env dan endpoint dibekukan pada [kontrak parameter 1.0.0](../../interface-contracts/index.md). Untuk scope parameter tersebut, JSON kontrak dan tabel turunannya mengendalikan nilai. SRS lain serta usulan lama tetap memiliki status review masing-masing; konfigurasi dibekukan tidak berarti aplikasi sudah diuji.
+Parameter jaringan, nama service/path, env dan endpoint dibekukan pada [kontrak parameter 1.1.0](../../interface-contracts/index.md). Untuk scope parameter tersebut, JSON kontrak dan tabel turunannya mengendalikan nilai. SRS lain serta usulan lama tetap memiliki status review masing-masing; konfigurasi dibekukan tidak berarti aplikasi sudah diuji.

@@ -1,8 +1,9 @@
 name: Parameter contract
 on:
   push:
-    branches: [main]
+    branches: [dev, staging, production]
   pull_request:
+    branches: [dev, staging, production]
   workflow_dispatch:
 permissions:
   contents: read
@@ -30,6 +31,8 @@ jobs:
           python-version: '3.13'
       - name: Bootstrap and test the coding environment
         run: make dev-setup
+      - name: Run the full unit test suite
+        run: make test
       - name: Check Source foundations
         run: make first-check ROLE=source
       - name: Check Monitor foundations

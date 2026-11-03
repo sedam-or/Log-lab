@@ -64,3 +64,9 @@ Thumbs.db
 !config/source.example.env
 !config/monitor.example.env
 !.env.example
+
+# Bundle konfigurasi lab (secret hasil make lab-bundle) dan daftar akun uji
+loglab-bundle/
+lab-bundle/
+test-accounts.json
+KREDENSIAL-PRIVAT.txt

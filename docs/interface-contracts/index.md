@@ -12,7 +12,7 @@ Untuk membaca kesepakatan tanpa JSON, buka [config/contract.md](../../config/con
 
 <!-- CONTRACT-TABLES:START -->
 
-Versi kontrak: **1.0.0**. Profil: **vmware-host-only**.
+Versi kontrak: **1.1.0**. Profil: **vmware-host-only**.
 
 | Parameter | Nilai yang disepakati |
 | --- | --- |
@@ -29,7 +29,7 @@ Versi kontrak: **1.0.0**. Profil: **vmware-host-only**.
 
 | Variabel wajib | Source | Monitor | Nama pada Settings Python | Arti |
 | --- | --- | --- | --- | --- |
-| `LOGLAB_CONTRACT_VERSION` | `1.0.0` | `1.0.0` | `contract_version` | Versi kontrak konfigurasi |
+| `LOGLAB_CONTRACT_VERSION` | `1.1.0` | `1.1.0` | `contract_version` | Versi kontrak konfigurasi |
 | `LOGLAB_PORT` | `8443` | `8443` | `port` | Port HTTPS, dibaca sebagai integer |
 | `LOGLAB_SOURCE_ID` | `login-lab-a` | `login-lab-a` | `source_id` | Identitas sumber yang harus sama pada A dan B |
 | `LOGLAB_CA_BUNDLE` | `/etc/loglab/ca.crt` | `/etc/loglab/ca.crt` | `ca_bundle` | CA publik untuk memverifikasi TLS |
@@ -46,16 +46,37 @@ Versi kontrak: **1.0.0**. Profil: **vmware-host-only**.
 | `LOGLAB_PSEUDONYM_KEY` | Rahasia: `hex64` | Tidak dipakai | `pseudonym_key` | Key HMAC 32 byte hex lowercase, hanya diperlukan Source |
 | `LOGLAB_OPERATOR_PASSWORD_HASH` | Tidak dipakai | Rahasia: `scrypt` | `operator_password_hash` | Hash scrypt operator; password mentah tidak masuk env |
 
-| Endpoint | Method | Alamat |
+| Endpoint | Method | Alamat | Status |
+| --- | --- | --- | --- |
+| `source_login_form` | `GET` | `https://172.16.202.21:8443/login` | implemented |
+| `source_login_form_submit` | `POST` | `https://172.16.202.21:8443/login` | implemented |
+| `source_login_submit` | `POST` | `https://172.16.202.21:8443/api/v1/login` | implemented |
+| `monitor_events` | `POST` | `https://172.16.202.22:8443/api/v1/events` | implemented |
+| `monitor_status` | `POST` | `https://172.16.202.22:8443/api/v1/source-status` | implemented |
+| `dashboard` | `GET` | `https://172.16.202.22:8443/` | implemented |
+| `monitor_login_form` | `GET` | `https://172.16.202.22:8443/login` | implemented |
+| `monitor_login_submit` | `POST` | `https://172.16.202.22:8443/login` | implemented |
+| `monitor_logout` | `POST` | `https://172.16.202.22:8443/logout` | implemented |
+| `monitor_event_list` | `GET` | `https://172.16.202.22:8443/events` | implemented |
+| `monitor_event_detail` | `GET` | `https://172.16.202.22:8443/events/{event_id}` | implemented |
+| `monitor_snapshot_list` | `GET` | `https://172.16.202.22:8443/snapshots` | implemented |
+| `monitor_snapshot_detail` | `GET` | `https://172.16.202.22:8443/snapshots/{sid}` | implemented |
+| `monitor_snapshot_revision` | `GET` | `https://172.16.202.22:8443/snapshots/{sid}/{revision}` | implemented |
+| `source_health` | `GET` | `https://172.16.202.21:8443/health` | implemented |
+| `monitor_health` | `GET` | `https://172.16.202.22:8443/health` | implemented |
+
+Status `planned` berarti disepakati tetapi belum ada di kode; `implemented` diperiksa terhadap rute aplikasi oleh tes.
+
+| Kode error | HTTP | Dicoba ulang Source |
 | --- | --- | --- |
-| `source_login_form` | `GET` | `https://172.16.202.21:8443/login` |
-| `source_login_form_submit` | `POST` | `https://172.16.202.21:8443/login` |
-| `source_login_submit` | `POST` | `https://172.16.202.21:8443/api/v1/login` |
-| `monitor_events` | `POST` | `https://172.16.202.22:8443/api/v1/events` |
-| `monitor_status` | `POST` | `https://172.16.202.22:8443/api/v1/source-status` |
-| `dashboard` | `GET` | `https://172.16.202.22:8443/` |
-| `source_health` | `GET` | `https://172.16.202.21:8443/health` |
-| `monitor_health` | `GET` | `https://172.16.202.22:8443/health` |
+| `request_too_large` | 413 | tidak (event ditahan) |
+| `invalid_request` | 400 | tidak (event ditahan) |
+| `invalid_json` | 400 | tidak (event ditahan) |
+| `unauthorized` | 401 | tidak (event ditahan) |
+| `unknown_source` | 401 | tidak (event ditahan) |
+| `invalid_event` | 422 | tidak (event ditahan) |
+| `invalid_source_status` | 422 | tidak (event ditahan) |
+| `service_unavailable` | 503 | ya |
 
 | Aturan masuk TCP baru | Yang diizinkan |
 | --- | --- |
@@ -101,7 +122,7 @@ Alamat endpoint pada tabel di atas dihasilkan dari JSON. Port database tidak dib
 
 `LOGLAB_MONITOR_URL` hanya berisi origin `https://172.16.202.22:8443`, tanpa `/api` atau trailing slash. Sender menambahkan path endpoint, memakai bearer token sumber dan memverifikasi TLS. Receipt event sukses memakai HTTP 200 dan field tepat `status`, `source_id`, `event_id`, `event_digest`; `status` hanya `stored` atau `duplicate`. Receipt diberikan sesudah commit, dan A membandingkan identitas/digest sebelum ACK.
 
-Respons `/health` memuat `service` (`loglab-source` atau `loglab-monitor`), `state=ready` untuk liveness dan `contract_version=1.0.0`. Respons ini tidak membuktikan outbox selesai, model tersedia, data READY, atau restore lulus. Form browser Source memakai `POST /login` dengan form-urlencoded `username` dan `password`. Endpoint `POST /api/v1/login` menerima JSON dengan nama field yang sama untuk alat uji. Pembatasan ukuran serta proteksi request tetap mengikuti SRS; dua jalur ini tidak boleh menghasilkan format event berbeda.
+Respons `/health` memuat `service` (`loglab-source` atau `loglab-monitor`), `state=ready` untuk liveness dan `contract_version=1.1.0`. Respons ini tidak membuktikan outbox selesai, model tersedia, data READY, atau restore lulus. Form browser Source memakai `POST /login` dengan form-urlencoded `username` dan `password`. Endpoint `POST /api/v1/login` menerima JSON dengan nama field yang sama untuk alat uji. Pembatasan ukuran serta proteksi request tetap mengikuti SRS; dua jalur ini tidak boleh menghasilkan format event berbeda.
 
 Nama variabel dan endpoint di sini wajib dipakai kode baru; detail event/error/retry dan data analisis tetap mengikuti SRS. Tidak semua usulan di lampiran SRS disahkan oleh kontrak parameter ini.
 
@@ -148,7 +169,7 @@ Aturan yang baru dipastikan: key HMAC hanya pada Source; bind/port berasal dari 
 
 ## Pemeriksaan otomatis pada GitHub
 
-Workflow `contract.yml` menjalankan pemeriksa repo dan tes alatnya pada PR serta push main. Job ini tidak memakai secret deployment dan tidak menguji service VM. Pengaturan required check pada proteksi main merupakan pengaturan repo terpisah; keberadaan workflow tidak otomatis memblokir tombol merge. Hasil run aktual diperiksa setelah workflow dikirim.
+Workflow `contract.yml` menjalankan pemeriksa repo dan tes alatnya pada PR serta push ke dev/staging/production. Job ini tidak memakai secret deployment dan tidak menguji service VM. Pengaturan required check pada proteksi branch merupakan pengaturan repo terpisah; keberadaan workflow tidak otomatis memblokir tombol merge. Hasil run aktual diperiksa setelah workflow dikirim.
 
 ## Bahan coding yang sudah dapat dipakai
 

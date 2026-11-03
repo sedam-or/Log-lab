@@ -41,7 +41,7 @@ VM A sender   --HTTPS--> VM B ingest
 VM B          --tidak mengirim perintah atau keputusan blokir--> VM A
 ```
 
-- Browser membuka `https://172.16.202.21:8443/` untuk login uji dan `https://172.16.202.22:8443/` untuk dashboard. Sertifikat lab memiliki SAN untuk kedua alamat; CA lokal dipasang pada host/browser dan VM yang memverifikasi B.
+- Browser membuka `https://172.16.202.21:8443/login` untuk login uji dan `https://172.16.202.22:8443/` untuk dashboard. Sertifikat lab memiliki SAN untuk kedua alamat; CA lokal dipasang pada host/browser dan VM yang memverifikasi B.
 - A mengirim satu event dengan `POST /api/v1/events`, bearer token sumber, dan satu JSON event maksimal 8 KiB. B memverifikasi token, schema, digest, kapasitas, identitas event, dan sequence. B commit lebih dahulu, lalu mengembalikan receipt berisi `status`, `source_id`, `event_id`, dan `event_digest`. `stored` menandakan insert baru; `duplicate` hanya berlaku untuk digest identik. ID sama dengan digest/isi berbeda menghasilkan konflik `409` dan tidak menimpa record.
 - A menandai outbox `ACKNOWLEDGED` hanya sesudah receipt cocok dan commit status lokal berhasil. Timeout/429/5xx dicoba ulang setelah 1, 2, 4, lalu paling lama 30 detik, dengan jitter 0-20% dan timeout request 3 detik. Event permanen invalid/konflik ditahan dengan alasan yang aman untuk inspeksi.
 - A mengirim `POST /api/v1/source-status` setiap 5 detik dengan `source_id`, `stream_id`, `committed_sequence`, watermark ACK kontigu, pending/held/rejected, offered/accepted_local dan waktu source. Sepuluh nama field persis dijelaskan pada kontrak event-pipeline. B mencatat `received_at` dan menghitung perkiraan selisih jam dari waktu penerimaan dikurangi waktu source; nilai ini mencakup waktu transit. Status bukan event.

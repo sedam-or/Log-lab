@@ -1,7 +1,7 @@
 {
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "profile": "vmware-host-only",
-  "date": "2026-10-29",
+  "date": "2026-11-03",
   "network": {
     "cidr": "172.16.202.0/24",
     "host_ip": "172.16.202.1",
@@ -123,7 +123,8 @@
     "source_login_form": {
       "method": "GET",
       "path": "/login",
-      "auth": "public"
+      "auth": "public",
+      "status": "implemented"
     },
     "source_login_submit": {
       "method": "POST",
@@ -133,27 +134,32 @@
       "fields": [
         "username",
         "password"
-      ]
+      ],
+      "status": "implemented"
     },
     "monitor_events": {
       "method": "POST",
       "path": "/api/v1/events",
-      "auth": "source_bearer"
+      "auth": "source_bearer",
+      "status": "implemented"
     },
     "monitor_status": {
       "method": "POST",
       "path": "/api/v1/source-status",
-      "auth": "source_bearer"
+      "auth": "source_bearer",
+      "status": "implemented"
     },
     "dashboard": {
       "method": "GET",
       "path": "/",
-      "auth": "operator_session"
+      "auth": "operator_session",
+      "status": "implemented"
     },
     "health": {
       "method": "GET",
       "path": "/health",
-      "auth": "public_liveness"
+      "auth": "public_liveness",
+      "status": "implemented"
     },
     "receipt_http_status": 200,
     "receipt_fields": [
@@ -180,7 +186,174 @@
       "fields": [
         "username",
         "password"
+      ],
+      "status": "implemented"
+    },
+    "errors": {
+      "request_too_large": {
+        "http": 413,
+        "retry": false,
+        "applies_to": [
+          "source_login",
+          "monitor_events",
+          "monitor_status"
+        ]
+      },
+      "invalid_request": {
+        "http": 400,
+        "retry": false,
+        "applies_to": [
+          "source_login_submit"
+        ]
+      },
+      "invalid_json": {
+        "http": 400,
+        "retry": false,
+        "applies_to": [
+          "monitor_events",
+          "monitor_status"
+        ]
+      },
+      "unauthorized": {
+        "http": 401,
+        "retry": false,
+        "applies_to": [
+          "monitor_events",
+          "monitor_status"
+        ]
+      },
+      "unknown_source": {
+        "http": 401,
+        "retry": false,
+        "applies_to": [
+          "monitor_events",
+          "monitor_status"
+        ]
+      },
+      "invalid_event": {
+        "http": 422,
+        "retry": false,
+        "applies_to": [
+          "monitor_events"
+        ]
+      },
+      "invalid_source_status": {
+        "http": 422,
+        "retry": false,
+        "applies_to": [
+          "monitor_status"
+        ]
+      },
+      "service_unavailable": {
+        "http": 503,
+        "retry": true,
+        "applies_to": [
+          "monitor_events",
+          "monitor_status"
+        ]
+      }
+    },
+    "error_body": {
+      "format": "json",
+      "fields": [
+        "error"
       ]
+    },
+    "sender_retry": {
+      "retry_http": [
+        429,
+        "5xx"
+      ],
+      "hold_http": [
+        400,
+        401,
+        409,
+        413,
+        422
+      ],
+      "timeout_seconds": 3,
+      "backoff_seconds": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        30
+      ],
+      "jitter_max_fraction": 0.2,
+      "heartbeat_seconds": 5
+    },
+    "source_status_counters": {
+      "offered_count": "counters.offered",
+      "accepted_local_count": "counters.accepted_local",
+      "rejected_count": "counters.enqueue_rejected",
+      "held_count": "outbox.state=held",
+      "pending_count": "outbox.state=pending",
+      "acknowledged_sequence": "sequence tepat sebelum event pertama yang belum acked (kontigu)"
+    },
+    "digest_test_vector": {
+      "event": {
+        "schema_version": 1,
+        "source_id": "login-lab-a",
+        "event_id": "00000000-0000-4000-8000-000000000001",
+        "stream_id": "11111111-1111-4111-8111-111111111111",
+        "sequence": 1,
+        "occurred_at": "2026-01-01T00:00:10Z",
+        "event_type": "login.failure",
+        "account_token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "client_token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "reason_code": "INVALID_CREDENTIALS"
+      },
+      "canonical": "JSON sort_keys, separators (\",\", \":\"), ensure_ascii, tanpa event_digest; digest = sha256 hex",
+      "event_digest": "551c5ce819a9018629fa61fcb07868dea002b7dc034fe4ca60d5d8ee630ffc00"
+    },
+    "monitor_login_form": {
+      "method": "GET",
+      "path": "/login",
+      "auth": "public",
+      "status": "implemented"
+    },
+    "monitor_login_submit": {
+      "method": "POST",
+      "path": "/login",
+      "auth": "operator_credentials",
+      "status": "implemented"
+    },
+    "monitor_logout": {
+      "method": "POST",
+      "path": "/logout",
+      "auth": "operator_session",
+      "status": "implemented"
+    },
+    "monitor_event_list": {
+      "method": "GET",
+      "path": "/events",
+      "auth": "operator_session",
+      "status": "implemented"
+    },
+    "monitor_event_detail": {
+      "method": "GET",
+      "path": "/events/{event_id}",
+      "auth": "operator_session",
+      "status": "implemented"
+    },
+    "monitor_snapshot_list": {
+      "method": "GET",
+      "path": "/snapshots",
+      "auth": "operator_session",
+      "status": "implemented"
+    },
+    "monitor_snapshot_detail": {
+      "method": "GET",
+      "path": "/snapshots/{sid}",
+      "auth": "operator_session",
+      "status": "implemented"
+    },
+    "monitor_snapshot_revision": {
+      "method": "GET",
+      "path": "/snapshots/{sid}/{revision}",
+      "auth": "operator_session",
+      "status": "implemented"
     }
   },
   "env": {
@@ -193,8 +366,8 @@
       "kind": "fixed",
       "description": "Versi kontrak konfigurasi",
       "values": {
-        "source": "1.0.0",
-        "monitor": "1.0.0"
+        "source": "1.1.0",
+        "monitor": "1.1.0"
       }
     },
     "LOGLAB_PORT": {
@@ -378,7 +551,21 @@
     "policy": "PR bersama, bump versi kontrak, regenerasi template, tes dan review kedua peran sebelum merge",
     "unknown_env_keys": "reject",
     "runtime_missing_required": "reject",
-    "test_overrides": "dependency injection or dedicated temporary test settings; never publish a modified integration profile"
+    "test_overrides": "dependency injection or dedicated temporary test settings; never publish a modified integration profile",
+    "versioning": {
+      "major": "ubah atau hapus nama, nilai, endpoint, atau bentuk berkas yang sudah disepakati",
+      "minor": "tambah item baru tanpa mengubah yang lama",
+      "patch": "perbaikan dokumentasi tanpa perubahan perilaku",
+      "env_note": "LOGLAB_CONTRACT_VERSION ikut berubah; env lama harus dibuat ulang dari templat atau bundle"
+    },
+    "history": [
+      {
+        "version": "1.1.0",
+        "date": "2026-11-03",
+        "level": "minor",
+        "summary": "status endpoint, kode error, aturan retry, pemetaan counter, test vector digest, izin berkas tambahan"
+      }
+    ]
   },
   "permissions": {
     "private_dir": {
@@ -400,6 +587,33 @@
       "mode": "0700",
       "owner": "loglab-svc",
       "group": "loglab-svc"
+    },
+    "ca_crt": {
+      "mode": "0644",
+      "owner": "root",
+      "group": "loglab-svc"
+    },
+    "tls_crt": {
+      "mode": "0644",
+      "owner": "root",
+      "group": "loglab-svc"
+    },
+    "test_accounts_file": {
+      "mode": "0600",
+      "owner": "root",
+      "group": "root"
+    },
+    "backup_dir": {
+      "mode": "0700",
+      "owner": "loglab-svc",
+      "group": "loglab-svc"
+    },
+    "run_dir": {
+      "mode": "0750",
+      "owner": "loglab-svc",
+      "group": "loglab-svc",
+      "role": "source",
+      "note": "dibuat systemd (RuntimeDirectory=loglab); berisi sender.lock"
     }
   }
 }

@@ -79,6 +79,14 @@ def validate_contract(c: dict) -> None:
     require(c['roles']['monitor']['model_checksum_file'] == c['roles']['monitor']['model_file'] + '.sha256', 'Model checksum sidecar path differs.')
     for path in c['paths'].values():
         require(Path(path).is_absolute(), 'Shared paths must be absolute.')
+    for name, endpoint in c['api'].items():
+        if isinstance(endpoint, dict) and 'method' in endpoint:
+            require(endpoint.get('status') in {'implemented', 'planned'}, f'{name}: status must be implemented or planned.')
+    for code, spec in c['api']['errors'].items():
+        require(bool(re.fullmatch(r'[a-z_]+', code)) and spec['http'] in {400, 401, 409, 413, 422, 429, 503}, f'{code}: invalid error entry.')
+    require(len(c['api']['digest_test_vector']['event_digest']) == 64, 'Digest test vector must be sha256 hex.')
+    for key in ['ca_crt', 'tls_crt', 'test_accounts_file', 'backup_dir', 'run_dir']:
+        require(re.fullmatch(r'0[0-7]{3}', c['permissions'][key]['mode']) is not None, f'{key}: invalid mode.')
     for key, spec in c['env'].items():
         require(bool(re.fullmatch(r'LOGLAB_[A-Z0-9_]+', key)), 'Invalid env key in contract.')
         require(set(spec['roles']) <= set(c['roles']) and bool(spec['roles']), f'{key}: invalid role scope.')
@@ -124,6 +132,10 @@ def render_env(c: dict, role: str) -> str:
     return '\n'.join(lines) + '\n'
 
 
+MONITOR_UI_ENDPOINTS = ('monitor_login_form', 'monitor_login_submit', 'monitor_logout', 'monitor_event_list',
+                        'monitor_event_detail', 'monitor_snapshot_list', 'monitor_snapshot_detail', 'monitor_snapshot_revision')
+
+
 def render_tables(c: dict) -> str:
     lines = [START, '', f'Versi kontrak: **{c["contract_version"]}**. Profil: **{c["profile"]}**.', '',
              '| Parameter | Nilai yang disepakati |', '| --- | --- |',
@@ -141,13 +153,18 @@ def render_tables(c: dict) -> str:
         for role in ['source', 'monitor']:
             cells.append('Tidak dipakai' if role not in spec['roles'] else (f'`{spec["values"][role]}`' if spec['kind'] == 'fixed' else f'Rahasia: `{spec["kind"]}`'))
         lines.append(f'| `{key}` | {cells[0]} | {cells[1]} | `{spec["python_name"]}` | {spec["description"]} |')
-    lines += ['', '| Endpoint | Method | Alamat |', '| --- | --- | --- |']
+    lines += ['', '| Endpoint | Method | Alamat | Status |', '| --- | --- | --- | --- |']
     for name, role in [('source_login_form', 'source'), ('source_login_form_submit', 'source'), ('source_login_submit', 'source'),
-                       ('monitor_events', 'monitor'), ('monitor_status', 'monitor'), ('dashboard', 'monitor')]:
+                       ('monitor_events', 'monitor'), ('monitor_status', 'monitor'), ('dashboard', 'monitor'),
+                       *[(n, 'monitor') for n in MONITOR_UI_ENDPOINTS]]:
         spec = c['api'][name]
-        lines.append(f'| `{name}` | `{spec["method"]}` | `{c["api"][role + "_origin"]}{spec["path"]}` |')
+        lines.append(f'| `{name}` | `{spec["method"]}` | `{c["api"][role + "_origin"]}{spec["path"]}` | {spec["status"]} |')
     for role in c['roles']:
-        lines.append(f'| `{role}_health` | `GET` | `{c["api"][role + "_origin"]}{c["api"]["health"]["path"]}` |')
+        lines.append(f'| `{role}_health` | `GET` | `{c["api"][role + "_origin"]}{c["api"]["health"]["path"]}` | {c["api"]["health"]["status"]} |')
+    lines += ['', 'Status `planned` berarti disepakati tetapi belum ada di kode; `implemented` diperiksa terhadap rute aplikasi oleh tes.',
+              '', '| Kode error | HTTP | Dicoba ulang Source |', '| --- | --- | --- |']
+    for code, spec in c['api']['errors'].items():
+        lines.append(f'| `{code}` | {spec["http"]} | {"ya" if spec["retry"] else "tidak (event ditahan)"} |')
     lines += ['', '| Aturan masuk TCP baru | Yang diizinkan |', '| --- | --- |']
     for role, rules in c['network']['inbound_tcp'].items():
         allowed = '; '.join(f'{rule["from"]}: {rule["ports"]}' for rule in rules)
@@ -193,6 +210,14 @@ def render_human(c: dict) -> str:
         ('monitor_events', 'monitor', 'Mengirim satu catatan login'),
         ('monitor_status', 'monitor', 'Mengirim kondisi antrean Source'),
         ('dashboard', 'monitor', 'Membuka halaman pemantauan operator'),
+        ('monitor_login_form', 'monitor', 'Membuka login operator'),
+        ('monitor_login_submit', 'monitor', 'Mengirim login operator'),
+        ('monitor_logout', 'monitor', 'Keluar dari sesi operator'),
+        ('monitor_event_list', 'monitor', 'Daftar catatan'),
+        ('monitor_event_detail', 'monitor', 'Rincian satu catatan'),
+        ('monitor_snapshot_list', 'monitor', 'Daftar snapshot analisis'),
+        ('monitor_snapshot_detail', 'monitor', 'Rincian snapshot'),
+        ('monitor_snapshot_revision', 'monitor', 'Revisi snapshot'),
     ]:
         endpoint = c['api'][name]
         lines.append(f'| {meaning} | {c["roles"][role]["member"]} | `{endpoint["method"]} {endpoint["path"]}` |')
@@ -222,7 +247,9 @@ def render_human(c: dict) -> str:
               '0750 untuk folder memberi owner akses penuh dan group akses baca/masuk. 0700 hanya dapat diakses owner.', '',
               '| Lokasi | Owner:group | Mode |', '| --- | --- | --- |']
     for label, permission in [('Folder konfigurasi privat', 'private_dir'), ('File env privat', 'env_file'),
-                               ('Private key TLS', 'tls_key'), ('Folder data', 'data_dir')]:
+                               ('Private key TLS', 'tls_key'), ('Sertifikat TLS dan CA publik', 'tls_crt'),
+                               ('Daftar akun uji Source', 'test_accounts_file'), ('Folder data', 'data_dir'),
+                               ('Folder backup', 'backup_dir'), ('Folder runtime Source (/run/loglab)', 'run_dir')]:
         rule = c['permissions'][permission]
         lines.append(f'| {label} | `{rule["owner"]}:{rule["group"]}` | `{rule["mode"]}` |')
     lines += ['', 'Env dibaca systemd sebagai root lalu diteruskan ke proses service. '

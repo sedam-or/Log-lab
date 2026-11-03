@@ -14,7 +14,7 @@ Jika guest belum ada, ikuti [pemasangan Debian](bersama.md#pasang-debian-sebelum
 
 ```bash
 cd ~
-git clone --branch mulai-v1 https://github.com/sedam-or/Log-lab.git LogLab
+git clone --branch dev https://github.com/sedam-or/Log-lab.git LogLab
 cd ~/LogLab
 git switch -c feat/erna-login-outbox
 make dev-setup
@@ -27,7 +27,7 @@ Sesudah tes fondasi lulus, langsung kerjakan [langkah 3](#langkah-3). Kamu dapat
 
 ## Konfigurasi yang wajib dipakai
 
-Baca [kontrak parameter 1.0.0](../interface-contracts/index.md), lalu gunakan [contoh env source](../../config/source.example.env). Nama env sudah final; jangan membuat alias sendiri. IP peran adalah `172.16.202.21`, HTTPS `8443`, dan source ID `login-lab-a`. Secret placeholder diganti privat saat pemasangan; nilai rahasia tidak dimasukkan PR.
+Baca [kontrak parameter 1.1.0](../interface-contracts/index.md), lalu gunakan [contoh env source](../../config/source.example.env). Nama env sudah final; jangan membuat alias sendiri. IP peran adalah `172.16.202.21`, HTTPS `8443`, dan source ID `login-lab-a`. Secret placeholder diganti privat saat pemasangan; nilai rahasia tidak dimasukkan PR.
 
 Sebelum mengirim PR, jalankan `make check-contract` dari `~/LogLab` dan tulis hasil aktualnya. Saat skrip setup sudah dibuat dan memasang env privat, jalankan `sudo python3 scripts/check_contract.py --role source --env /etc/loglab/source.env` sebelum service dinyalakan. Setup wajib melakukan pemeriksaan setara dan memberi error jika nilai salah; menulis template saja belum memenuhi kewajiban ini. Bind/port launcher dibaca dari variabel yang ditetapkan, bukan angka lain pada file service.
 
@@ -64,23 +64,23 @@ Requirement utama adalah [EP-01 sampai EP-07](../requirements/srs/event-pipeline
 
 ## Hasil pekerjaan Erna yang harus ada di repo
 
-Bagian ini adalah gambaran yang dituju, bukan klaim aplikasi Source sudah tersedia; helper bersama sudah ada. Setelah seluruh pekerjaan Erna selesai, clone yang dipakai untuk menyerahkan hasil harus memuat fondasi dari main dan hasil Source di bawah. Karena ini satu repo bersama, file Monitor yang sudah masuk main juga boleh terlihat pada branch Erna. Tidak perlu menghapus file anggota lain untuk membuat branch terlihat khusus Source.
+Bagian ini adalah gambaran yang dituju, bukan klaim aplikasi Source sudah tersedia; helper bersama sudah ada. Setelah seluruh pekerjaan Erna selesai, clone yang dipakai untuk menyerahkan hasil harus memuat fondasi dari dev dan hasil Source di bawah. Karena ini satu repo bersama, file Monitor yang sudah masuk dev juga boleh terlihat pada branch Erna. Tidak perlu menghapus file anggota lain untuk membuat branch terlihat khusus Source.
 
 ### Bentuk folder yang diharapkan
 
 ```text
 LogLab/
-├── README.md                          penjelasan proyek dari main
+├── README.md                          penjelasan proyek dari dev
 ├── Makefile                           disiapkan bersama oleh penanggung jawab repo
-├── pyproject.toml                     aturan package/Python dari main
-├── requirements.lock                  daftar versi library dari main
+├── pyproject.toml                     aturan package/Python dari dev
+├── requirements.lock                  daftar versi library dari dev
 ├── src/loglab/
-│   ├── __init__.py                     fondasi package dari main
-│   ├── events.py                      aturan event bersama dari main
-│   ├── db.py                          fungsi database bersama dari main
-│   ├── config.py                      pembacaan konfigurasi dari main
-│   ├── security.py                    fungsi keamanan bersama dari main
-│   ├── backup.py                      fungsi backup bersama dari main
+│   ├── __init__.py                     fondasi package dari dev
+│   ├── events.py                      aturan event bersama dari dev
+│   ├── db.py                          fungsi database bersama dari dev
+│   ├── config.py                      pembacaan konfigurasi dari dev
+│   ├── security.py                    fungsi keamanan bersama dari dev
+│   ├── backup.py                      fungsi backup bersama dari dev
 │   ├── source_app.py                  form dan route login
 │   ├── source_main.py                 menjalankan aplikasi Source
 │   ├── source_service.py              auth, event dan transaksi outbox
@@ -89,8 +89,8 @@ LogLab/
 ├── tests/
 │   ├── test_source.py                 tes login dan penyimpanan
 │   ├── test_sender.py                 tes pengiriman dan receipt
-│   ├── test_contract.py               tes aturan konfigurasi bersama dari main
-│   └── fixtures/                      contoh uji bersama dari main
+│   ├── test_contract.py               tes aturan konfigurasi bersama dari dev
+│   └── fixtures/                      contoh uji bersama dari dev
 ├── config/contract.json                nilai publik yang ditetapkan bersama
 ├── config/source.example.env          nama konfigurasi dan nilai contoh aman
 ├── deployment/source/
@@ -100,7 +100,7 @@ LogLab/
 └── docs/tugas/erna.md                  panduan ini dan catatan hasil nyata Erna
 ```
 
-Pohon ini menunjukkan file yang relevan untuk Erna; folder dokumentasi dan file lain dari main tetap ikut dalam clone. Nama skrip deployment di atas menjadi target yang ditulis pada tugas ini. Bila integrator perlu menggantinya, ubah panduan serta pemanggilan Makefile bersama sebelum dianggap siap. File `source.example.env` hanya berisi contoh aman. Password/token sebenarnya, private key dan database tidak berada pada pohon yang dikirim ke GitHub.
+Pohon ini menunjukkan file yang relevan untuk Erna; folder dokumentasi dan file lain dari dev tetap ikut dalam clone. Nama skrip deployment di atas menjadi target yang ditulis pada tugas ini. Bila integrator perlu menggantinya, ubah panduan serta pemanggilan Makefile bersama sebelum dianggap siap. File `source.example.env` hanya berisi contoh aman. Password/token sebenarnya, private key dan database tidak berada pada pohon yang dikirim ke GitHub.
 
 ### Apa yang harus bekerja saat diperlihatkan
 
@@ -117,7 +117,7 @@ Saat pengujian sendiri, receiver uji boleh menggantikan B dan harus ditandai seb
 
 ### Isi setiap branch dan PR
 
-Satu branch dipakai untuk satu bagian kerja lalu digabung ke main setelah review. Jadi branch pertama belum diharapkan berisi semua Source selesai. Hasil akhir peran diperoleh dari beberapa PR yang sudah digabung; branch berikutnya mengambil main tersebut.
+Satu branch dipakai untuk satu bagian kerja lalu digabung ke dev setelah review. Jadi branch pertama belum diharapkan berisi semua Source selesai. Hasil akhir peran diperoleh dari beberapa PR yang sudah digabung; branch berikutnya mengambil dev tersebut.
 
 | Branch contoh | Perubahan yang diharapkan pada PR | Syarat sebelum meminta merge |
 | --- | --- | --- |
@@ -126,7 +126,7 @@ Satu branch dipakai untuk satu bagian kerja lalu digabung ke main setelah review
 | `feat/erna-source-deployment` | `deployment/source/*`, template Source, startup yang diperlukan, dan catatan pemasangan | Setup ulang, HTTPS, reboot dan recovery lulus E-05 |
 | `docs/erna-hasil` jika diperlukan | Bagian Catatan hasil pada panduan Erna | Ada commit, command dan hasil nyata; tidak berisi credential |
 
-Ketika membuka PR, reviewer membandingkan perubahan branch terhadap main. File fondasi yang sudah diwarisi dari main tidak dihitung sebagai kode baru Erna. Jika harus mengubah helper bersama atau root Makefile, koordinasikan PR bersama terlebih dahulu.
+Ketika membuka PR, reviewer membandingkan perubahan branch terhadap dev. File fondasi yang sudah diwarisi dari dev tidak dihitung sebagai kode baru Erna. Jika harus mengubah helper bersama atau root Makefile, koordinasikan PR bersama terlebih dahulu.
 
 [Mulai mengerjakan langkah 1](#langkah-1) · [Lihat aturan Source](../requirements/srs/event-pipeline.md) · [Cara kirim PR](../../CONTRIBUTING.md)
 
@@ -204,7 +204,7 @@ Nomor catatan pekerjaan: `E-04`. Gunakan nomor ini ketika menulis PR atau hasil 
 
 <a href="../requirements/srs/event-pipeline.md"><kbd>Aturan pengiriman dan jawaban</kbd></a>
 
-Tujuan tahap ini adalah memindahkan event dari antrean A ke penyimpanan B tanpa menghitung ulang kejadian yang sama. Requirement: EP-03, EP-06, EP-07 dan kesesuaian API EP-04. Mulai dari main yang sudah berisi E-03 melalui branch `feat/erna-sender`. Receiver uji sudah tersedia sebagai `loglab.testing.ReceiverStub`, dengan `post(path, payload, source_token)`. Gunakan callback ini pada tes transport sender; ia tidak membuka server jaringan atau menguji TLS.
+Tujuan tahap ini adalah memindahkan event dari antrean A ke penyimpanan B tanpa menghitung ulang kejadian yang sama. Requirement: EP-03, EP-06, EP-07 dan kesesuaian API EP-04. Mulai dari dev yang sudah berisi E-03 melalui branch `feat/erna-sender`. Receiver uji sudah tersedia sebagai `loglab.testing.ReceiverStub`, dengan `post(path, payload, source_token)`. Gunakan callback ini pada tes transport sender; ia tidak membuka server jaringan atau menguji TLS.
 
 ### Memahami receipt sebelum menulis kode
 

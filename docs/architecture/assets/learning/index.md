@@ -7,7 +7,7 @@ Diagram berikut ditulis menggunakan Mermaid. Markdown panduan memakai PNG yang s
 | [mulai-kerja.mmd](mulai-kerja.mmd) | [PNG](mulai-kerja.png) | Langkah yang langsung dikerjakan Erna dan Arhasya dari fondasi awal |
 | [kontrak-parameter.mmd](kontrak-parameter.mmd) | [PNG](kontrak-parameter.png) | Kontrak publik, env privat dan pemeriksaan sebelum uji dua VM |
 | [hasil-aplikasi.mmd](hasil-aplikasi.mmd) | [PNG](hasil-aplikasi.png) | Tujuan aplikasi dari login sampai halaman operator |
-| [hasil-branch.mmd](hasil-branch.mmd) | [PNG](hasil-branch.png) | Hasil perubahan anggota di atas fondasi main dan repo gabungan |
+| [hasil-branch.mmd](hasil-branch.mmd) | [PNG](hasil-branch.png) | Hasil perubahan anggota di atas fondasi dev dan repo gabungan |
 | [host-ssh.mmd](host-ssh.mmd) | [PNG](host-ssh.png) | Terminal host, console, SSH, guest dan folder proyek |
 | [event-journey.mmd](event-journey.mmd) | [PNG](event-journey.png) | Login, commit, sender, receipt, ACK dan analisis |
 | [git-journey.mmd](git-journey.mmd) | [PNG](git-journey.png) | Branch, tes, PR, sinkronisasi, merge dan deployment |

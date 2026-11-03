@@ -209,7 +209,7 @@ git remote -v
 git fetch origin --tags
 ```
 
-Jika belum ada pekerjaan yang belum disimpan, Erna dapat menjalankan `git switch -c feat/erna-login-outbox mulai-v1`; Arhasya memakai `feat/arhasya-ingest`. Jangan memaksa switch atau reset saat masih ada perubahan yang belum dipahami. Setelah PR task selesai masuk main, task berikutnya mulai dari main terbaru, bukan selalu kembali ke tag awal.
+Jika belum ada pekerjaan yang belum disimpan, Erna dapat menjalankan `git switch -c feat/erna-login-outbox mulai-v1`; Arhasya memakai `feat/arhasya-ingest`. Jangan memaksa switch atau reset saat masih ada perubahan yang belum dipahami. Setelah PR task selesai masuk dev, task berikutnya mulai dari dev terbaru, bukan selalu kembali ke tag awal.
 
 Jalankan `make dev-setup`, kemudian `make first-check ROLE=source` atau `ROLE=monitor`. Langkah Git berikutnya dijelaskan di CONTRIBUTING. Jika push ditolak karena izin, coding lokal tetap bisa dilakukan; pemilik repo perlu memberi akses akun yang benar atau menyepakati PR melalui fork.
 
@@ -223,7 +223,7 @@ Jika pekerjaan membutuhkan hasil yang memang belum ada, seperti paket model F-05
 
 Integrator bertanggung jawab agar Source Erna dan Monitor Arhasya memakai aturan yang sama. Tanggung jawab ini dimulai sebelum coding paralel, lalu berlanjut ketika PR masuk dan kedua VM diuji bersama. Nama penanggung jawab integrasi belum diisi; sementara peran tersebut mengikuti pemilik repo/pemimpin tim.
 
-Ada dua hasil yang perlu dibedakan saat merencanakan pekerjaan. **Penggabungan kode** menyatukan perubahan file ke main dan memeriksa tesnya. **Uji aplikasi yang berjalan** menjalankan dua layanan dari kode tersebut pada jaringan yang sama, lalu membuktikan komunikasi sebenarnya. Keduanya diperlukan karena Git dapat menggabungkan file meskipun URL, token, format event atau perilaku kedua layanan belum cocok.
+Ada dua hasil yang perlu dibedakan saat merencanakan pekerjaan. **Penggabungan kode** menyatukan perubahan file ke dev dan memeriksa tesnya. **Uji aplikasi yang berjalan** menjalankan dua layanan dari kode tersebut pada jaringan yang sama, lalu membuktikan komunikasi sebenarnya. Keduanya diperlukan karena Git dapat menggabungkan file meskipun URL, token, format event atau perilaku kedua layanan belum cocok.
 
 ![Perjalanan dari fondasi sampai rilis yang diperiksa](../architecture/assets/learning/integration-journey.png)
 
@@ -261,7 +261,7 @@ Bila menggunakan ulang kode lama, periksa dependency/path dan jelaskan asalnya. 
 
 #### F-04 Membagikan baseline pengembangan
 
-Catat SHA commit yang berisi fondasi, cara bootstrap, ISO/hash, contoh command yang sudah terisi, dan cara memperoleh konfigurasi privat. Periksa bahwa akun GitHub anggota dapat mengakses repo dan menyerahkan perubahan. Pengaturan review/proteksi main diperiksa pada GitHub; aturan yang ditulis pada dokumen tidak otomatis mengaktifkan fitur tersebut.
+Catat SHA commit yang berisi fondasi, cara bootstrap, ISO/hash, contoh command yang sudah terisi, dan cara memperoleh konfigurasi privat. Periksa bahwa akun GitHub anggota dapat mengakses repo dan menyerahkan perubahan. Pengaturan review/proteksi branch diperiksa pada GitHub; aturan yang ditulis pada dokumen tidak otomatis mengaktifkan fitur tersebut.
 
 Beri Erna dan Arhasya sumber panduan dengan versi yang sama. Jika mengekspor PDF, gunakan Markdown yang sama dan pastikan gambar terbaca. Baseline pengembangan ini cukup untuk mulai menulis kode; installer aplikasi yang lengkap tetap diselesaikan bersama kode peran.
 
@@ -269,7 +269,7 @@ Beri Erna dan Arhasya sumber panduan dengan versi yang sama. Jika mengekspor PDF
 
 Erna mengerjakan login/outbox, sender, lalu deployment. Arhasya mengerjakan ingest, fitur/analisis, inferensi/console, lalu deployment. Setiap bagian mempunyai PR kecil, tes dan reviewer. PR tidak ditahan sampai seluruh task anggota selesai.
 
-Urutan bertahap itu diperlukan untuk dependency model. PR fitur R-04 harus diterima lebih dahulu agar integrator dapat melatih model pada fitur yang sama. Jika semua PR Arhasya baru boleh masuk setelah model selesai, training justru akan menunggu kode yang belum tersedia di main.
+Urutan bertahap itu diperlukan untuk dependency model. PR fitur R-04 harus diterima lebih dahulu agar integrator dapat melatih model pada fitur yang sama. Jika semua PR Arhasya baru boleh masuk setelah model selesai, training justru akan menunggu kode yang belum tersedia di dev.
 
 #### F-05 Menyiapkan training dan paket model
 
@@ -283,13 +283,13 @@ F-05 menunggu fitur R-04, tetapi tidak menahan Erna mengerjakan sender atau Arha
 
 E-06 dan R-07 adalah penyerahan hasil peran sebelum pengujian pasangan. Keduanya berisi PR, tes dan masalah yang masih ada. Partisipasi menguji dua VM dilakukan pada I-02 setelah audit berikut; dengan demikian tidak ada ketergantungan berputar.
 
-#### I-01 Audit perubahan yang sudah masuk main
+#### I-01 Audit perubahan yang sudah masuk dev
 
 Periksa seluruh PR yang dibutuhkan, termasuk helper, fitur, training, kedua aplikasi, tes dan deployment. Sebagian PR sudah masuk selama pengerjaan. I-01 memeriksa keadaan gabungan terakhir, bukan menjadi satu-satunya waktu merge sepanjang proyek.
 
-Untuk PR yang masih terbuka, merge satu per satu. Anggota yang belum merge mengambil main terbaru pada branch-nya, memeriksa/resolusikan konflik jika ada, lalu menjalankan tes yang terdampak dan memperbarui PR. Langkah command dijelaskan pada [panduan kontribusi](../../CONTRIBUTING.md).
+Untuk PR yang masih terbuka, merge satu per satu. Anggota yang belum merge mengambil dev terbaru pada branch-nya, memeriksa/resolusikan konflik jika ada, lalu menjalankan tes yang terdampak dan memperbarui PR. Langkah command dijelaskan pada [panduan kontribusi](../../CONTRIBUTING.md).
 
-Sesudah semua perubahan aplikasi yang diperlukan tersedia, jalankan pemeriksaan gabungan dan catat satu SHA commit untuk pengujian dua VM. **Mematok commit** berarti mencatat versi persis yang harus dipasang pada keduanya; memakai main yang berubah pada dua waktu berbeda dapat menghasilkan kode yang tidak sama.
+Sesudah semua perubahan aplikasi yang diperlukan tersedia, jalankan pemeriksaan gabungan dan catat satu SHA commit untuk pengujian dua VM. **Mematok commit** berarti mencatat versi persis yang harus dipasang pada keduanya; memakai branch yang berubah pada dua waktu berbeda dapat menghasilkan kode yang tidak sama.
 
 ### Tahap keempat menjalankan dua VM pada satu jaringan
 
@@ -346,7 +346,7 @@ Semua modul berikut berada di `src/loglab/` dan dapat di-import setelah `make de
 | `build_receipt(event, status)` / `validate_receipt(receipt, event)` | Event valid dan status stored/duplicate / jawaban yang akan dibandingkan | Jawaban receiver dan pemeriksaan sender; tidak melakukan commit DB otomatis |
 | `validate_source_status(data)` | Sepuluh field status sumber pada fixture | Pemeriksaan input heartbeat tanpa menambah event login |
 | `initialize_source(path)` / `initialize_monitor(path)` | Path DB baru/lab; membuat schema bila diperlukan | Persiapan penyimpanan; bukan migrasi semua DB lama |
-| `connect(path)` | Path DB; context manager koneksi, row sqlite3.Row | SQL aplikasi; commit/transaksi domain tetap tanggung jawab penulis peran |
+| `connect(path)` | Path DB; context manager koneksi, row sqlite3.Row | SQL aplikasi; commit/transaksi dodev tetap tanggung jawab penulis peran |
 | `hash_password(password)` / `verify_password(password, hash)` | Password/hash; menghasilkan hash acak / bool cocok | Akun uji dan operator; password seed minimal 12 karakter |
 | `pseudonym(key, namespace, value)` | Key bytes, namespace account/client dan teks | Token pseudonim pada event |
 | `create_atomic_backup(source, destination)` | Dua Path berbeda; membuat backup konsisten dan metadata hasil | Skrip backup peran; restore tetap diuji terisolasi |
