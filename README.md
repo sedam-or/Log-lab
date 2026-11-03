@@ -76,11 +76,12 @@ Clone dan coding lokal tidak membutuhkan izin push. Jika push ditolak, pemilik r
 | `make dev-setup` | Menyiapkan environment Python 3.13 dan memeriksa fondasi |
 | `make first-check ROLE=source` / `ROLE=monitor` | Contoh kecil menggunakan DB sementara dan receiver simulasi |
 | `make test` | Menjalankan semua tes yang sudah tersedia dalam `.venv` |
+| `make lab-bundle` / `make setup-source` / `make setup-monitor` | Bundle lab (host) dan pemasangan peran (VM); lihat OPERASI-VM |
 | `make check-contract` | Memeriksa JSON, versi untuk manusia, tabel dan contoh env |
 | `make test-contract` | Hanya tes alat pemeriksa konfigurasi |
 | `python3 scripts/check_iso.py /path/ke/ISO` | Memeriksa nama dan SHA-256 installer yang sudah diunduh |
 
-`make setup-source` dan `make setup-monitor` belum tersedia: skrip pemasangan service adalah hasil tugas anggota E-05/R-06. `make dev-setup` menyiapkan coding, bukan memasang aplikasi jadi atau membuat VM secara otomatis.
+`make lab-bundle` (di host) membuat env/TLS/akun lab di luar Git; `sudo make setup-source LOGLAB_BUNDLE=...` dan `sudo make setup-monitor LOGLAB_BUNDLE=...` memasang service di VM; langkah lengkap di [docs/OPERASI-VM.md](docs/OPERASI-VM.md). Skrip belum dibuktikan pada VM sampai ada output uji nyata. `make dev-setup` menyiapkan coding, bukan memasang aplikasi atau membuat VM.
 
 <a id="hasil-aplikasi"></a>
 

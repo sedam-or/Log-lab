@@ -5,6 +5,8 @@
 # Pakai (dari ~/LogLab, sebagai user loglab):   sudo bash deployment/source/setup.sh
 # Opsi lingkungan:
 #   LOGLAB_SKIP_FIREWALL=1   lewati pemasangan firewall (mis. saat masih SSH lewat NAT)
+#   LOGLAB_BUNDLE=/folder    bundle dari "make lab-bundle" (env, TLS, akun). Hanya berkas yang belum
+#                            ada yang dipasang; yang sudah ada tidak ditimpa.
 set -euo pipefail
 
 SERVICE_USER="loglab-svc"
@@ -69,6 +71,24 @@ ensure_service_user_and_dirs() {
     fi
     install -d -o root -g "$SERVICE_USER" -m 0750 "$CONF_DIR"
     install -d -o "$SERVICE_USER" -g "$SERVICE_USER" -m 0700 "$DATA_DIR"
+}
+
+install_bundle() {
+    [ -n "${LOGLAB_BUNDLE:-}" ] || return 0
+    say "Memasang berkas dari bundle ${LOGLAB_BUNDLE} (yang sudah ada tidak ditimpa)"
+    local dir="${LOGLAB_BUNDLE}/source" pairs pair name target
+    [ -d "$dir" ] && [ -s "${LOGLAB_BUNDLE}/ca.crt" ] || fail "bundle tidak lengkap: butuh ${LOGLAB_BUNDLE}/ca.crt dan ${dir}/"
+    pairs="${LOGLAB_BUNDLE}/ca.crt:${CONF_DIR}/ca.crt ${LOGLAB_BUNDLE}/source/source.env:${CONF_DIR}/source.env ${LOGLAB_BUNDLE}/source/tls.crt:${CONF_DIR}/tls.crt ${LOGLAB_BUNDLE}/source/tls.key:${CONF_DIR}/tls.key ${LOGLAB_BUNDLE}/source/test-accounts.json:${CONF_DIR}/test-accounts.json"
+    for pair in $pairs; do
+        name="${pair%%:*}"
+        target="${pair##*:}"
+        [ -s "$name" ] || fail "berkas bundle tidak ada: $name"
+        if [ -e "$target" ]; then
+            say "Sudah ada, tidak ditimpa: $target"
+        else
+            install -m 0600 -o root -g root "$name" "$target"
+        fi
+    done
 }
 
 grant_project_access() {
@@ -197,6 +217,7 @@ main() {
     install_packages
     set_hostname
     ensure_service_user_and_dirs
+    install_bundle
     grant_project_access
     ensure_env
     validate_env
