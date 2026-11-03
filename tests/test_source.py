@@ -8,7 +8,7 @@ import httpx
 from loglab.config import Settings
 from loglab.db import connect
 from loglab.security import hash_password
-from loglab.seed_source_accounts import seed_accounts
+from loglab.seed_source_accounts import parse_accounts, seed_accounts
 from loglab.source_app import create_app
 from loglab.source_service import SourceService
 
@@ -160,6 +160,65 @@ class TestSourceService(unittest.TestCase):
                 seed_accounts(settings.db_path, {"akun-baru": "pendek"})
 
 
+class TestSeedFile(unittest.TestCase):
+    def test_parse_accounts_valid(self):
+        text = json.dumps({"demo-user-01": "password-uji-01", "demo-user-02": "password-uji-02"})
+        self.assertEqual(set(parse_accounts(text)), {"demo-user-01", "demo-user-02"})
+
+    def test_parse_accounts_menolak_bentuk_salah_tanpa_membocorkan_password(self):
+        bad = ["bukan json", "[]", "{}", json.dumps({"demo-user-01": "password-uji-01"}),
+               json.dumps({"demo-user-01": 1, "demo-user-02": "password-uji-02"})]
+        for text in bad:
+            with self.assertRaises(ValueError) as ctx:
+                parse_accounts(text)
+            self.assertNotIn("password-uji", str(ctx.exception))
+
+    def test_seed_dari_file_dua_kali_aman(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            settings = Settings.for_test("source", Path(tmp))
+            accounts = parse_accounts(
+                json.dumps({"demo-user-01": "password-uji-01", "demo-user-02": "password-uji-02"})
+            )
+            self.assertEqual(seed_accounts(settings.db_path, accounts), 2)
+            self.assertEqual(seed_accounts(settings.db_path, accounts), 0)
+
+
+class TestSourceEntrypoint(unittest.IsolatedAsyncioTestCase):
+    def test_app_ada_dan_import_tanpa_efek_samping(self):
+        import importlib
+        module = importlib.import_module("loglab.source_main")
+        self.assertTrue(callable(module.app))
+
+    async def test_app_dibangun_lazy_dan_health_jalan(self):
+        from unittest import mock
+        import loglab.source_main as main
+        with tempfile.TemporaryDirectory() as tmp:
+            settings = Settings.for_test("source", Path(tmp))
+            with mock.patch.object(main.Settings, "from_env", return_value=settings) as from_env:
+                client = httpx.AsyncClient(
+                    transport=httpx.ASGITransport(app=main._LazyApp()), base_url="https://test"
+                )
+                r = await client.get("/health")
+                await client.aclose()
+            from_env.assert_called_once_with("source")
+            self.assertEqual(r.json()["service"], "loglab-source")
+
+    def test_role_monitor_ditolak_untuk_source(self):
+        import secrets
+        import loglab.source_main as main
+        from loglab.contract import ContractError, load_contract, render_env
+        env = dict(
+            line.split("=", 1)
+            for line in render_env(load_contract(), "source").splitlines()
+            if line and not line.startswith("#")
+        )
+        env["LOGLAB_SOURCE_TOKEN"] = secrets.token_hex(32)
+        env["LOGLAB_PSEUDONYM_KEY"] = secrets.token_hex(32)
+        self.assertEqual(main.Settings.from_env("source", env).role, "source")
+        with self.assertRaises(ContractError):
+            main.Settings.from_env("source", {**env, "LOGLAB_ROLE": "monitor"})
+
+
 class TestSourceRoutes(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -181,10 +240,56 @@ class TestSourceRoutes(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(r.status_code, 200)
         self.assertIn("<form", r.text)
 
-    async def test_healthz_minimal(self):
-        r = await self.client.get("/healthz")
+    async def test_login_form_di_jalur_kontrak(self):
+        r = await self.client.get("/login")
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json(), {"status": "ok"})
+        self.assertIn("<form", r.text)
+
+    async def test_health_minimal_sesuai_kontrak(self):
+        r = await self.client.get("/health")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(
+            r.json(),
+            {
+                "service": "loglab-source",
+                "state": "ready",
+                "contract_version": self.settings.contract_version,
+            },
+        )
+        self.assertEqual((await self.client.get("/healthz")).status_code, 404)
+
+    async def test_api_login_json_berhasil_dan_gagal(self):
+        ok = await self.client.post(
+            "/api/v1/login", json={"username": "akun-uji-1", "password": PASSWORD}
+        )
+        bad = await self.client.post(
+            "/api/v1/login", json={"username": "akun-uji-1", "password": WRONG}
+        )
+        self.assertEqual((ok.status_code, ok.json()), (200, {"result": "success"}))
+        self.assertEqual((bad.status_code, bad.json()), (401, {"result": "failure"}))
+        types = [json.loads(r["payload_json"])["event_type"] for r in outbox_rows(self.settings.db_path)]
+        self.assertEqual(types, ["login.success", "login.failure"])
+
+    async def test_api_login_jalur_json_dan_form_menghasilkan_event_sama_bentuk(self):
+        await self.client.post("/login", data={"username": "akun-uji-1", "password": PASSWORD})
+        await self.client.post(
+            "/api/v1/login", json={"username": "akun-uji-1", "password": PASSWORD}
+        )
+        a, b = (json.loads(r["payload_json"]) for r in outbox_rows(self.settings.db_path))
+        self.assertEqual(set(a), set(b))
+        self.assertEqual((a["event_type"], a["reason_code"]), (b["event_type"], b["reason_code"]))
+
+    async def test_api_login_input_salah_ditolak_sebelum_auth(self):
+        for body in (b"bukan json", b"[]", b'{"username": 1, "password": "x"}', b'{"username": "a"}'):
+            r = await self.client.post(
+                "/api/v1/login", content=body, headers={"content-type": "application/json"}
+            )
+            self.assertEqual((r.status_code, r.json()), (400, {"error": "invalid_request"}))
+        big = await self.client.post("/api/v1/login", content=b"x" * 5000)
+        self.assertEqual((big.status_code, big.json()), (413, {"error": "request_too_large"}))
+        self.assertEqual(outbox_rows(self.settings.db_path), [])
+        c = read_counters(self.settings.db_path)
+        self.assertEqual((c["request_rejected"], c["offered"]), (5, 0))
 
     async def test_login_berhasil_mencatat_event(self):
         r = await self.client.post("/login", data={"username": "akun-uji-1", "password": PASSWORD})

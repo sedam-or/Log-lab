@@ -1,8 +1,12 @@
 """Menyiapkan akun fiktif Source. Aman dijalankan berulang (E3-05).
 
-Password dibaca dari environment (LOGLAB_SEED_PASSWORD), tidak ditulis di kode
-atau Git. Akun yang sudah ada tidak ditimpa.
+Daftar akun dibaca dari `test-accounts.json` (kontrak: /etc/loglab/test-accounts.json, tidak
+dikomit), berisi objek {"demo-user-01": "<password>", "demo-user-02": "<password>", ...}.
+Berkas boleh dibaca dari path atau dari stdin (`-`) agar root dapat menyalurkannya ke akun
+layanan tanpa melonggarkan izin berkas. Akun yang sudah ada tidak ditimpa.
 """
+import argparse
+import json
 import os
 import sys
 from pathlib import Path
@@ -11,7 +15,7 @@ from typing import Dict
 from loglab.db import connect, initialize_source
 from loglab.security import hash_password
 
-DEFAULT_USERNAMES = ("akun-uji-1", "akun-uji-2", "akun-uji-3")
+REQUIRED_USERNAMES = ("demo-user-01", "demo-user-02")
 MIN_PASSWORD_LENGTH = 12
 
 
@@ -43,20 +47,46 @@ def seed_accounts(db_path, accounts: Dict[str, str]) -> int:
     return added
 
 
-def main() -> int:
+def parse_accounts(text: str) -> Dict[str, str]:
+    """Baca isi test-accounts.json; tolak bentuk salah tanpa mencetak password."""
+    try:
+        data = json.loads(text)
+    except ValueError as exc:
+        raise ValueError("test-accounts.json bukan JSON yang valid") from exc
+    if not isinstance(data, dict) or not data:
+        raise ValueError("test-accounts.json harus objek {username: password}")
+    for username, password in data.items():
+        if not isinstance(username, str) or not isinstance(password, str):
+            raise ValueError("username dan password harus berupa teks")
+    missing = [name for name in REQUIRED_USERNAMES if name not in data]
+    if missing:
+        raise ValueError("akun wajib belum ada: " + ", ".join(missing))
+    return data
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Seed akun fiktif Source")
+    parser.add_argument(
+        "--accounts-file",
+        default="/etc/loglab/test-accounts.json",
+        help="path test-accounts.json, atau '-' untuk membaca stdin",
+    )
+    args = parser.parse_args(argv)
     db_path = os.environ.get("LOGLAB_DB_PATH", "")
-    password = os.environ.get("LOGLAB_SEED_PASSWORD", "")
     if not db_path:
         print("LOGLAB_DB_PATH belum diatur", file=sys.stderr)
         return 2
     try:
-        added = seed_accounts(
-            Path(db_path), {name: password for name in DEFAULT_USERNAMES}
-        )
-    except ValueError as exc:
+        if args.accounts_file == "-":
+            text = sys.stdin.read()
+        else:
+            text = Path(args.accounts_file).read_text(encoding="utf-8")
+        accounts = parse_accounts(text)
+        added = seed_accounts(Path(db_path), accounts)
+    except (OSError, ValueError) as exc:
         print(f"Seed gagal: {exc}", file=sys.stderr)
         return 2
-    print(f"Akun baru ditambahkan: {added} dari {len(DEFAULT_USERNAMES)}")
+    print(f"Akun baru ditambahkan: {added} dari {len(accounts)}")
     return 0
 
 
