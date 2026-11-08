@@ -1,4 +1,5 @@
 from pathlib import Path
+import gc
 import importlib.util
 import json
 import re
@@ -7,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import warnings
 
 from loglab.analysis import run_cycle
 from loglab.backup import create_atomic_backup
@@ -174,6 +176,15 @@ class RestoreDrillTests(unittest.TestCase):
         self.assertIn("monitor_events    : 1", text)
         self.assertIn("rules-v1", text)
         self.assertIn("HASIL: LULUS", text)
+
+    def test_no_sqlite_connection_is_left_open(self):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            self.drill.drill(self.backup, self.live)
+            self.drill.drill(self.backup, None)
+            gc.collect()
+        leaks = [str(w.message) for w in caught if issubclass(w.category, ResourceWarning)]
+        self.assertEqual(leaks, [])  # ResourceWarning: unclosed database
 
     def test_original_backup_is_untouched_and_live_may_have_more_rows(self):
         before = self.backup.read_bytes()
