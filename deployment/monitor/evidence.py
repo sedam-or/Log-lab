@@ -103,7 +103,7 @@ def main() -> int:
     print("| --- | --- | --- | --- | --- | --- |")
     for row in rows:
         print("| " + " | ".join(row) + " |")
-    print(f"\nOutput mentah privat: {raw_path} (jangan di-commit)")
+    print("\nOutput mentah tersimpan privat di folder loglab-evidence pada home Anda. Jangan menempel jalur lengkapnya di PR dan jangan di-commit.", file=sys.stderr)
     if dirty:
         print("PERINGATAN: ada perubahan belum di-commit. Commit dulu, lalu jalankan ulang agar commit yang dicatat benar-benar yang diuji.")
     return 1 if failed else 0

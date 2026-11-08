@@ -11,13 +11,15 @@ import shutil
 import sqlite3
 import sys
 import tempfile
+from contextlib import closing
 from pathlib import Path
 
 TABLES = ("monitor_events", "source_status", "ingest_rejections", "snapshots", "analysis_results", "operators")
 
 
 def counts(path: Path) -> dict[str, int]:
-    with sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True) as db:
+    # closing(): "with sqlite3.connect()" hanya commit, tidak menutup koneksi (ResourceWarning di Python 3.13)
+    with closing(sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True)) as db:
         return {table: db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] for table in TABLES}
 
 
@@ -29,7 +31,7 @@ def drill(backup: Path, live: Path | None) -> tuple[bool, list[str]]:
         restored = Path(folder) / "restored.sqlite3"
         shutil.copyfile(backup, restored)  # bekerja pada salinan; backup asli tidak diubah
         restored.chmod(0o600)
-        with sqlite3.connect(restored) as db:
+        with closing(sqlite3.connect(restored)) as db:
             integrity = db.execute("PRAGMA integrity_check").fetchone()[0]
             foreign = db.execute("PRAGMA foreign_key_check").fetchall()
             version = db.execute("PRAGMA user_version").fetchone()[0]
