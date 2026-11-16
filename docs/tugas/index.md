@@ -41,6 +41,7 @@ Kerjakan satu task dari panduan peran. Setelah hasil dan tesnya dapat diperiksa,
 | I-01 | Seluruh tim | Audit PR yang sudah masuk; merge sisanya dan catat commit integrasi | E-06/R-07 | Belum |
 | I-02 | Seluruh tim | Dua peran dari commit yang sama diuji pada satu host Windows 11 | I-01 | Belum |
 | I-03 | Seluruh tim | Hasil acceptance, tag jika lulus, serta sumber/PDF artefak Modul 5 | I-02 | Belum |
+| I-04 | Seluruh tim | Baseline container Modul 7: image, compose, perintah build/run, bukti service, dan catatan masalah (`docs/KONTAINER.md`) | F-03 | Build, run, dan e2e laptop lulus; belum diuji di VM |
 
 E-01/R-01 dapat dikerjakan sambil Fase fondasi berjalan: membaca panduan dan mencatat prasyarat tidak memerlukan installer. E-02/R-02 memakai tag mulai-v1 yang sudah menyiapkan fondasi. Erna dan Arhasya menulis kode serta memasang VM perannya. Setiap task dapat diajukan sebagai PR kecil; jangan menahan seluruh pekerjaan sampai semua task peran selesai.
 

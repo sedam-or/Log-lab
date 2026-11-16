@@ -1,0 +1,105 @@
+# Baseline container Modul 7: dua service dari satu image, IP sama dengan kontrak 1.1.0.
+# Jaringan internal tanpa NAT dan tanpa port yang dipublikasikan ke host (sesuai runtime_nat_enabled: false).
+# Folder privat (env, TLS, akun uji) berasal dari LOGLAB_PRIVATE_DIR; default ./private tidak masuk Git.
+#   LOGLAB_PRIVATE_DIR=/folder/privat docker compose -f deployment/container/compose.yaml up -d --build
+name: loglab
+
+x-app: &app
+  build:
+    context: ../..
+    dockerfile: deployment/container/Dockerfile
+  image: loglab-app:1.1.0
+  user: "10001:10001"
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  restart: unless-stopped
+  networks:
+    - loglab-net
+
+services:
+  source:
+    <<: *app
+    container_name: loglab-source
+    env_file: ${LOGLAB_PRIVATE_DIR:-./private}/source.env
+    command:
+      - loglab.source_main:app
+      - --host
+      - 172.16.202.21
+      - --port
+      - "8443"
+      - --ssl-certfile
+      - /etc/loglab/tls.crt
+      - --ssl-keyfile
+      - /etc/loglab/tls.key
+      - --no-access-log
+      - --no-server-header
+      - --log-level
+      - warning
+      - --timeout-graceful-shutdown
+      - "5"
+    volumes:
+      - ${LOGLAB_PRIVATE_DIR:-./private}/tls-source:/etc/loglab:ro
+      - source-data:/var/lib/loglab
+      - source-run:/run/loglab
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,ssl,urllib.request as u; c=ssl.create_default_context(cafile=os.environ['LOGLAB_CA_BUNDLE']); u.urlopen('https://%s:%s/health' % (os.environ['LOGLAB_BIND_HOST'], os.environ['LOGLAB_PORT']), context=c, timeout=3).read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      loglab-net:
+        ipv4_address: 172.16.202.21
+
+  monitor:
+    <<: *app
+    container_name: loglab-monitor
+    env_file: ${LOGLAB_PRIVATE_DIR:-./private}/monitor.env
+    command:
+      - loglab.monitor_main:app
+      - --host
+      - 172.16.202.22
+      - --port
+      - "8443"
+      - --ssl-certfile
+      - /etc/loglab/tls.crt
+      - --ssl-keyfile
+      - /etc/loglab/tls.key
+      - --no-access-log
+      - --no-server-header
+      - --log-level
+      - warning
+      - --timeout-graceful-shutdown
+      - "5"
+    volumes:
+      - ${LOGLAB_PRIVATE_DIR:-./private}/tls-monitor:/etc/loglab:ro
+      - monitor-data:/var/lib/loglab
+      - monitor-backups:/var/backups/loglab
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,ssl,urllib.request as u; c=ssl.create_default_context(cafile=os.environ['LOGLAB_CA_BUNDLE']); u.urlopen('https://%s:%s/health' % (os.environ['LOGLAB_BIND_HOST'], os.environ['LOGLAB_PORT']), context=c, timeout=3).read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      loglab-net:
+        ipv4_address: 172.16.202.22
+
+networks:
+  loglab-net:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.16.202.0/24
+          gateway: 172.16.202.254
+
+volumes:
+  source-data:
+  source-run:
+  monitor-data:
+  monitor-backups:

@@ -2,6 +2,11 @@
 
 ## Belum dirilis
 
+### Baseline container (Modul 7)
+
+- Menambah `deployment/container/` (Dockerfile, compose, skrip folder privat, uji e2e) dan `docs/KONTAINER.md`. Jalur systemd di VM tidak berubah; kontrak 1.1.0 tidak berubah.
+- Menambah target `make container-*` dan tes statis `tests/test_container_files.py`.
+
 ### Kontrak parameter 1.1.0 (MINOR, 3 November 2026)
 
 - Menambah status endpoint (`implemented`/`planned`), rute UI Monitor, kode error beserta perilaku retry, aturan retry sender, pemetaan counter status Source, test vector digest event, dan izin berkas tambahan (CA/sertifikat, daftar akun uji, backup, `/run/loglab`).
