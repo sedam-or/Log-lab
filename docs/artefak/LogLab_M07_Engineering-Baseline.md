@@ -1,6 +1,6 @@
 # Lampiran Lembar Modul 7: Engineering Baseline
 
-Keadaan repository pada 16 November 2026. Commit baseline belum dibuat; menunggu persetujuan. Tidak memuat password, token, private key, atau data sensitif.
+Keadaan repository pada 16 November 2026, setelah commit baseline dibuat. Tidak memuat password, token, private key, atau data sensitif.
 
 ## 1. Commit dan tag baseline
 
@@ -8,11 +8,11 @@ Keadaan repository pada 16 November 2026. Commit baseline belum dibuat; menunggu
 | --- | --- |
 | Branch | `dev` |
 | Commit dasar | `e340722` (artefak Modul 5 dan 6) |
-| Commit baseline | Belum dibuat. Perubahan ada di working tree dan menunggu persetujuan commit. |
-| Tag yang direncanakan | `baseline-m07` (anotasi, lokal). Belum dibuat. |
+| Commit baseline | `3c83b3b` (Tambah baseline container Modul 7) |
+| Tag baseline | `baseline-m07` (anotasi, lokal) |
 | Push | Belum dilakukan. |
 
-Perubahan yang akan masuk ke commit baseline: `deployment/container/` (Dockerfile, Dockerfile.dockerignore, compose.yaml, make-private.sh, smoke-e2e.sh), `docs/KONTAINER.md`, `tests/test_container_files.py`, target `container-*` di `Makefile`, entri `CHANGELOG.md`, dan baris I-04 di `docs/tugas/index.md`.
+Isi commit baseline `3c83b3b`: `deployment/container/` (Dockerfile, Dockerfile.dockerignore, compose.yaml, make-private.sh, smoke-e2e.sh), `docs/KONTAINER.md`, `tests/test_container_files.py`, target `container-*` di `Makefile`, entri `CHANGELOG.md`, dan baris I-04 di `docs/tugas/index.md`.
 
 ## 2. Dockerfile dan Compose yang dipakai
 
