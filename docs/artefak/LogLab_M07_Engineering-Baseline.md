@@ -9,8 +9,8 @@ Keadaan repository pada 17 November 2026. Tidak memuat password, token, private 
 | Branch | `dev` |
 | Commit dasar | `e340722` (artefak Modul 5 dan 6) |
 | Commit baseline | `3c83b3b` (Tambah baseline container Modul 7) |
-| Tag baseline | `baseline-m07` (anotasi, lokal, menunjuk `3c83b3b`) |
-| Push ke `origin` | Belum dilakukan (commit `e340722` dan `3c83b3b` serta tag masih lokal). |
+| Tag baseline | `baseline-m07` (anotasi, menunjuk `3c83b3b`) |
+| Push ke `origin` | Sudah dilakukan pada 17 November: branch `dev` sampai `6828606` dan tag `baseline-m07`. |
 
 Isi commit baseline `3c83b3b`: `deployment/container/` (Dockerfile, Dockerfile.dockerignore, compose.yaml, make-private.sh, smoke-e2e.sh), `docs/KONTAINER.md`, `tests/test_container_files.py`, target `container-*` di `Makefile`, entri `CHANGELOG.md`, dan baris I-04 di `docs/tugas/index.md`.
 
@@ -82,4 +82,3 @@ Yang belum dilakukan:
 - Tidak ada pemindaian image (slide 20 menyarankan).
 - Tidak ada registry. Jika image dibawa ke VM, jalurnya `docker save` lalu `docker load`; belum diuji.
 - Dashboard belum dapat dibuka dari browser host, karena port tidak dipublikasikan.
-- Commit dan tag `baseline-m07` belum di-push ke `origin`.

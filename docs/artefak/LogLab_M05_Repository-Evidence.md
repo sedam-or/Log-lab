@@ -12,11 +12,11 @@ Keadaan repository pada 17 November 2026. Cuplikan git log di bagian 3 adalah sn
 
 | Branch | Commit | Fungsi |
 | --- | --- | --- |
-| dev | 6db42af | Kerja harian; commit langsung per tahap. Commit terakhir per 17 November; commit `e340722`, `3c83b3b`, dan `6db42af` belum di-push |
+| dev | 6828606 | Kerja harian; commit langsung per tahap. Sudah di-push ke origin pada 17 November |
 | staging | e9766a4 | Uji dua VM; hanya lewat PR dari dev |
 | production | c905828 | Demo final; hanya lewat PR dari staging |
 
-Tag `baseline-m07` (anotasi, lokal, di commit 3c83b3b) belum di-push. Per 17 November, `dev` berisi baseline container Modul 7 yang belum masuk staging.
+Tag `baseline-m07` (anotasi, di commit 3c83b3b) sudah di-push ke origin pada 17 November. `dev` berisi baseline container Modul 7 yang belum masuk staging.
 
 | PR | Dari ke | Merge | Review tercatat |
 | --- | --- | --- | --- |
