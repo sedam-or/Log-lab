@@ -29,7 +29,7 @@ make container-down    LOGLAB_PRIVATE_DIR=$HOME/loglab-private   # stop dan hapu
 
 Untuk menghapus data uji sepenuhnya: `docker compose -f deployment/container/compose.yaml down -v`. Perintah ini menghapus volume DB, jadi jalankan hanya pada laptop uji.
 
-## Bukti (laptop, 16 November 2026)
+## Bukti (laptop, 16 November 2026; dijalankan ulang 17 November 2026)
 
 Bukti ini berasal dari laptop host, bukan VM. Nilai secret tidak dicatat di sini.
 
@@ -56,6 +56,8 @@ Semua masalah di bawah muncul saat uji dan sudah diperbaiki kecuali yang ditanda
 3. **`PermissionError` saat membaca kunci TLS.** Direktori bind mount berizin `0700` milik UID host (1000), sehingga UID container 10001 tidak bisa masuk. Perbaikan khusus lab: direktori `0755`, berkas kunci `0644`. Di VM, `deployment/source/setup.sh` memakai `root:loglab-svc` dengan `0640`; izin lab ini **tidak** dipakai di VM.
 4. **Subnet kontrak bersinggungan dengan jaringan host.** `172.16.202.0/24` sudah dipakai `vmnet1` pada laptop ini. Keputusan: jaringan container memakai subnet kontrak tetapi `internal: true`, tanpa gateway NAT, dan tanpa port publik. Rute host ke `172.16.202.0/24` tetap lewat `vmnet1` (dicek dengan `ip route get`). Container saling terhubung lewat bridge. Akibatnya, pemeriksaan dilakukan dari dalam container (`docker compose exec`), bukan dari browser host.
 5. **Monitor sehat tetapi analisis ML belum aktif.** `model.json` tidak ada (`model_absent`), sehingga Monitor berjalan dengan `model_not_configured`. Ini sesuai status F-05 (paket model belum ada). Health 200 tidak membuktikan analisis, sebagaimana tertulis di docstring `/health` Monitor.
+6. **Container lama menunjuk folder yang sudah hilang (17 November).** Bind mount TLS masih mengarah ke folder scratchpad uji. Setelah folder itu hilang, kedua service crash-loop dengan `FileNotFoundError` saat memuat sertifikat. Perbaikan: `make container-down`, lalu folder privat tetap di `~/loglab-private` dan e2e ulang.
+7. **Akun uji lama tersisa di volume (17 November).** Seed menjawab `0 dari 2` dan login mendapat HTTP 401, karena kata sandi di volume tidak cocok dengan folder privat baru. Perbaikan: `docker compose -f deployment/container/compose.yaml down -v` pada laptop uji, lalu e2e dari awal. Perintah ini hanya menghapus volume uji di laptop.
 
 ## Batas dan yang belum dilakukan
 

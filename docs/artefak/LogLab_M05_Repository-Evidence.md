@@ -1,6 +1,6 @@
 # Repository Evidence (Modul 5) - LogLab
 
-Sumber editable untuk `LogLab_M05_Repository-Evidence.pdf`. Keadaan repository pada 3 November 2026, setelah PR #3 di-merge.
+Keadaan repository pada 17 November 2026. Cuplikan git log di bagian 3 adalah snapshot 3 November 2026, setelah PR #3 di-merge.
 
 ## 1. Lokasi/path repository
 
@@ -12,9 +12,11 @@ Sumber editable untuk `LogLab_M05_Repository-Evidence.pdf`. Keadaan repository p
 
 | Branch | Commit | Fungsi |
 | --- | --- | --- |
-| dev | 029714b | Kerja harian; commit langsung per tahap |
+| dev | 6db42af | Kerja harian; commit langsung per tahap. Commit terakhir per 17 November; commit `e340722`, `3c83b3b`, dan `6db42af` belum di-push |
 | staging | e9766a4 | Uji dua VM; hanya lewat PR dari dev |
 | production | c905828 | Demo final; hanya lewat PR dari staging |
+
+Tag `baseline-m07` (anotasi, lokal, di commit 3c83b3b) belum di-push. Per 17 November, `dev` berisi baseline container Modul 7 yang belum masuk staging.
 
 | PR | Dari ke | Merge | Review tercatat |
 | --- | --- | --- | --- |

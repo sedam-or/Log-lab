@@ -12,8 +12,13 @@ Materi membedakan empat environment; repo memakai tiga branch (syarat dosen). Pe
 | Testing | GitHub Actions (Python 3.13) dan `make test` lokal | push/PR ke `dev` | `tests/fixtures`, DB temporer; terpisah dari data VM | Terbatas | Terkelola |
 | Staging | Dua VM host-only (Source `.21`, Monitor `.22`), uji pasangan I-02 | `staging` | env privat dari bundle, akun `demo-user-01/02`, TLS CA lab | Terkontrol | Terjadwal (PR promosi) |
 | Production | Dua VM yang sama untuk demo final | `production` | struktur env sama dengan staging, DB dikosongkan sebelum demo | Sangat terkontrol | Terkendali (PR + tag) |
+| Container (laptop, Modul 7) | Laptop host, image `loglab-app:1.1.0` lewat `docker compose` | `dev` (tag `baseline-m07`) | env dari `config/*.example.env` dan folder privat di luar Git (`make container-private`) | Pengembang laptop | Terkelola per commit; belum diuji di VM |
 
 Staging dan production memakai VM yang sama karena hanya ada dua VM. Perbedaannya disengaja dan terdokumentasi: branch yang di-checkout dan data. Pindah branch tidak menghapus `/var/lib/loglab`; lihat prosedur backup dan reset di [OPERASI-VM.md](OPERASI-VM.md).
+
+## Profil container laptop (Modul 7)
+
+Profil container adalah baseline yang bisa direproduksi di laptop dengan Docker, bukan pengganti jalur VM. Image `loglab-app:1.1.0` memakai base `python:3.13-slim` dengan digest yang dikunci, dan dependency dipasang dari `requirements.lock` dengan hash. Dua service memakai IP kontrak (`172.16.202.21` dan `172.16.202.22`) pada jaringan internal tanpa NAT dan tanpa port publik. Nilai env sama dengan VM, sehingga kontrak 1.1.0 tidak berubah. Rincian perintah, bukti uji, dan masalah yang sudah diperbaiki ada di [KONTAINER.md](KONTAINER.md). Uji di VM tetap menjadi bagian I-02.
 
 ## Parity dan promotion
 
